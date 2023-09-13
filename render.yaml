@@ -14,7 +14,7 @@ services:
   - type: web
     name: ocha
     env: php
-    region: singapore
+    # region: oregon
     plan: free
     runtime: docker
     # buildCommand: "./bin/render-build.sh"
