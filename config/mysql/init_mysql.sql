@@ -1,0 +1,23 @@
+CREATE TABLE ocha.users (user_id varchar(255) NOT NULL PRIMARY KEY, mail varchar(255) NOT NULL, password varchar(255) NOT NULL, profile_image varchar(255) NOT NULL);
+CREATE TABLE ocha.links (
+user_id varchar(255) NOT NULL PRIMARY KEY,
+title1 varchar(255) NULL,
+url1 varchar(255) NULL,
+title2 varchar(255) NULL,
+url2 varchar(255) NULL,
+title3 varchar(255) NULL,
+url3 varchar(255) NULL,
+title4 varchar(255) NULL,
+url4 varchar(255) NULL,
+title5 varchar(255) NULL,
+url5 varchar(255) NULL,
+title6 varchar(255) NULL,
+url6 varchar(255) NULL,
+title7 varchar(255) NULL,
+url7 varchar(255) NULL,
+title8 varchar(255) NULL,
+url8 varchar(255) NULL,
+title9 varchar(255) NULL,
+url9 varchar(255) NULL,
+title10 varchar(255) NULL,
+url10 varchar(255) NULL);
