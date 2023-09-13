@@ -5,12 +5,13 @@
 // define('DB_PASSWORD', 'ochapassword');
 
 // localhost接続
-// define('DATABASE_CONNECTION', 'pgsql:dbname=ocha; host=localhost; port=5432;');
+define('DATABASE_CONNECTION', 'pgsql:dbname=ocha; host=localhost; port=5432;');
 
 // render postgres接続
-define('DATABASE_CONNECTION', 'pgsql:dbname=ocha_huc2; host=dpg-ck0ih89au56s73do38f0-a; port=5432;');
+// define('DATABASE_CONNECTION', 'pgsql:dbname=; host=; port=;');
 define('DB_USER', 'ochauser');
-define('DB_PASSWORD', '8swvCRzD9OFD6T5FYVq4YDktDdRAsrJH');
+// define('DB_PASSWORD', '');
+define('DB_PASSWORD', 'ochapassword');
 
 class DatabaseConnection
 {

@@ -84,7 +84,7 @@
                         echo '<a href="';
                         echo $fetchedUser[$urlColumn];
                         echo '" class="';
-                        echo 'btn btn-success btn-lg">';
+                        echo 'btn btn-success btn-lg" target="_blank" rel="noopener noreferrer">';
                         echo $fetchedUser[$titleColumn];
                         echo '</a>';
                         echo '</div>';
