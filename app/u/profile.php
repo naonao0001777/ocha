@@ -59,7 +59,7 @@
                 echo '<div class="col">';
                 echo '<img src="';
                 echo config::USER_DIRECTORY_PATH . $fetchedUser['user_id'] . '/' . $profileImage;
-                echo '" class="img-thumbnail rounded-circle" width="100px" height="100px" alt="profile">';
+                echo '" class="img-thumbnail rounded-circle" width="100px" height="100px" alt="">';
                 echo '</div>';
                 echo '<div class="col"></div>';
                 echo '</div>';

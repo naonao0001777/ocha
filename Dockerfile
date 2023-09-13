@@ -6,7 +6,7 @@ FROM php:8.2.9-apache
 # RUN chmod +x /usr/local/bin/install-php-extensions
 RUN apt-get update &&\
   # 最小構成（PNG 可）
-  apt-get install -y zlib1g-dev libpng-dev &&\
+  apt-get install -y zlib1g-dev libpng-dev && \
   docker-php-ext-install -j$(nproc) gd
 
 RUN apt-get update && \
@@ -14,8 +14,14 @@ RUN apt-get update && \
     docker-php-ext-configure gd --with-jpeg && \
     docker-php-ext-install -j$(nproc) gd
 
-RUN docker-php-ext-install pdo_mysql mysqli
-# RUN install-php-extensions mysqli pdo_mysql
+# RUN docker-php-ext-install pdo_pgsql
+# RUN apt-get update && apt-get -y install libpq-dev \
+#     docker-php-ext-install pdo_pgsql
+RUN apt-get update && \
+  # PDO PostgreSQL 拡張
+  apt-get install -y libpq-dev &&\
+  docker-php-ext-install pdo_pgsql
+# RUN docker-php-ext-install mysqli pdo_mysql
 
 # Apacheのモジュールを有効化
 RUN a2enmod rewrite

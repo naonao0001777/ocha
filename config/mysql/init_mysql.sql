@@ -1,5 +1,5 @@
-CREATE TABLE ocha.users (user_id varchar(255) NOT NULL PRIMARY KEY, mail varchar(255) NOT NULL, password varchar(255) NOT NULL, profile_image varchar(255) NOT NULL);
-CREATE TABLE ocha.links (
+CREATE TABLE users (user_id varchar(255) NOT NULL PRIMARY KEY, mail varchar(255) NOT NULL, password varchar(255) NOT NULL, profile_image varchar(255));
+CREATE TABLE links (
 user_id varchar(255) NOT NULL PRIMARY KEY,
 title1 varchar(255) NULL,
 url1 varchar(255) NULL,
