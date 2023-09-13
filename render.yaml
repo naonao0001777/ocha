@@ -4,11 +4,11 @@ databases:
     user: ochauser
     plan: free
     region: singapore
-    Advanced:
-      - key: MYSQL_DATABASE
-      - key: MYSQL_USER
-      - key: MYSQL_PASSWORD
-      - key: MYSQL_ROOT_PASSWORD
+    # envVars:
+    #   - key: MYSQL_DATABASE
+    #   - key: MYSQL_USER
+    #   - key: MYSQL_PASSWORD
+    #   - key: MYSQL_ROOT_PASSWORD
 
 services:
   - type: web
