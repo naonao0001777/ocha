@@ -4,7 +4,11 @@ databases:
     user: ochauser
     plan: free
     region: singapore
-    postgresMajorVersion: 14
+    Advanced:
+      - key: MYSQL_DATABASE
+      - key: MYSQL_USER
+      - key: MYSQL_PASSWORD
+      - key: MYSQL_ROOT_PASSWORD
 
 services:
   - type: web
@@ -12,6 +16,7 @@ services:
     env: php
     region: singapore
     plan: free
+    runtime: docker
     # buildCommand: "./bin/render-build.sh"
     # startCommand: "bundle exec puma -C config/puma.rb"
     envVars:
@@ -19,5 +24,7 @@ services:
         fromDatabase:
           name: ocha-mysql
           property: connectionString
-      # - key: RAILS_MASTER_KEY
-      #   sync: false
+      # - key: MYSQL_DATABASE
+      # - key: MYSQL_USER
+      # - key: MYSQL_PASSWORD
+      # - key: MYSQL_ROOT_PASSWORD
