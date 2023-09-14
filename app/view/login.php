@@ -1,7 +1,7 @@
 <?php session_start(); ?>
 
 <!DOCTYPE html>
-<html lang="ja" data-bs-theme="">
+<html lang="ja" data-bs-theme="dark">
 
 <head>
     <meta charset="utf-8">
