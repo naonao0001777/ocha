@@ -105,7 +105,9 @@ if (isset($logoutFlag)) {
                 $stmt->bindvalue(':userId', $userId);
                 $stmt->execute();
                 $_SESSION['userId'] = $userId;
-                header('Location: ../view/admin');
+                $msg = message::REGISTERD;
+                $_SESSION['msg'] = $msg;
+                header('Location: ../view/login');
             }
         }
     } catch (PDOException $e) {

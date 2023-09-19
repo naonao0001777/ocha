@@ -41,5 +41,7 @@ try {
     $msg = $e->getMessage();
 }
 
-session_destroy();
+$msg = message::DELETED;
+$_SESSION['msg'] = $msg;
+
 header('Location: ../index');

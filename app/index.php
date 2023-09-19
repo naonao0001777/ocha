@@ -1,5 +1,4 @@
 <?php
-session_destroy();
 session_start();
 ?>
 <!DOCTYPE html>
@@ -126,7 +125,6 @@ session_start();
             </div>
             <div class="col-lg-4 col-xs-2"></div>
         </div>
-
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
@@ -134,6 +132,7 @@ session_start();
 </body>
 
 </html>
+<?php session_destroy(); ?>
 <script>
     $(function() {
         'use strict'
