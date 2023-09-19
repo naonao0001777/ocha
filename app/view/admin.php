@@ -64,10 +64,10 @@ if (!isset($_SESSION['token'])) {
         </div>
     </nav>
     <div class="container-sm text-center">
-        <!-- <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alert">
-            現在は画像をアップロードできません。あらかじめご了承ください。
+        <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alert" hidden>
+            サーバーが再起動をした時に画像ファイルにアクセスができないため、画像ファイルのアップロードは現在はご利用ができません。
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="dismissAlert"></button>
-        </div> -->
+        </div>
         <div class="row justify-content-md-center g-2">
             <div class="col"></div>
             <div class="col">
@@ -284,14 +284,21 @@ if (!isset($_SESSION['token'])) {
         });
     });
 
-    // $(function() {
-    //     $('#dismissAlert').on('click', function() {
-    //         $.cookie('clicked', 'on', {
-    //             expires: 1,
-    //             path: '/'
-    //         });
-    //     });
-    // });
+    $(function() {
+        if ($.cookie('clicked') == undefined) {
+            document.getElementById("alert").hidden = false;
+        }
+    });
+
+    $(function() {
+        $('#dismissAlert').on('click', function() {
+            $.cookie('clicked', 'on', {
+                expires: 1,
+                path: '/'
+            });
+        });
+        $('#hoge').show();
+    });
 
     // $(function() {
     //     if ($.cookie('dismissed') == undefined) {
