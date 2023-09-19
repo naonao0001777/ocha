@@ -82,20 +82,32 @@ if (!isset($_SESSION['token'])) {
                 </div>
                 <div class="col-lg-4 col-xs-3"></div>
             </div>
-            <div class="row justify-content-md-center g-2">
+            <!-- <div class="row justify-content-md-center">
                 <div class="col-lg-4 col-xs-0"></div>
-                <div class="col-lg-auto col-xs-auto">
-                    <form method="post" action="../routes/adminEdit.php" enctype="multipart/form-data">
-                        <input type="file" class="form-control-sm" id="fileUpload" name="fileUpload" multiple>
-                    </form>
-                </div>
-                <div class="col-lg-4 col-xs-2 text-start">
+                <div class="col-lg-4 col-xs-2 text-center">
                     <form method="post" action="../routes/adminEdit.php">
                         <button type="submit" class="btn btn-sm" id="fileDelete" name="fileDelete" value="fileDelete" data-bs-toggle="tooltip" data-bs-placement="top" title="画像を削除">
                             <span class="glyphicon glyphicon-copy-url" aria-hidden="true" id="fileDelete"><img width="20" height="20" src="../assets/trash.png" alt="" /></span>
                         </button>
                     </form>
                 </div>
+                <div class="col-lg-4 col-xs-0"></div>
+            </div> -->
+            <div class="row">
+                <div class="col-lg-5 col-xs-5"></div>
+                <div class="col-lg-2 col-xs-2">
+                    <form method="post" action="../routes/adminEdit.php" enctype="multipart/form-data">
+                        <input type="file" class="form-control-sm" id="fileUpload" name="fileUpload" multiple>
+                    </form>
+                </div>
+                <div class="col-lg-5 col-xs-5 text-start">
+                    <form method="post" action="../routes/adminEdit.php">
+                        <button type="submit" class="btn btn-sm" id="fileDelete" name="fileDelete" value="fileDelete" data-bs-toggle="tooltip" data-bs-placement="top" title="画像を削除">
+                            <span class="glyphicon glyphicon-copy-url" aria-hidden="true" id="fileDelete"><img width="20" height="20" src="../assets/trash.png" alt="" /></span>
+                        </button>
+                    </form>
+                </div>
+
             </div>
             <div class="row justify-content-md-center g-2">
                 <div class="col-lg-4 col-xs-0"></div>
@@ -105,25 +117,25 @@ if (!isset($_SESSION['token'])) {
                 <div class="col-lg-4 col-xs-0"></div>
             </div>
 
-            <div class="row justify-content-md-center g-2">
+            <div class="row justify-content-md-center mt-2 p-1">
                 <div class="col-lg-4 col-xs-0"></div>
                 <div class="col-lg-auto col-xs-auto text-center">
                     <h3>@<?php echo $_SESSION['userId'] ?></h3>
                 </div>
-                <div class="col-lg-4 col-xs-2 text-start">
+                <div class="col-lg-4 col-xs-0 text-start">
                     <button type="button" class="btn btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="URLをクリップボードにコピー">
                         <span class="glyphicon glyphicon-copy-url" aria-hidden="true" data-url="<?php echo $_SERVER['HTTP_HOST'] ?>/u/<?php echo $_SESSION['userId'] ?>" id="copy-url"><img width="20" height="20" src="../assets/clipboard.png" alt="clipboard" /></span>
                     </button>
                 </div>
             </div>
-            <div class="row justify-content-md-center g-3">
+            <div class="col-lg-4 col-xs-2 text-start">
+            </div>
+            <div class="row justify-content-md-center mt-2 p-1">
                 <div class="col-lg-3 col-xs-3"></div>
-                <div class="col-lg-6 col-xs-6">
-                    <p>
-                        <button type="button" class="btn btn-success rounded-pill" data-bs-toggle="collapse" data-bs-target="#collapseAddButton" aria-expanded="false" aria-controls="collapseAddButton">
-                            リンクを追加
-                        </button>
-                    </p>
+                <div class="col-lg-6 col-xs-6 gap-2">
+                    <button type="button" class="btn btn-success rounded-pill mb-2" data-bs-toggle="collapse" data-bs-target="#collapseAddButton" aria-expanded="false" aria-controls="collapseAddButton">
+                        リンクを追加
+                    </button>
                     <div class="collapse" id="collapseAddButton">
                         <div class="card card-body">
                             <form method="post" action="../routes/adminEdit.php" name="add">
