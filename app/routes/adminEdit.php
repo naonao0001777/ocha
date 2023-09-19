@@ -15,13 +15,14 @@ $uploadedFileType = $_FILES['fileUpload']['type'];
 $uploadedFileErrorInfo = $_FILES['fileUpload']['error'];
 $uploadedFileSize = $_FILES['fileUpload']['size'];
 $uploadedFileTempName = $_FILES['fileUpload']['tmp_name'];
+$fileDelete = $_POST['fileDelete'];
 
 $dbh = DatabaseConnection::Connection();
 
 if (isset($_FILES['fileUpload'])) {
     // アップロードファイルのエラー情報チェック
-    if (!isset($uploadedFileErrorInfo) || !is_int($uploadedFileErrorInfo)) {
-        $_SESSION['msg'] = "FileUploadErrorCode:" . $uploadedFileErrorInfo;
+    if (!isset($uploadedFileErrorInfo) || !is_int($uploadedFileErrorInfo) || $uploadedFileErrorInfo != 0) {
+        $_SESSION['msg'] = "アップロード中にエラーが発生しました。エラーコード:" . $uploadedFileErrorInfo;
         header('Location: ../view/admin');
         exit;
     }
@@ -72,9 +73,11 @@ if (isset($_FILES['fileUpload'])) {
     }
     chmod($uploadedFileResizeBefore, 0644);
 
+    // chmod("/var/www/html/images", 0777);
+    // chmod("/var/www/html/images/" . $userId, 0777);
     // ユーザーフォルダが無ければ作成
     if (!file_exists(config::USER_DIRECTORY_PATH . $userId)) {
-        if (mkdir(config::USER_DIRECTORY_PATH . $userId)) {
+        if (mkdir(config::USER_DIRECTORY_PATH . $userId, 0777, true)) {
         }
     }
     // 画像ファイルの保存
@@ -86,21 +89,24 @@ if (isset($_FILES['fileUpload'])) {
             $stmt->execute();
             $fetchedUser = $stmt->fetch();
 
-            // データベースに保存されているファイル名を取得して更新し、サーバーに保存されている画像を削除
+            // サーバーに保存されている画像を削除
             if (isset($fetchedUser['profile_image'])) {
                 if (file_exists(config::USER_DIRECTORY_PATH . $userId . '/' . $fetchedUser['profile_image'])) {
                     if (unlink(config::USER_DIRECTORY_PATH . $userId . '/' . $fetchedUser['profile_image'])) {
                     }
                 }
             }
+            // $uploadedFileBlob = file_get_contents($uploadedFileTempName);
             // データベースに保存されたファイル名を更新
             $sql = DatabaseStatement::UPDATE_FILE_USERS;
             $stmt = $dbh->prepare($sql);
             $stmt->bindvalue(':uploadedFileName', $uploadedFileName);
+            // $stmt->bindvalue(':image_byte', $uploadedFileBlob);
             $stmt->bindvalue(':userId', $userId);
             $stmt->execute();
             $fetchedUser = $stmt->fetch();
 
+            // $_SESSION['msg'] = $uploadedFileErrorInfo . sys_get_temp_dir()."成功";
             $_SESSION['msg'] = "ファイルはアップロードされました。";
             $_SESSION['profileImage'] = $uploadedFileName;
         } catch (PDOException $e) {
@@ -108,7 +114,37 @@ if (isset($_FILES['fileUpload'])) {
             echo $msg;
         }
     } else {
+        // $_SESSION['msg'] = $uploadedFileErrorInfo . sys_get_temp_dir()."失敗";
         $_SESSION['msg'] = "ファイルのアップロードに失敗しました。";
+    }
+} elseif (isset($fileDelete)) {
+    // 画像ファイルを削除する処理
+    try {
+        $sql = DatabaseStatement::SELECT_USER_ID;
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindvalue(':userId', $userId);
+        $stmt->execute();
+        $fetchedUser = $stmt->fetch();
+
+        // データベースに保存されているファイル名を取得して更新し、サーバーに保存されている画像を削除
+        if (isset($fetchedUser['profile_image'])) {
+            if (file_exists(config::USER_DIRECTORY_PATH . $userId . '/' . $fetchedUser['profile_image'])) {
+                if (unlink(config::USER_DIRECTORY_PATH . $userId . '/' . $fetchedUser['profile_image'])) {
+                }
+            }
+        }
+        // データベースに保存されたファイル名を更新
+        $sql = DatabaseStatement::UPDATE_FILE_USERS;
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindvalue(':uploadedFileName', NULL);
+        $stmt->bindvalue(':userId', $userId);
+        $stmt->execute();
+        $fetchedUser = $stmt->fetch();
+
+        $_SESSION['msg'] = "ファイルは削除されました";
+    } catch (PDOException $e) {
+        $msg = $e->getMessage();
+        echo $msg;
     }
 }
 // リンクの追加処理

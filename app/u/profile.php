@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="../resource/css/style.css">
+    <link rel="shortcut icon" type="image/x-icon" href="../assets/favicon.ico" />
     <title>Profile</title>
 </head>
 
@@ -46,6 +47,7 @@
             $fetchedUser = $stmt->fetch();
 
             $profileImage = $fetchedUser['profile_image'];
+            // $profileImageBlob = $fetchedUser['image_byte'];
 
             $sql = DatabaseStatement::SELECT_USER_LINKS;
             $stmt = $dbh->prepare($sql);
@@ -53,13 +55,19 @@
             $stmt->execute();
             $fetchedUser = $stmt->fetch();
 
+            chmod("/var/www/html/images/" . $userId . $profileImage, 0777);
+
             if ($fetchedUser) {
                 echo '<div class="row justify-content-md-center g-2">';
                 echo '<div class="col"></div>';
                 echo '<div class="col">';
-                echo '<img src="';
-                echo config::USER_DIRECTORY_PATH . $fetchedUser['user_id'] . '/' . $profileImage;
-                echo '" class="img-thumbnail rounded-circle" width="100px" height="100px" alt="">';
+                if (isset($profileImage)) {
+                    echo '<img src="';
+                    echo config::USER_DIRECTORY_PATH . $fetchedUser['user_id'] . '/' . $profileImage;
+                    echo '" class="img-thumbnail rounded-circle" width="100px" height="100px" alt="">';
+                } else {
+                    echo '<img src="../assets/default_leaf.png" class="img-thumbnail rounded-circle" width="100px" height="100px" alt="">';
+                };
                 echo '</div>';
                 echo '<div class="col"></div>';
                 echo '</div>';
@@ -84,7 +92,7 @@
                         echo '<a href="';
                         echo $fetchedUser[$urlColumn];
                         echo '" class="';
-                        echo 'btn btn-success btn-lg" target="_blank" rel="noopener noreferrer">';
+                        echo 'btn btn-outline-success text-success-emphasis btn-lg rounded-pill" target="_blank" rel="noopener noreferrer" style="--bs-btn-padding-y: .70rem; --bs-btn-padding-x: .5rem;">';
                         echo $fetchedUser[$titleColumn];
                         echo '</a>';
                         echo '</div>';

@@ -12,6 +12,7 @@ if (!isset($_SESSION['token'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="../resource/css/style.css">
+    <link rel="shortcut icon" type="image/x-icon" href="../assets/favicon.ico" />
     <title>admin</title>
 </head>
 
@@ -63,23 +64,39 @@ if (!isset($_SESSION['token'])) {
         </div>
     </nav>
     <div class="container-sm text-center">
+        <!-- <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alert">
+            現在は画像をアップロードできません。あらかじめご了承ください。
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="dismissAlert"></button>
+        </div> -->
         <div class="row justify-content-md-center g-2">
             <div class="col"></div>
             <div class="col">
-                <img src="../images/<?php echo $_SESSION['userId'] . '/' . $_SESSION['profileImage'] ?>" class="img-thumbnail rounded-circle" width="100px" height="100px" alt="">
+                <?php if (is_file("../images/" . $_SESSION['userId'] . '/' . $_SESSION['profileImage'])) {
+                    echo '<img src="../images/';
+                    echo $_SESSION['userId'] . '/' . $_SESSION['profileImage'] . '"';
+                    echo ' class="img-thumbnail rounded-circle" width="100px" height="100px" alt="">';
+                } else {
+                    echo "<img src='../assets/default_leaf.png' class='img-thumbnail rounded-circle' width='100px' height='100px' alt=''>";
+                } ?>
             </div>
             <div class="col"></div>
         </div>
-        <form method="post" action="../routes/adminEdit.php" enctype="multipart/form-data">
-            <div class="row justify-content-md-center g-2">
-                <div class="col"></div>
-                <div class="col-2">
-                    <input type="file" id="fileUpload" name="fileUpload" multiple>
+        <div class="row justify-content-md-center g-2">
+            <div class="col"></div>
+            <div class="col-2">
+                <form method="post" action="../routes/adminEdit.php" enctype="multipart/form-data">
+                    <input type="file" class="form-control-sm" id="fileUpload" name="fileUpload" multiple>
                     <?php echo $_SESSION['msg'] ?>
-                </div>
-                <div class="col"></div>
+                </form>
             </div>
-        </form>
+            <div class="col text-start">
+                <form method="post" action="../routes/adminEdit.php">
+                    <button type="submit" class="btn btn-sm" id="fileDelete" name="fileDelete" value="fileDelete" data-bs-toggle="tooltip" data-bs-placement="top" title="画像を削除">
+                        <span class="glyphicon glyphicon-copy-url" aria-hidden="true" id="fileDelete"><img width="20" height="20" src="../assets/trash.png" alt="" /></span>
+                    </button>
+                </form>
+            </div>
+        </div>
 
         <div class="row justify-content-md-center g-2">
             <div class="col"></div>
@@ -87,8 +104,8 @@ if (!isset($_SESSION['token'])) {
                 <h3>@<?php echo $_SESSION['userId'] ?></h3>
             </div>
             <div class="col text-start">
-                <button type="button" class="btn btn-sm">
-                    <span class="glyphicon glyphicon-copy-url" aria-hidden="true" data-url="<?php echo $_SERVER['HTTP_HOST'] ?>/u/<?php echo $_SESSION['userId'] ?>" id="copy-url"><img width="20" height="20" src="https://img.icons8.com/ios/50/clipboard.png" alt="clipboard" /></span>
+                <button type="button" class="btn btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="URLをクリップボードにコピー">
+                    <span class="glyphicon glyphicon-copy-url" aria-hidden="true" data-url="<?php echo $_SERVER['HTTP_HOST'] ?>/u/<?php echo $_SESSION['userId'] ?>" id="copy-url"><img width="20" height="20" src="../assets/clipboard.png" alt="clipboard" /></span>
                 </button>
             </div>
 
@@ -139,6 +156,7 @@ if (!isset($_SESSION['token'])) {
 
                 unset($_SESSION['msg']);
 
+                $_SESSION['count'] = $count++;
 
                 $dbh = DatabaseConnection::Connection();
                 try {
@@ -175,7 +193,7 @@ if (!isset($_SESSION['token'])) {
                             echo '<div class = "row justify-content-md-center g-2">';
                             echo '<div class="col"></div>';
                             echo '<div class="col-6 d-grid gap-2">';
-                            echo '<button type="button" class="btn btn-outline-success btn-lg" data-bs-toggle="collapse" data-bs-target="#collapseLinks';
+                            echo '<button type="button" class="btn btn-outline-success text-success-emphasis btn-lg rounded-pill" style="--bs-btn-padding-y: .70rem; --bs-btn-padding-x: .5rem;" data-bs-toggle="collapse" data-bs-target="#collapseLinks';
                             echo $countColumn;
                             echo '" aria-expanded="false" aria-controls="collapseLinks';
                             echo $countColumn;
@@ -232,16 +250,21 @@ if (!isset($_SESSION['token'])) {
                 ?>
             </div>
         </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+        <script src="../resource/js/jquery.cookie.js"></script>
 </body>
 
 </html>
 <script>
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
     // クリップボードコピー
     $(function() {
-        $('#copy-url').click(function() {
+        $('#copy-url').on('click', function() {
             // data-urlの値を取得
             const url = $(this).data('url');
 
@@ -260,4 +283,19 @@ if (!isset($_SESSION['token'])) {
             $(this).closest("form").submit();
         });
     });
+
+    // $(function() {
+    //     $('#dismissAlert').on('click', function() {
+    //         $.cookie('clicked', 'on', {
+    //             expires: 1,
+    //             path: '/'
+    //         });
+    //     });
+    // });
+
+    // $(function() {
+    //     if ($.cookie('dismissed') == undefined) {
+    //         $('.container-sm .text-center').append('< div class = "alert alert-warning alert-dismissible fade show" role="alert" id= "alert" > 現在は画像をアップロードできません。 あらかじめご了承ください。 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="dismissAlert"></button></div>');
+    //     }
+    // });
 </script>
