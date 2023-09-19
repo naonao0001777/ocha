@@ -39,8 +39,8 @@ session_start();
             </div>
         </div>
     </nav>
-    <div class="position-relative">
-        <div class="position-absolute top-50 start-50 translate-middle-x">
+    <main>
+        <div class="text-center bg-body-tertiary p-3 p-sm-5 mb-4 rounded">
             <h1>Ocha<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
                     <style>
                         svg {
@@ -54,8 +54,23 @@ session_start();
                 echo $_SESSION['msg'];
             }
             ?>
+            <p class="lead">Ochaはリンクをまとめてプロフィールに追加することができるプロフィールサービスです</p>
+            <a class="btn btn-success btn-md" href="./view/register" role="button">はじめる</a>
         </div>
-    </div>
+        <div class="row my-5 mx-0 px-3 px-md-0">
+            <div class="col-lg-3"></div>
+            <div class="col-lg-6">
+                <h4>最大10個まで</h4>
+                <p>リンクを追加することができるのは最大10個までです。</p>
+                <h4 class="mt-4">プロフィール画像を追加できます</h4>
+                <p>png,jpeg形式の画像をプロフィール画像として使用できます。もちろん使用しなくてもデフォルトのアイコンが当てられます。</p>
+                <h4 class="mt-4">アカウントを作成します。</h4>
+                <p>アカウントを作成していただきますが、もちろん削除してもう一度再利用することができます。</p>
+            </div>
+            <div class="col-lg-3"></div>
+        </div>
+
+    </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="./resource/js/jquery.cookie.js"></script>

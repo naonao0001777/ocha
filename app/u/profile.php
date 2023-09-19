@@ -59,8 +59,8 @@
 
             if ($fetchedUser) {
                 echo '<div class="row justify-content-md-center g-2">';
-                echo '<div class="col"></div>';
-                echo '<div class="col">';
+                echo '<div class="col-lg-3 col-xs-2"></div>';
+                echo '<div class="col-lg-auto col-xs-auto">';
                 if (isset($profileImage)) {
                     echo '<img src="';
                     echo config::USER_DIRECTORY_PATH . $fetchedUser['user_id'] . '/' . $profileImage;
@@ -69,7 +69,7 @@
                     echo '<img src="../assets/default_leaf.png" class="img-thumbnail rounded-circle" width="100px" height="100px" alt="">';
                 };
                 echo '</div>';
-                echo '<div class="col"></div>';
+                echo '<div class="col-lg-3 col-xs-2"></div>';
                 echo '</div>';
                 echo '<h3>@';
                 echo $fetchedUser['user_id'];
@@ -87,8 +87,8 @@
 
                     if (isset($fetchedUser[$titleColumn])) {
                         echo '<div class = "row justify-content-md-center g-2">';
-                        echo '<div class="col"></div>';
-                        echo '<div class="col-6 d-grid gap-2">';
+                        echo '<div class="col-lg-3 col-sm-2"></div>';
+                        echo '<div class="col-lg-6 col-sm-8 d-grid gap-2">';
                         echo '<a href="';
                         echo $fetchedUser[$urlColumn];
                         echo '" class="';
@@ -96,7 +96,7 @@
                         echo $fetchedUser[$titleColumn];
                         echo '</a>';
                         echo '</div>';
-                        echo '<div class="col"></div>';
+                        echo '<div class="col-lg-3 col-sm-2"></div>';
                         echo '</div>';
                     } else {
                         $_SESSION[$countColumn] = (int)$countColumn - 1;

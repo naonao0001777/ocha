@@ -38,13 +38,14 @@
         </div>
     </nav>
     <?php
-    // CSRF対策にトークンを生成
+    // CSRF対策
     $token = bin2hex(random_bytes(32));
     $_SESSION["token"] = $token;
     ?>
     <div class="container-sm">
         <div class="row justify-content-md-center">
-            <div class="col-4 border border-success-subtle">
+            <div class="col-lg-4 col-xs-2"></div>
+            <div class="col-lg-4 col-xs-8 border border-success-subtle">
                 <h4 class="text-center">サインイン<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
                         <style>
                             svg {
@@ -73,6 +74,7 @@
                     <input type="hidden" name="token" value="<?php echo htmlspecialchars($_SESSION['token']) ?>"></input>
                 </form>
             </div>
+            <div class="col-lg-4 col-xs-2"></div>
         </div>
     </div>
 </body>

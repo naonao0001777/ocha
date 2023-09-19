@@ -63,55 +63,56 @@ if (!isset($_SESSION['token'])) {
             </div>
         </div>
     </nav>
-    <div class="container-sm text-center">
-        <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alert" hidden>
-            サーバーが再起動をした時に画像ファイルにアクセスができないため、画像ファイルのアップロードは現在はご利用ができません。
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="dismissAlert"></button>
-        </div>
-        <div class="row justify-content-md-center g-2">
-            <div class="col"></div>
-            <div class="col">
-                <?php if (is_file("../images/" . $_SESSION['userId'] . '/' . $_SESSION['profileImage'])) {
-                    echo '<img src="../images/';
-                    echo $_SESSION['userId'] . '/' . $_SESSION['profileImage'] . '"';
-                    echo ' class="img-thumbnail rounded-circle" width="100px" height="100px" alt="">';
-                } else {
-                    echo "<img src='../assets/default_leaf.png' class='img-thumbnail rounded-circle' width='100px' height='100px' alt=''>";
-                } ?>
+    <main>
+        <div class="container-sm text-center">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alert" hidden>
+                サーバーが再起動をした時に画像ファイルにアクセスができないため、画像ファイルをアップロードしてもサーバー再起動時に表示されなくなります。
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="dismissAlert"></button>
             </div>
-            <div class="col"></div>
-        </div>
-        <div class="row justify-content-md-center g-2">
-            <div class="col"></div>
-            <div class="col-2">
-                <form method="post" action="../routes/adminEdit.php" enctype="multipart/form-data">
-                    <input type="file" class="form-control-sm" id="fileUpload" name="fileUpload" multiple>
-                    <?php echo $_SESSION['msg'] ?>
-                </form>
+            <div class="row justify-content-md-center g-2">
+                <div class="col-lg-4 col-xs-3"></div>
+                <div class="col-lg-4 col-xs-6">
+                    <?php if (is_file("../images/" . $_SESSION['userId'] . '/' . $_SESSION['profileImage'])) {
+                        echo '<img src="../images/';
+                        echo $_SESSION['userId'] . '/' . $_SESSION['profileImage'] . '"';
+                        echo ' class="img-thumbnail rounded-circle" width="100px" height="100px" alt="">';
+                    } else {
+                        echo "<img src='../assets/default_leaf.png' class='img-thumbnail rounded-circle' width='100px' height='100px' alt=''>";
+                    } ?>
+                </div>
+                <div class="col-lg-4 col-xs-3"></div>
             </div>
-            <div class="col text-start">
-                <form method="post" action="../routes/adminEdit.php">
-                    <button type="submit" class="btn btn-sm" id="fileDelete" name="fileDelete" value="fileDelete" data-bs-toggle="tooltip" data-bs-placement="top" title="画像を削除">
-                        <span class="glyphicon glyphicon-copy-url" aria-hidden="true" id="fileDelete"><img width="20" height="20" src="../assets/trash.png" alt="" /></span>
+            <div class="row justify-content-md-center g-2">
+                <div class="col-lg-4 col-xs-0"></div>
+                <div class="col-lg-auto col-xs-auto">
+                    <form method="post" action="../routes/adminEdit.php" enctype="multipart/form-data">
+                        <input type="file" class="form-control-sm" id="fileUpload" name="fileUpload" multiple>
+                        <?php echo $_SESSION['msg'] ?>
+                    </form>
+                </div>
+                <div class="col-lg-4 col-xs-2 text-start">
+                    <form method="post" action="../routes/adminEdit.php">
+                        <button type="submit" class="btn btn-sm" id="fileDelete" name="fileDelete" value="fileDelete" data-bs-toggle="tooltip" data-bs-placement="top" title="画像を削除">
+                            <span class="glyphicon glyphicon-copy-url" aria-hidden="true" id="fileDelete"><img width="20" height="20" src="../assets/trash.png" alt="" /></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row justify-content-md-center g-2">
+                <div class="col-lg-4 col-xs-0"></div>
+                <div class="col-lg-auto col-xs-auto text-center">
+                    <h3>@<?php echo $_SESSION['userId'] ?></h3>
+                </div>
+                <div class="col-lg-4 col-xs-2 text-start">
+                    <button type="button" class="btn btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="URLをクリップボードにコピー">
+                        <span class="glyphicon glyphicon-copy-url" aria-hidden="true" data-url="<?php echo $_SERVER['HTTP_HOST'] ?>/u/<?php echo $_SESSION['userId'] ?>" id="copy-url"><img width="20" height="20" src="../assets/clipboard.png" alt="clipboard" /></span>
                     </button>
-                </form>
+                </div>
             </div>
-        </div>
-
-        <div class="row justify-content-md-center g-2">
-            <div class="col"></div>
-            <div class="col-md-auto">
-                <h3>@<?php echo $_SESSION['userId'] ?></h3>
-            </div>
-            <div class="col text-start">
-                <button type="button" class="btn btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="URLをクリップボードにコピー">
-                    <span class="glyphicon glyphicon-copy-url" aria-hidden="true" data-url="<?php echo $_SERVER['HTTP_HOST'] ?>/u/<?php echo $_SESSION['userId'] ?>" id="copy-url"><img width="20" height="20" src="../assets/clipboard.png" alt="clipboard" /></span>
-                </button>
-            </div>
-
             <div class="row justify-content-md-center g-3">
-                <div class="col"></div>
-                <div class="col-6">
+                <div class="col-lg-3 col-xs-3"></div>
+                <div class="col-lg-6 col-xs-6">
                     <p>
                         <button type="button" class="btn btn-success rounded-pill" data-bs-toggle="collapse" data-bs-target="#collapseAddButton" aria-expanded="false" aria-controls="collapseAddButton">
                             リンクを追加
@@ -138,7 +139,7 @@ if (!isset($_SESSION['token'])) {
                         </div>
                     </div>
                 </div>
-                <div class="col"></div>
+                <div class="col-lg-3 col-xs-3"></div>
             </div>
             <div class="row justify-content-md-center">
                 <?php
@@ -191,8 +192,8 @@ if (!isset($_SESSION['token'])) {
 
                         if (isset($fetchedUser[$titleColumn])) {
                             echo '<div class = "row justify-content-md-center g-2">';
-                            echo '<div class="col"></div>';
-                            echo '<div class="col-6 d-grid gap-2">';
+                            echo '<div class="col-lg-3 col-xs-2"></div>';
+                            echo '<div class="col-lg-6 col-xs-8 d-grid gap-2">';
                             echo '<button type="button" class="btn btn-outline-success text-success-emphasis btn-lg rounded-pill" style="--bs-btn-padding-y: .70rem; --bs-btn-padding-x: .5rem;" data-bs-toggle="collapse" data-bs-target="#collapseLinks';
                             echo $countColumn;
                             echo '" aria-expanded="false" aria-controls="collapseLinks';
@@ -232,7 +233,7 @@ if (!isset($_SESSION['token'])) {
                             echo '</div>';
                             echo '</div>';
                             echo '</div>';
-                            echo '<div class="col"></div>';
+                            echo '<div class="col-lg-3 col-xs-2"></div>';
                             echo '</div>';
                         } else {
                             $_SESSION[$countColumn] = (int)$countColumn - 1;
@@ -250,13 +251,16 @@ if (!isset($_SESSION['token'])) {
                 ?>
             </div>
         </div>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
-        <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-        <script src="../resource/js/jquery.cookie.js"></script>
+        </div>
+    </main>
+
 </body>
 
 </html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script src="../resource/js/jquery.cookie.js"></script>
 <script>
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
