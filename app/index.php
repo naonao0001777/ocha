@@ -69,6 +69,49 @@ session_start();
             </div>
             <div class="col-lg-3"></div>
         </div>
+        <div class="row my-5 mx-0 px-3 px-md-0">
+            <div class="col"></div>
+            <div class="col text-center">
+                <a class="" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
+                    データの取り扱いについて
+                </a>
+
+                <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasExampleLabel">データの取り扱いについて</h5>
+                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <div>
+                            <p class="text-start">
+                                このサイトは<a href="https://render.com/" target="_blank">Render</a>によってセキュリティを保障されています。</br>
+                                このサイトに登録をされたことによって得たデータは、全てRenderに建てているデータベースに保管され、このサイトに使用される目的でのみ情報を取り扱います。</br>
+                                また、アカウントを作成する際に入力するメールアドレスは適当なもので大丈夫です。</br>
+                                例えば、"a@example.com"など本来使用しているメールアドレスでなくともメール認証機能を搭載していないため、</br>
+                                他のユーザーとの被りがない限り本サイトを使用することができます。</br>
+                                また、アカウントを削除することで、ご登録いただいたメールアドレス、ID、パスワードはデータベースから削除されます。
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-2"></div>
+                            <div class="col-8"><p>当サイト制作者の情報</p></div>
+                            <div class="col-2"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4"></div>
+                            <div class="col-2">
+                                <a class="contact-link" href="https://twitter.com/salty_special" target="_blank" rel="noopener noreferrer nofollow"><img src="./assets/icon_x.png" style="width:30px;" alt=""></a>
+                            </div>
+                            <div class="col-2">
+                                <a class="contact-link" href="https://github.com/naonao0001777" target="_blank" rel="noopener noreferrer nofollow"><img src="./assets/icon_gh.png" style="width:30px;" alt=""></a>
+                            </div>
+                            <div class="col-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col"></div>
+        </div>
 
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
