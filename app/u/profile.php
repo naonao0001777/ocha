@@ -58,7 +58,7 @@
             chmod("/var/www/html/images/" . $userId . $profileImage, 0777);
 
             if ($fetchedUser) {
-                echo '<div class="row justify-content-md-center g-2">';
+                echo '<div class="row justify-content-md-center mb-3">';
                 echo '<div class="col-lg-3 col-xs-2"></div>';
                 echo '<div class="col-lg-auto col-xs-auto">';
                 if (isset($profileImage)) {
@@ -71,10 +71,10 @@
                 echo '</div>';
                 echo '<div class="col-lg-3 col-xs-2"></div>';
                 echo '</div>';
-                echo '<h3>@';
+                echo '<h3 class="mb-3">@';
                 echo $fetchedUser['user_id'];
                 echo '</h3>';
-                echo '<div class="row justify-content-md-center">';
+                echo '<div class="row justify-content-center">';
 
                 for ($countColumn = 1; $countColumna <= (int)config::MAX_LINK; $countColumn++) {
                     $titleColumn = "title";
@@ -86,7 +86,7 @@
                     $arrayTitleColumn[$urlColumn <= $fetchedUser[$urlColumn]];
 
                     if (isset($fetchedUser[$titleColumn])) {
-                        echo '<div class = "row justify-content-md-center g-2">';
+                        echo '<div class = "row mb-3">';
                         echo '<div class="col-lg-3 col-sm-2"></div>';
                         echo '<div class="col-lg-6 col-sm-8 d-grid gap-2">';
                         echo '<a href="';

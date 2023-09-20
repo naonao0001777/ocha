@@ -66,10 +66,10 @@ if (!isset($_SESSION['token'])) {
     <main>
         <div class="container-sm text-center">
             <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alert" hidden>
-                サーバーが再起動をした時に画像ファイルにアクセスができないため、画像ファイルをアップロードしてもサーバー再起動時に表示されなくなります。
+                現在、画像ファイルをアップロードしてもサーバー再起動時に表示されなくなる不具合に対応しています。
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="dismissAlert"></button>
             </div>
-            <div class="row justify-content-md-center g-2">
+            <div class="row justify-content-center g-2">
                 <div class="col-lg-4 col-xs-3"></div>
                 <div class="col-lg-4 col-xs-6">
                     <?php if (is_file("../images/" . $_SESSION['userId'] . '/' . $_SESSION['profileImage'])) {
@@ -94,13 +94,13 @@ if (!isset($_SESSION['token'])) {
                 <div class="col-lg-4 col-xs-0"></div>
             </div> -->
             <div class="row">
-                <div class="col-lg-5 col-xs-5"></div>
-                <div class="col-lg-2 col-xs-2">
+                <div class="col-lg-5 col-0"></div>
+                <div class="col-lg-2 col-auto">
                     <form method="post" action="../routes/adminEdit.php" enctype="multipart/form-data">
                         <input type="file" class="form-control-sm" id="fileUpload" name="fileUpload" multiple>
                     </form>
                 </div>
-                <div class="col-lg-5 col-xs-5 text-start">
+                <div class="col-lg-5 col-2 text-start">
                     <form method="post" action="../routes/adminEdit.php">
                         <button type="submit" class="btn btn-sm" id="fileDelete" name="fileDelete" value="fileDelete" data-bs-toggle="tooltip" data-bs-placement="top" title="画像を削除">
                             <span class="glyphicon glyphicon-copy-url" aria-hidden="true" id="fileDelete"><img width="20" height="20" src="../assets/trash.png" alt="" /></span>
@@ -109,7 +109,7 @@ if (!isset($_SESSION['token'])) {
                 </div>
 
             </div>
-            <div class="row justify-content-md-center g-2">
+            <div class="row justify-content-center g-2">
                 <div class="col-lg-4 col-xs-0"></div>
                 <div class="col-lg-auto col-xs-auto">
                     <?php echo $_SESSION['msg'] ?>
@@ -117,20 +117,20 @@ if (!isset($_SESSION['token'])) {
                 <div class="col-lg-4 col-xs-0"></div>
             </div>
 
-            <div class="row justify-content-md-center mt-2 p-1">
-                <div class="col-lg-4 col-xs-0"></div>
-                <div class="col-lg-auto col-xs-auto text-center">
+            <div class="row justify-content-center mt-2 p-1">
+                <div class="col-lg-4 col-2"></div>
+                <div class="col-lg-auto col-auto text-center">
                     <h3>@<?php echo $_SESSION['userId'] ?></h3>
                 </div>
-                <div class="col-lg-4 col-xs-0 text-start">
+                <div class="col-lg-4 col-2 text-start">
                     <button type="button" class="btn btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="URLをクリップボードにコピー">
                         <span class="glyphicon glyphicon-copy-url" aria-hidden="true" data-url="<?php echo $_SERVER['HTTP_HOST'] ?>/u/<?php echo $_SESSION['userId'] ?>" id="copy-url"><img width="20" height="20" src="../assets/clipboard.png" alt="clipboard" /></span>
                     </button>
                 </div>
             </div>
-            <div class="col-lg-4 col-xs-2 text-start">
+            <div class="col-lg-4 col-2 text-start">
             </div>
-            <div class="row justify-content-md-center mt-2 p-1">
+            <div class="row justify-content-center mt-2 p-1">
                 <div class="col-lg-3 col-xs-3"></div>
                 <div class="col-lg-6 col-xs-6 gap-2">
                     <button type="button" class="btn btn-success rounded-pill mb-2" data-bs-toggle="collapse" data-bs-target="#collapseAddButton" aria-expanded="false" aria-controls="collapseAddButton">
@@ -159,7 +159,7 @@ if (!isset($_SESSION['token'])) {
                 </div>
                 <div class="col-lg-3 col-xs-3"></div>
             </div>
-            <div class="row justify-content-md-center">
+            <div class="row justify-content-center">
                 <?php
                 // プロフィール画面表示処理
                 require_once('../database/connection.php');
@@ -209,7 +209,7 @@ if (!isset($_SESSION['token'])) {
                         $arrayTitleColumn[$urlColumn <= $fetchedUser[$urlColumn]];
 
                         if (isset($fetchedUser[$titleColumn])) {
-                            echo '<div class = "row justify-content-md-center g-2">';
+                            echo '<div class = "row justify-content-center mb-3">';
                             echo '<div class="col-lg-3 col-xs-2"></div>';
                             echo '<div class="col-lg-6 col-xs-8 d-grid gap-2">';
                             echo '<button type="button" class="btn btn-outline-success text-success-emphasis btn-lg rounded-pill" style="--bs-btn-padding-y: .70rem; --bs-btn-padding-x: .5rem;" data-bs-toggle="collapse" data-bs-target="#collapseLinks';
