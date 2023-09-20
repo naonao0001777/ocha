@@ -101,11 +101,11 @@ if (!isset($_SESSION['token'])) {
                             if ($fileExtention = "png") {
                                 echo '<img src="';
                                 echo "data:image/png;base64,", $base64DecodedContent;
-                                echo '" class="img-thumbnail rounded-circle" width="100px" height="100px" alt="">';
+                                echo '" class="rounded-circle" width="100px" height="100px" alt="">';
                             } else {
                                 echo '<img src="';
                                 echo "data:image/jpeg;base64,", $base64DecodedContent;
-                                echo '" class="img-thumbnail rounded-circle" width="100px" height="100px" alt="">';
+                                echo '" class="rounded-circle" width="100px" height="100px" alt="">';
                             }
                         } else {
                             echo "<img src='../assets/default_leaf.png' class='img-thumbnail rounded-circle' width='100px' height='100px' alt=''>";
