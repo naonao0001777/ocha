@@ -93,14 +93,14 @@ if (!isset($_SESSION['token'])) {
                 </div>
                 <div class="col-lg-4 col-xs-0"></div>
             </div> -->
-            <div class="row">
-                <div class="col-lg-5 col-0"></div>
-                <div class="col-lg-2 col-auto">
+            <div class="row justify-content-center">
+                <div class="col-lg-3 col-md-3 col-0"></div>
+                <div class="col-lg-auto col-md-auto col-auto">
                     <form method="post" action="../routes/adminEdit.php" enctype="multipart/form-data">
                         <input type="file" class="form-control-sm" id="fileUpload" name="fileUpload" multiple>
                     </form>
                 </div>
-                <div class="col-lg-5 col-2 text-start">
+                <div class="col-lg-3 col-md-3 col-1 text-start">
                     <form method="post" action="../routes/adminEdit.php">
                         <button type="submit" class="btn btn-sm" id="fileDelete" name="fileDelete" value="fileDelete" data-bs-toggle="tooltip" data-bs-placement="top" title="画像を削除">
                             <span class="glyphicon glyphicon-copy-url" aria-hidden="true" id="fileDelete"><img width="20" height="20" src="../assets/trash.png" alt="" /></span>
