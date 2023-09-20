@@ -63,7 +63,7 @@
                         <input type="password" class="form-control" id="userPassword" name="userPassword" placeholder="Password" required>
                         <label for="userPassword">Password</label>
                     </div>
-                    <div class="row">
+                    <div class="row mb-3">
                         <label for="message" class="form-label text-center"><?php echo $_SESSION['msg']; ?></label>
                     </div>
                     <div class="mb-3">
