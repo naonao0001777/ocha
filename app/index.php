@@ -74,11 +74,11 @@ session_start();
                 <!-- <img src="./assets/data.png" style="width:20px;height:20px;" alt=""> -->
                 <a class="" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
 
-                    データの取り扱いについて
+                    データの取扱いについて
                 </a>
                 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
                     <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="offcanvasExampleLabel">データの取り扱いについて</h5>
+                        <h5 class="offcanvas-title" id="offcanvasExampleLabel">データの取扱いについて</h5>
                         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body">
@@ -89,7 +89,7 @@ session_start();
                                     このサイトは<a href="https://render.com/" target="_blank">Render</a>によってセキュリティを保障されています。</br>
                                 </li>
                                 <li class="text-start" style="padding:2px;margin:2px;">
-                                    このサイトに登録をされたことによって得たデータは、全てRenderに建てているデータベースに保管され、このサイトに使用される目的でのみ情報を取り扱います。</br>
+                                    このサイトに登録をされたことによって得たデータは、全てRenderに建てているデータベースに保管され、このサイトに使用される目的でのみ情報を取扱います。</br>
                                 </li>
                                 <li class="text-start" style="padding:2px;margin:2px;">
                                     また、アカウントを作成する際に入力するメールアドレスは適当なもので大丈夫です。</br>
