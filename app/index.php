@@ -7,6 +7,16 @@ session_start();
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- OGP設定 -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ocha" />
+    <meta property="og:description" content="Ochaはリンクを貼るプロフィールWebサービスです" />
+    <meta property="og:url" content="https://ocha.onrender.com/" />
+    <meta property="og:site_name" content="Ocha" />
+    <meta property="og:image" content="https://user-images.githubusercontent.com/46675984/269119261-5a61b35d-27d1-4a8b-99cf-dbbdd2bfd279.png" />
+    <!-- Twitterカードの設定 -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@salty_special" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="shortcut icon" type="image/x-icon" href="./assets/favicon.ico" />
     <title>ocha</title>
@@ -63,7 +73,7 @@ session_start();
                 <p>リンクを追加することができるのは最大10個までです。</p>
                 <h4 class="mt-4">プロフィール画像を追加できます</h4>
                 <p>png,jpeg形式の画像をプロフィール画像として使用できます。もちろん使用しなくてもデフォルトのアイコンが当てられます。</p>
-                <h4 class="mt-4">アカウントを作成します。</h4>
+                <h4 class="mt-4">アカウントを作成します</h4>
                 <p>アカウントを作成していただきますが、もちろん削除してもう一度再利用することができます。</p>
             </div>
             <div class="col-lg-3"></div>
@@ -86,7 +96,7 @@ session_start();
                             <p class="text-start">
                             <ul>
                                 <li class="text-start" style="padding:2px;margin:2px;">
-                                    このサイトは<a href="https://render.com/" target="_blank">Render</a>によってセキュリティを保障されています。</br>
+                                    このサイトは<a href="https://render.com/" target="_blank">Render</a>によってDDos攻撃などからのセキュリティを保障されています。</br>
                                 </li>
                                 <li class="text-start" style="padding:2px;margin:2px;">
                                     このサイトに登録をされたことによって得たデータは、全てRenderに建てているデータベースに保管され、このサイトに使用される目的でのみ情報を取扱います。</br>
@@ -102,13 +112,13 @@ session_start();
                                     また、アカウントを削除することで、ご登録いただいたメールアドレス、ID、パスワードはデータベースから削除されます。
                                 </li>
                                 <li class="text-start" style="padding:2px;margin:2px;">
-                                当サイトはRenderにデプロイされていますが、無料枠での利用のため、15分間操作がない場合、サーバーの再起動が必要になります。
+                                    当サイトはRenderにホストされていますが、無料枠での利用のため、15分間操作がない場合、サーバーの再起動が必要になります。
                                 </li>
                                 <li class="text-start" style="padding:2px;margin:2px;">
-                                サーバー再起動時のローディングは最大30秒ほど要します。
+                                    サーバーは再起動に最大30秒ほど要します。
                                 </li>
                                 <li class="text-start" style="padding:2px;margin:2px;">
-                                また、データベース内に保管されたデータは3ヶ月後に全て消去されます。その際には再度ご登録いただく形になります。如何せん商用に使っていない個人開発ですので、その点ご了承ください。
+                                    また、データベース内に保管されたデータは3ヶ月後に全て消去されます。その際には再度ご登録いただく形になります。如何せん商用に使っていない個人開発ですので、その点ご了承ください。
                                 </li>
                             </ul>
                             </p>
