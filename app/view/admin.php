@@ -108,7 +108,7 @@ if (!isset($_SESSION['token'])) {
                                 echo '" class="rounded-circle" width="100px" height="100px" alt="">';
                             }
                         } else {
-                            echo "<img src='../assets/default_leaf.png' class='img-thumbnail rounded-circle' width='100px' height='100px' alt=''>";
+                            echo "<img src='../assets/default_leaf.png' class='rounded-circle' width='100px' height='100px' alt=''>";
                         }
                     } catch (PDOException $e) {
                         $msg = $e->getMessage();
