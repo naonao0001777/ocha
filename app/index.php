@@ -71,10 +71,11 @@ session_start();
         <div class="row my-5 mx-0 px-3 px-md-0">
             <div class="col-lg-4 col-xs-2"></div>
             <div class="col-lg-4 col-xs-8 text-center">
+                <!-- <img src="./assets/data.png" style="width:20px;height:20px;" alt=""> -->
                 <a class="" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
+
                     データの取り扱いについて
                 </a>
-
                 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
                     <div class="offcanvas-header">
                         <h5 class="offcanvas-title" id="offcanvasExampleLabel">データの取り扱いについて</h5>
@@ -99,6 +100,15 @@ session_start();
                                 </li>
                                 <li class="text-start" style="padding:2px;margin:2px;">
                                     また、アカウントを削除することで、ご登録いただいたメールアドレス、ID、パスワードはデータベースから削除されます。
+                                </li>
+                                <li class="text-start" style="padding:2px;margin:2px;">
+                                当サイトはRenderにデプロイされていますが、無料枠での利用のため、15分間操作がない場合、サーバーの再起動が必要になります。
+                                </li>
+                                <li class="text-start" style="padding:2px;margin:2px;">
+                                サーバー再起動時のローディングは最大30秒ほど要します。
+                                </li>
+                                <li class="text-start" style="padding:2px;margin:2px;">
+                                また、データベース内に保管されたデータは3ヶ月後に削除されます。その際には再度ご登録いただく形になります。如何せん商用に使っていない個人開発ですので、その点ご了承ください。
                                 </li>
                             </ul>
                             </p>
@@ -126,12 +136,12 @@ session_start();
             <div class="col-lg-4 col-xs-2"></div>
         </div>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-    <script src="./resource/js/jquery.cookie.js"></script>
 </body>
 
 </html>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script src="./resource/js/jquery.cookie.js"></script>
 <?php session_destroy(); ?>
 <script>
     $(function() {
