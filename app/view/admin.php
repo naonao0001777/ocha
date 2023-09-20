@@ -102,7 +102,7 @@ if (!isset($_SESSION['token'])) {
                 </div>
                 <div class="col-lg-3 col-md-3 col-1 text-start">
                     <form method="post" action="../routes/adminEdit.php">
-                        <button type="submit" class="btn btn-sm" id="fileDelete" name="fileDelete" value="fileDelete" data-bs-toggle="tooltip" data-bs-placement="top" title="画像を削除">
+                        <button type="submit" class="btn btn-sm" id="fileDelete" name="fileDelete" value="fileDelete" data-bs-toggle="tooltip" data-bs-placement="top" title="アイコンを消去">
                             <span class="glyphicon glyphicon-copy-url" aria-hidden="true" id="fileDelete"><img width="20" height="20" src="../assets/trash.png" alt="" /></span>
                         </button>
                     </form>
