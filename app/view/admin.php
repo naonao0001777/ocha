@@ -72,27 +72,52 @@ if (!isset($_SESSION['token'])) {
             <div class="row justify-content-center g-2">
                 <div class="col-lg-4 col-xs-3"></div>
                 <div class="col-lg-4 col-xs-6">
-                    <?php if (is_file("../images/" . $_SESSION['userId'] . '/' . $_SESSION['profileImage'])) {
-                        echo '<img src="../images/';
-                        echo $_SESSION['userId'] . '/' . $_SESSION['profileImage'] . '"';
-                        echo ' class="img-thumbnail rounded-circle" width="100px" height="100px" alt="">';
-                    } else {
-                        echo "<img src='../assets/default_leaf.png' class='img-thumbnail rounded-circle' width='100px' height='100px' alt=''>";
+                    <?php
+                    require_once('../database/connection.php');
+                    require_once('../database/statement.php');
+                    require_once('../config/config.php');
+                    require_once('../config/message.php');
+
+                    try {
+                        $dbh = DatabaseConnection::Connection();
+
+                        $userId = $_SESSION['userId'];
+
+                        $sql = DatabaseStatement::SELECT_USER_ID;
+                        $stmt = $dbh->prepare($sql);
+                        $stmt->bindValue(':userId', $userId);
+                        $stmt->execute();
+                        $fetchedUser = $stmt->fetch();
+
+                        // DBのバイナリデータをbase64で出力
+                        $profileImage = $fetchedUser['profile_image'];
+                        $profileImageBlob = $fetchedUser['image_byte'];
+
+                        if (isset($profileImageBlob)) {
+                            $streamContent = stream_get_contents($profileImageBlob);
+                            $base64DecodedContent = base64_encode($streamContent);
+
+                            $fileExtention = substr($profileImage, -3);
+                            if ($fileExtention = "png") {
+                                echo '<img src="';
+                                echo "data:image/png;base64,", $base64DecodedContent;
+                                echo '" class="img-thumbnail rounded-circle" width="100px" height="100px" alt="">';
+                            } else {
+                                echo '<img src="';
+                                echo "data:image/jpeg;base64,", $base64DecodedContent;
+                                echo '" class="img-thumbnail rounded-circle" width="100px" height="100px" alt="">';
+                            }
+                        } else {
+                            echo "<img src='../assets/default_leaf.png' class='img-thumbnail rounded-circle' width='100px' height='100px' alt=''>";
+                        }
+                    } catch (PDOException $e) {
+                        $msg = $e->getMessage();
+                        $_SESSION['msg'] = $msg;
+                        header('Location: ../index');
                     } ?>
                 </div>
                 <div class="col-lg-4 col-xs-3"></div>
             </div>
-            <!-- <div class="row justify-content-md-center">
-                <div class="col-lg-4 col-xs-0"></div>
-                <div class="col-lg-4 col-xs-2 text-center">
-                    <form method="post" action="../routes/adminEdit.php">
-                        <button type="submit" class="btn btn-sm" id="fileDelete" name="fileDelete" value="fileDelete" data-bs-toggle="tooltip" data-bs-placement="top" title="画像を削除">
-                            <span class="glyphicon glyphicon-copy-url" aria-hidden="true" id="fileDelete"><img width="20" height="20" src="../assets/trash.png" alt="" /></span>
-                        </button>
-                    </form>
-                </div>
-                <div class="col-lg-4 col-xs-0"></div>
-            </div> -->
             <div class="row justify-content-center">
                 <div class="col-lg-3 col-md-3 col-0"></div>
                 <div class="col-lg-auto col-md-auto col-auto">
@@ -120,7 +145,7 @@ if (!isset($_SESSION['token'])) {
             <div class="row justify-content-center mt-2 p-1">
                 <div class="col-lg-4 col-2"></div>
                 <div class="col-lg-auto col-auto text-center">
-                    <h3>@<?php echo $_SESSION['userId'] ?></h3>
+                    <h3>@<?php echo $userId ?></h3>
                 </div>
                 <div class="col-lg-4 col-2 text-start">
                     <button type="button" class="btn btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="URLをクリップボードにコピー">
@@ -162,35 +187,9 @@ if (!isset($_SESSION['token'])) {
             <div class="row justify-content-center">
                 <?php
                 // プロフィール画面表示処理
-                require_once('../database/connection.php');
-                require_once('../database/statement.php');
-                require_once('../config/config.php');
-                require_once('../config/message.php');
-
-                $userId = $_SESSION['userId'];
-                $userMail = $_POST['userMail'];
-                $loginFlag = $_POST['login'];
-                $logoutFlag = $_POST['logout'];
-                $registerFlag = $_POST['register'];
-
                 unset($_SESSION['msg']);
 
                 $_SESSION['count'] = $count++;
-
-                $dbh = DatabaseConnection::Connection();
-                try {
-                    $sql = DatabaseStatement::SELECT_USER_ID;
-                    $stmt = $dbh->prepare($sql);
-                    $stmt->bindValue(':userId', $userId);
-                    $stmt->execute();
-                    $fetchedUser = $stmt->fetch();
-
-                    $_SESSION['profileImage'] = $fetchedUser['profile_image'];
-                } catch (PDOException $e) {
-                    $msg = $e->getMessage();
-                    $_SESSION['msg'] = $msg;
-                    header('Location: ../index');
-                }
 
                 try {
                     $sql = DatabaseStatement::SELECT_USER_LINKS;

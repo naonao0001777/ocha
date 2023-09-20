@@ -41,7 +41,7 @@ if (isset($_FILES['fileUpload'])) {
     }
     // ファイル名をユニファイ
     $uploadedFileName = uniqid(mt_rand(), true) . '.' . $extension;
-
+    
     // 画像が正方形でなかったり大きすぎた場合はリサイズする
     $uploadedFileResizeBefore = $uploadedFileTempName;
     $uploadedFileResizeAfter = '';
@@ -73,8 +73,6 @@ if (isset($_FILES['fileUpload'])) {
     }
     chmod($uploadedFileResizeBefore, 0644);
 
-    // chmod("/var/www/html/images", 0777);
-    // chmod("/var/www/html/images/" . $userId, 0777);
     // ユーザーフォルダが無ければ作成
     if (!file_exists(config::USER_DIRECTORY_PATH . $userId)) {
         if (mkdir(config::USER_DIRECTORY_PATH . $userId, 0777, true)) {
@@ -96,12 +94,21 @@ if (isset($_FILES['fileUpload'])) {
                     }
                 }
             }
+
+            // 画像ファイルをDBに入れる処理
+            $dbcon = pg_connect('host=dpg-ck0ih89au56s73do38f0-a.singapore-postgres.render.com dbname=ocha_huc2 user=ochauser password=8swvCRzD9OFD6T5FYVq4YDktDdRAsrJH');
+            $contentData = file_get_contents(config::USER_DIRECTORY_PATH . $userId . '/' . $uploadedFileName);
+            $escaped = pg_escape_bytea($dbcon, $contentData);
+            // $result = pg_query($dbcon, "UPDATE users SET image_byte='{$escaped}' WHERE user_id='{$userId}';");
+            pg_close($dbcon);
+            $_SESSION['base64EncodedFile'] = $contentData;
+
             // $uploadedFileBlob = file_get_contents($uploadedFileTempName);
             // データベースに保存されたファイル名を更新
             $sql = DatabaseStatement::UPDATE_FILE_USERS;
             $stmt = $dbh->prepare($sql);
             $stmt->bindvalue(':uploadedFileName', $uploadedFileName);
-            // $stmt->bindvalue(':image_byte', $uploadedFileBlob);
+            $stmt->bindvalue(':imageByte', $escaped);
             $stmt->bindvalue(':userId', $userId);
             $stmt->execute();
             $fetchedUser = $stmt->fetch();
@@ -137,6 +144,7 @@ if (isset($_FILES['fileUpload'])) {
         $sql = DatabaseStatement::UPDATE_FILE_USERS;
         $stmt = $dbh->prepare($sql);
         $stmt->bindvalue(':uploadedFileName', NULL);
+        $stmt->bindvalue(':imageByte', NULL);
         $stmt->bindvalue(':userId', $userId);
         $stmt->execute();
         $fetchedUser = $stmt->fetch();

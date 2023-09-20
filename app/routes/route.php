@@ -6,14 +6,11 @@ require_once('../database/statement.php');
 require_once('../config/config.php');
 require_once('../config/message.php');
 
-// $userId = $_SESSION['userId'];
 $userId = $_POST['userId'];
 $userMail = $_POST['userMail'];
 $loginFlag = $_POST['login'];
 $logoutFlag = $_POST['logout'];
 $registerFlag = $_POST['register'];
-
-// $_SESSION['userId'] = $userId;
 
 $dbh = DatabaseConnection::Connection();
 

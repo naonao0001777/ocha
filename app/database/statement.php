@@ -10,5 +10,5 @@ class DatabaseStatement{
     const INSERT_USER_LINKS = 'INSERT INTO links (user_id) VALUES (:userId);';
     const UPDATE_LINKS = '';
     const SELECT_FILE_USERS = 'SELECT * FROM users WHERE user_id = :userId;';
-    const UPDATE_FILE_USERS = 'UPDATE users SET profile_image = :uploadedFileName WHERE user_id = :userId;';
+    const UPDATE_FILE_USERS = 'UPDATE users SET profile_image = :uploadedFileName, image_byte = :imageByte WHERE user_id = :userId;';
 }

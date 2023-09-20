@@ -47,27 +47,37 @@
             $fetchedUser = $stmt->fetch();
 
             $profileImage = $fetchedUser['profile_image'];
-            // $profileImageBlob = $fetchedUser['image_byte'];
+            $profileImageBlob = $fetchedUser['image_byte'];
 
-            $sql = DatabaseStatement::SELECT_USER_LINKS;
-            $stmt = $dbh->prepare($sql);
-            $stmt->bindValue(':userId', $userId);
-            $stmt->execute();
-            $fetchedUser = $stmt->fetch();
+            if (isset($fetchedUser)) {
+                // DBのバイナリデータをbase64で出力
+                if (isset($profileImageBlob)) {
+                    $streamContent = stream_get_contents($profileImageBlob);
+                    $base64DecodedContent = base64_encode($streamContent);
+                    $fileExtention = substr($profileImage, -3);
+                }
 
-            chmod("/var/www/html/images/" . $userId . $profileImage, 0777);
-
-            if ($fetchedUser) {
+                $sql = DatabaseStatement::SELECT_USER_LINKS;
+                $stmt = $dbh->prepare($sql);
+                $stmt->bindValue(':userId', $userId);
+                $stmt->execute();
+                $fetchedUser = $stmt->fetch();
                 echo '<div class="row justify-content-md-center mb-3">';
                 echo '<div class="col-lg-3 col-xs-2"></div>';
                 echo '<div class="col-lg-auto col-xs-auto">';
-                if (isset($profileImage)) {
-                    echo '<img src="';
-                    echo config::USER_DIRECTORY_PATH . $fetchedUser['user_id'] . '/' . $profileImage;
-                    echo '" class="img-thumbnail rounded-circle" width="100px" height="100px" alt="">';
+                if (isset($profileImageBlob)) {
+                    if ($fileExtention = "png") {
+                        echo '<img src="';
+                        echo "data:image/png;base64,", $base64DecodedContent;
+                        echo '" class="img-thumbnail rounded-circle" width="100px" height="100px" alt="">';
+                    } else {
+                        echo '<img src="';
+                        echo "data:image/jpeg;base64,", $base64DecodedContent;
+                        echo '" class="img-thumbnail rounded-circle" width="100px" height="100px" alt="">';
+                    }
                 } else {
                     echo '<img src="../assets/default_leaf.png" class="img-thumbnail rounded-circle" width="100px" height="100px" alt="">';
-                };
+                }
                 echo '</div>';
                 echo '<div class="col-lg-3 col-xs-2"></div>';
                 echo '</div>';
