@@ -1,5 +1,16 @@
-.kore{
+/* .kore{
     width: 400px;
     height: 400px;
     background-color: aqua;
+} */
+#sample1 {
+    height: 54px;
+    width: 150px;
+    background: url(../../assets/icon_x.png) center center / contain no-repeat;
+    display: inline-block;
+    cursor: pointer;
+}
+
+input[type="file"] {
+    display: none;
 }

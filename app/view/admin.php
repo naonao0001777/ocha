@@ -65,11 +65,11 @@ if (!isset($_SESSION['token'])) {
     </nav>
     <main>
         <div class="container-sm text-center">
-            <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alert" hidden>
-                現在、画像ファイルをアップロードしてもサーバー再起動時に表示されなくなる不具合に対応しています。
+            <!-- <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alert" hidden>
+                現在、画像をアップロードしてもサーバー再起動時に表示されなくなる不具合に対応しています。
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="dismissAlert"></button>
-            </div>
-            <div class="row justify-content-center g-2">
+            </div> -->
+            <div class="row justify-content-center m-2 p-2">
                 <div class="col-lg-4 col-xs-3"></div>
                 <div class="col-lg-4 col-xs-6">
                     <?php

@@ -62,7 +62,7 @@
                 $stmt->bindValue(':userId', $userId);
                 $stmt->execute();
                 $fetchedUser = $stmt->fetch();
-                echo '<div class="row justify-content-md-center mb-3">';
+                echo '<div class="row justify-content-md-center m-2 p-2">';
                 echo '<div class="col-lg-3 col-xs-2"></div>';
                 echo '<div class="col-lg-auto col-xs-auto">';
                 if (isset($profileImageBlob)) {

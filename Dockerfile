@@ -13,7 +13,7 @@ RUN apt-get update &&\
 RUN apt-get update && \
   # PDO PostgreSQL 拡張
   apt-get install -y libpq-dev &&\
-  docker-php-ext-install pdo_pgsql
+  docker-php-ext-install pdo_pgsql pgsql
 # RUN docker-php-ext-install mysqli pdo_mysql
 
 # Apacheのモジュールを有効化
