@@ -148,7 +148,7 @@ if (!isset($_SESSION['token'])) {
                 </div>
                 <div class="col-lg-4 col-2 text-start">
                     <button type="button" class="btn btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="URLをクリップボードにコピー">
-                        <span class="glyphicon glyphicon-copy-url" aria-hidden="true" data-url="<?php echo $_SERVER['HTTP_HOST'] ?>/u/<?php echo $_SESSION['userId'] ?>" id="copy-url"><img width="25" height="25" src="../assets/clipboard_one.png" alt="clipboard" /></span>
+                        <span class="glyphicon glyphicon-copy-url" aria-hidden="true" data-url="<?php echo $_SERVER['HTTP_HOST'] ?>/u/<?php echo $_SESSION['userId'] ?>" id="copy-url"><img width="23px" height="23px" src="../assets/clip.png" alt="clipboard" /></span>
                     </button>
                 </div>
             </div>
