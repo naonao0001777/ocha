@@ -49,7 +49,7 @@
             $profileImage = $fetchedUser['profile_image'];
             $profileImageBlob = $fetchedUser['image_byte'];
 
-            if (isset($fetchedUser)) {
+            if ($fetchedUser) {
                 // DBのバイナリデータをbase64で出力
                 if (isset($profileImageBlob)) {
                     $streamContent = stream_get_contents($profileImageBlob);
