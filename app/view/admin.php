@@ -35,7 +35,7 @@ if (!isset($_SESSION['token'])) {
                     <form method="post" action="../routes/route.php">
                         <ul class="dropdown-menu dropdown-menu-end text-center">
                             <li><button type="submit" class="dropdown-item" name="logout" id="logout">Logout</button></li>
-                            <li><button type="button" class="btn btn-danger btn-sm mx-1 rounded-pill" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">Delete Account</button></li>
+                            <li><button type="button" class="btn btn-danger btn-sm mx-1 rounded-pill mt-1" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">Delete Account</button></li>
                         </ul>
                     </form>
                 </div>
@@ -64,11 +64,14 @@ if (!isset($_SESSION['token'])) {
         </div>
     </nav>
     <main>
-        <div class="container-sm text-center">
+        <div class="container-fluid text-center position-relative">
             <!-- <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alert" hidden>
                 現在、画像をアップロードしてもサーバー再起動時に表示されなくなる不具合に対応しています。
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="dismissAlert"></button>
             </div> -->
+            <div class="d-none" id="loading">
+                <img class="position-absolute top-0 end-0" width="20" height="20" src="../assets/4.gif" alt="clipboard" />
+            </div>
             <div class="row justify-content-center m-2 p-2">
                 <div class="col-lg-4 col-xs-3"></div>
                 <div class="col-lg-4 col-xs-6">
@@ -92,16 +95,18 @@ if (!isset($_SESSION['token'])) {
                         // DBのバイナリデータをbase64で出力
                         $profileImage = $fetchedUser['profile_image'];
                         $profileImageBlob = $fetchedUser['image_byte'];
-
+                        echo '<div class="dropdown">';
+                        echo '<button class="btn rounded-circle border-0 dropdown-toggle position-relative" data-bs-toggle="dropdown" aria-expanded="false">';
+                        echo '<div class="bg-dark position-absolute bottom-0 end-0 rounded text-center border border-1" style="width:60px"><img src="../assets/edit.png" width="13px" height="13px" alt="" /><strong> Edit</strong></div>';
                         if (isset($profileImageBlob)) {
                             $streamContent = stream_get_contents($profileImageBlob);
                             $base64DecodedContent = base64_encode($streamContent);
-
                             $fileExtention = substr($profileImage, -3);
-                            if ($fileExtention = "png") {
+
+                            if ($fileExtention == "png") {
                                 echo '<img src="';
                                 echo "data:image/png;base64,", $base64DecodedContent;
-                                echo '" class="rounded-circle" width="100px" height="100px" alt="">';
+                                echo '" class="rounded-circle" width="100px" height="100px" alt="" id="imageFile">';
                             } else {
                                 echo '<img src="';
                                 echo "data:image/jpeg;base64,", $base64DecodedContent;
@@ -110,6 +115,17 @@ if (!isset($_SESSION['token'])) {
                         } else {
                             echo "<img src='../assets/default_leaf.png' class='rounded-circle' width='100px' height='100px' alt=''>";
                         }
+                        echo '</button>';
+                        echo '<ul class="dropdown-menu dropdown-menu-start text-start">';
+                        echo '<form id="file-upload-form" enctype="multipart/form-data">';
+                        echo '<li><button type="button" class="dropdown-item" id="fileUpload" name="fileUpload">Upload a Photo</button>';
+                        echo '<input type="file" id="input-file-upload" name="input-file-upload" style="display:none;" multiple></li>';
+                        echo '</form>';
+                        echo '<form method="post" action="../routes/adminEdit.php">';
+                        echo '<li><button type="submit" class="dropdown-item" id="fileDelete" name="fileDelete" value="fileDelete">Remove Photo</button></li>';
+                        echo '</form>';
+                        echo '</ul>';
+                        echo '</div>';
                     } catch (PDOException $e) {
                         $msg = $e->getMessage();
                         $_SESSION['msg'] = $msg;
@@ -118,22 +134,6 @@ if (!isset($_SESSION['token'])) {
                 </div>
                 <div class="col-lg-4 col-xs-3"></div>
             </div>
-            <div class="row justify-content-center">
-                <div class="col-lg-3 col-md-3 col-0"></div>
-                <div class="col-lg-auto col-md-auto col-auto">
-                    <form method="post" action="../routes/adminEdit.php" enctype="multipart/form-data">
-                        <input type="file" class="form-control-sm" id="fileUpload" name="fileUpload" multiple>
-                    </form>
-                </div>
-                <div class="col-lg-3 col-md-3 col-1 text-start">
-                    <form method="post" action="../routes/adminEdit.php">
-                        <button type="submit" class="btn btn-sm" id="fileDelete" name="fileDelete" value="fileDelete" data-bs-toggle="tooltip" data-bs-placement="top" title="アイコンを消去">
-                            <span class="glyphicon glyphicon-copy-url" aria-hidden="true" id="fileDelete"><img width="20" height="20" src="../assets/trash.png" alt="" /></span>
-                        </button>
-                    </form>
-                </div>
-
-            </div>
             <div class="row justify-content-center g-2">
                 <div class="col-lg-4 col-xs-0"></div>
                 <div class="col-lg-auto col-xs-auto">
@@ -141,21 +141,20 @@ if (!isset($_SESSION['token'])) {
                 </div>
                 <div class="col-lg-4 col-xs-0"></div>
             </div>
-
             <div class="row justify-content-center mt-2 p-1">
                 <div class="col-lg-4 col-2"></div>
-                <div class="col-lg-auto col-auto text-center">
-                    <h3>@<?php echo $userId ?></h3>
+                <div class="col-lg-auto col-auto">
+                    <h3 class="text-center">@<?php echo $userId ?></h3>
                 </div>
                 <div class="col-lg-4 col-2 text-start">
                     <button type="button" class="btn btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="URLをクリップボードにコピー">
-                        <span class="glyphicon glyphicon-copy-url" aria-hidden="true" data-url="<?php echo $_SERVER['HTTP_HOST'] ?>/u/<?php echo $_SESSION['userId'] ?>" id="copy-url"><img width="20" height="20" src="../assets/clipboard.png" alt="clipboard" /></span>
+                        <span class="glyphicon glyphicon-copy-url" aria-hidden="true" data-url="<?php echo $_SERVER['HTTP_HOST'] ?>/u/<?php echo $_SESSION['userId'] ?>" id="copy-url"><img width="25" height="25" src="../assets/clipboard_one.png" alt="clipboard" /></span>
                     </button>
                 </div>
             </div>
             <div class="col-lg-4 col-2 text-start">
             </div>
-            <div class="row justify-content-center mt-2 p-1">
+            <div class="row justify-content-center m-2 p-1">
                 <div class="col-lg-3 col-xs-3"></div>
                 <div class="col-lg-6 col-xs-6 gap-2">
                     <button type="button" class="btn btn-success rounded-pill mb-2" data-bs-toggle="collapse" data-bs-target="#collapseAddButton" aria-expanded="false" aria-controls="collapseAddButton">
@@ -268,7 +267,7 @@ if (!isset($_SESSION['token'])) {
                 ?>
             </div>
         </div>
-        </div>
+
     </main>
 
 </body>
@@ -279,10 +278,14 @@ if (!isset($_SESSION['token'])) {
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script src="../resource/js/jquery.cookie.js"></script>
 <script>
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)
-    })
+    // ツールチップ
+    $(function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    });
+
     // クリップボードコピー
     $(function() {
         $('#copy-url').on('click', function() {
@@ -298,13 +301,7 @@ if (!isset($_SESSION['token'])) {
             });
         });
     });
-    // ファイルを選択したと同時にPOSTする
-    $(function() {
-        $("#fileUpload").change(function() {
-            $(this).closest("form").submit();
-        });
-    });
-
+    // アラート文を表示する時のクッキーの扱い
     $(function() {
         if ($.cookie('clicked') == undefined) {
             document.getElementById("alert").hidden = false;
@@ -318,12 +315,32 @@ if (!isset($_SESSION['token'])) {
                 path: '/'
             });
         });
-        $('#hoge').show();
     });
-
-    // $(function() {
-    //     if ($.cookie('dismissed') == undefined) {
-    //         $('.container-sm .text-center').append('< div class = "alert alert-warning alert-dismissible fade show" role="alert" id= "alert" > 現在は画像をアップロードできません。 あらかじめご了承ください。 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="dismissAlert"></button></div>');
-    //     }
-    // });
+    // 画像ファイルアップロードのボタンをクリックしたらファイルダイアログを表示させる
+    $(function() {
+        $('#fileUpload').on('click', function() {
+            $('#input-file-upload').click();
+        });
+    });
+    // ファイルアップロードAjax通信
+    $(function() {
+        $('#input-file-upload').change(function() {
+            var formdata = new FormData($('#file-upload-form').get(0));
+            $.ajax({
+                url: "../routes/adminEdit.php",
+                type: "POST",
+                data: formdata,
+                cache: false,
+                contentType: false,
+                processData: false,
+                dataType: "html",
+                beforeSend: function() {
+                    $('#loading').removeClass('d-none');
+                }
+            }).done(function() {
+                location.reload();
+                $('#loading').addClass('d-none');
+            });
+        });
+    });
 </script>

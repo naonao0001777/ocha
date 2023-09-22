@@ -10,16 +10,16 @@ $userId = $_SESSION['userId'];
 $titleData = $_POST['title'];
 $urlData = $_POST['url'];
 $hiddenData = $_POST['hiddenLink'];
-$uploadedFileName = $_FILES['fileUpload']['name'];
-$uploadedFileType = $_FILES['fileUpload']['type'];
-$uploadedFileErrorInfo = $_FILES['fileUpload']['error'];
-$uploadedFileSize = $_FILES['fileUpload']['size'];
-$uploadedFileTempName = $_FILES['fileUpload']['tmp_name'];
+$uploadedFileName = $_FILES['input-file-upload']['name'];
+$uploadedFileType = $_FILES['input-file-upload']['type'];
+$uploadedFileErrorInfo = $_FILES['input-file-upload']['error'];
+$uploadedFileSize = $_FILES['input-file-upload']['size'];
+$uploadedFileTempName = $_FILES['input-file-upload']['tmp_name'];
 $fileDelete = $_POST['fileDelete'];
 
 $dbh = DatabaseConnection::Connection();
 
-if (isset($_FILES['fileUpload'])) {
+if (isset($_FILES['input-file-upload'])) {
     // アップロードファイルのエラー情報チェック
     if (!isset($uploadedFileErrorInfo) || !is_int($uploadedFileErrorInfo) || $uploadedFileErrorInfo != 0) {
         $_SESSION['msg'] = "アップロード中にエラーが発生しました。エラーコード:" . $uploadedFileErrorInfo;
