@@ -64,7 +64,7 @@ if (!isset($_SESSION['token'])) {
         </div>
     </nav>
     <main>
-        <div class="container-fluid text-center position-relative">
+        <div class="container text-center position-relative">
             <!-- <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alert" hidden>
                 現在、画像をアップロードしてもサーバー再起動時に表示されなくなる不具合に対応しています。
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="dismissAlert"></button>
@@ -97,7 +97,7 @@ if (!isset($_SESSION['token'])) {
                         $profileImageBlob = $fetchedUser['image_byte'];
                         echo '<div class="dropdown">';
                         echo '<button class="btn rounded-circle border-0 dropdown-toggle position-relative" data-bs-toggle="dropdown" aria-expanded="false">';
-                        echo '<div class="bg-dark position-absolute bottom-0 end-0 rounded text-center border border-1" style="width:60px; height:30px;"><img src="../assets/edit.png" width="13px" height="13px" alt="" /><strong> Edit</strong></div>';
+                        echo '<div class="bg-dark position-absolute bottom-0 start-0 rounded text-center border border-1" style="width:60px; height:30px;"><img src="../assets/edit.png" width="13px" height="13px" alt="" /><strong> Edit</strong></div>';
                         if (isset($profileImageBlob)) {
                             $streamContent = stream_get_contents($profileImageBlob);
                             $base64DecodedContent = base64_encode($streamContent);
