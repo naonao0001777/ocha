@@ -64,14 +64,16 @@ if (!isset($_SESSION['token'])) {
         </div>
     </nav>
     <main>
+        <div class="container-fluid text-center position-relative">
+            <div class="d-none" id="loading">
+                <img class="position-absolute top-0 end-0" width="20" height="20" src="../assets/4.gif" alt="clipboard" />
+            </div>
+        </div>
         <div class="container text-center position-relative">
             <!-- <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alert" hidden>
                 現在、画像をアップロードしてもサーバー再起動時に表示されなくなる不具合に対応しています。
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="dismissAlert"></button>
             </div> -->
-            <div class="d-none" id="loading">
-                <img class="position-absolute top-0 end-0" width="20" height="20" src="../assets/4.gif" alt="clipboard" />
-            </div>
             <div class="row justify-content-center m-2 p-2">
                 <div class="col-lg-4 col-xs-3"></div>
                 <div class="col-lg-4 col-xs-6">
