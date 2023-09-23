@@ -10,8 +10,10 @@ if (!isset($_SESSION['token'])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <link rel="stylesheet" href="../resource/css/style.css">
+    <link href="../resource/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- <link href="../resource/node_modules/bootstrap/scss/mixins/_caret.scss" rel="stylesheet" />
+    <link href="../resource/node_modules/bootstrap/scss/_variables.scss" rel="stylesheet" /> -->
+    <link rel="stylesheet" href="../resource/css/style.css" />
     <link rel="shortcut icon" type="image/x-icon" href="../assets/favicon.ico" />
     <title>admin</title>
 </head>
@@ -97,7 +99,7 @@ if (!isset($_SESSION['token'])) {
                         // DBのバイナリデータをbase64で出力
                         $profileImage = $fetchedUser['profile_image'];
                         $profileImageBlob = $fetchedUser['image_byte'];
-                        echo '<div class="dropdown">';
+                        echo '<div class="dropdown" style=".bootstrap-select .btn-group .dropdown-toggle .caret {display: none, !important;}">';
                         echo '<button class="btn rounded-circle border-0 dropdown-toggle position-relative" data-bs-toggle="dropdown" aria-expanded="false">';
                         echo '<div class="bg-dark position-absolute bottom-0 start-0 rounded text-center border border-1" style="width:60px; height:30px;"><img src="../assets/edit.png" width="13px" height="13px" alt="" /><strong> Edit</strong></div>';
                         if (isset($profileImageBlob)) {
@@ -275,8 +277,8 @@ if (!isset($_SESSION['token'])) {
 </body>
 
 </html>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script> -->
+<script src="../resource/node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script src="../resource/js/jquery.cookie.js"></script>
 <script>
