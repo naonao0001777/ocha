@@ -10,7 +10,7 @@ if (!isset($_SESSION['token'])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="../resource/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <!-- <link href="../resource/node_modules/bootstrap/scss/mixins/_caret.scss" rel="stylesheet" />
     <link href="../resource/node_modules/bootstrap/scss/_variables.scss" rel="stylesheet" /> -->
     <link rel="stylesheet" href="../resource/css/style.css" />
@@ -66,11 +66,13 @@ if (!isset($_SESSION['token'])) {
         </div>
     </nav>
     <main>
-        <div class="container-fluid text-center position-relative">
-            <div class="d-none" id="loading">
-                <img class="position-absolute top-0 end-0" width="20" height="20" src="../assets/4.gif" alt="clipboard" />
+        <!-- <div class="container-fluid position-relative">
+            <div class="d-none position-absolute top-0 end-0" id="loading">
+                <div class="spinner-border spinner-border-sm text-success" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
             </div>
-        </div>
+        </div> -->
         <div class="container text-center position-relative">
             <!-- <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alert" hidden>
                 現在、画像をアップロードしてもサーバー再起動時に表示されなくなる不具合に対応しています。
@@ -101,6 +103,7 @@ if (!isset($_SESSION['token'])) {
                         $profileImageBlob = $fetchedUser['image_byte'];
                         echo '<div class="dropdown" style=".bootstrap-select .btn-group .dropdown-toggle .caret {display: none, !important;}">';
                         echo '<button class="btn rounded-circle border-0 dropdown-toggle position-relative" data-bs-toggle="dropdown" aria-expanded="false">';
+                        echo '<span class="d-none position-absolute spinner-border spinner-border-sm text-light bottom-0 end-0" id="loading" role="status"></span>';
                         echo '<div class="bg-dark position-absolute bottom-0 start-0 rounded text-center border border-1" style="width:60px; height:30px;"><img src="../assets/edit.png" width="13px" height="13px" alt="" /><strong> Edit</strong></div>';
                         if (isset($profileImageBlob)) {
                             $streamContent = stream_get_contents($profileImageBlob);
@@ -277,8 +280,8 @@ if (!isset($_SESSION['token'])) {
 </body>
 
 </html>
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script> -->
-<script src="../resource/node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script src="../resource/js/jquery.cookie.js"></script>
 <script>
