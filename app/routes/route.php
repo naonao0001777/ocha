@@ -12,6 +12,7 @@ $loginFlag = $_POST['login'];
 $logoutFlag = $_POST['logout'];
 $registerFlag = $_POST['register'];
 $autoLoginCheck = $_POST['autoLogin'];
+$guestUserLogin = $_POST['demoLogin'];
 
 $dbh = DatabaseConnection::Connection();
 
@@ -129,11 +130,40 @@ if (isset($logoutFlag)) {
                 $stmt->execute();
                 $_SESSION['userId'] = $userId;
                 $msg = message::REGISTERD;
-                $_SESSION['msg'] = $msg;
+
                 header('Location: ../view/login');
             }
         }
     } catch (PDOException $e) {
         $msg = $e->getMessage();
+    }
+} elseif (isset($guestUserLogin) && $guestUserLogin == 'demoLogin') {
+    try {
+        $userPassword = "guestpassword";
+
+        $sql = DatabaseStatement::SELECT_USER_ID;
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':userId', "guest");
+        $stmt->execute();
+        $fetchedUser = $stmt->fetch();
+        if (password_verify($userPassword, $fetchedUser['password'])) {
+            $msg = message::LOGINED;
+            $_SESSION['userId'] = $fetchedUser['user_id'];
+            $_SESSION['profileImage'] = $fetchedUser['profile_image'];
+            $_SESSION['msg'] = $msg;
+
+            $token = "guestUserLoginToken";
+            $_SESSION["token"] = $token;
+
+            header('Location: ../view/admin');
+        } else {
+            $msg = "ゲストユーザーのパスワードが違います。管理者にお問い合わせください。";
+            $_SESSION['msg'] = $msg;
+            header('Location: ../view/index');
+        }
+    } catch (PDOException $e) {
+        $msg = $e->getMessage();
+        $_SESSION['msg'] = $msg;
+        header('Location: ../view/index');
     }
 }

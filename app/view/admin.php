@@ -37,7 +37,9 @@ if (!isset($_SESSION['token'])) {
                     <form method="post" action="../routes/route.php">
                         <ul class="dropdown-menu dropdown-menu-end text-center">
                             <li><button type="submit" class="dropdown-item" name="logout" id="logout">Logout</button></li>
-                            <li><button type="button" class="btn btn-danger btn-sm mx-1 rounded-pill mt-1" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">Delete Account</button></li>
+                            <?php if ($_SESSION["token"] != "guestUserLoginToken") {
+                                echo '<li><button type="button" class="btn btn-danger btn-sm mx-1 rounded-pill mt-1" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">Delete Account</button></li>';
+                            } ?>
                         </ul>
                     </form>
                 </div>
