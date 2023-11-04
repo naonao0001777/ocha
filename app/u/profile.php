@@ -81,7 +81,7 @@
                 echo '</div>';
                 echo '<div class="col-lg-3 col-xs-2"></div>';
                 echo '</div>';
-                echo '<h3 class="mb-2 pb-3 text-center">@';
+                echo '<h3 class="mb-2 pb-3 text-center">';
                 echo $fetchedUser['user_id'];
                 echo '</h3>';
                 echo '<div class="row justify-content-center">';

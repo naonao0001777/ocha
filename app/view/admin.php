@@ -151,7 +151,7 @@ if (!isset($_SESSION['token'])) {
             <div class="row justify-content-center mt-2 p-1">
                 <div class="col-lg-4 col-2"></div>
                 <div class="col-lg-auto col-auto">
-                    <h3 class="text-center">@<?php echo $userId ?></h3>
+                    <h3 class="text-center"><?php echo $userId ?></h3>
                 </div>
                 <div class="col-lg-4 col-2 text-start">
                     <button type="button" class="btn btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="URLをクリップボードにコピー">

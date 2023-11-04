@@ -1,4 +1,38 @@
-<?php session_start(); ?>
+<?php session_start();
+require_once('../database/connection.php');
+require_once('../database/statement.php');
+require_once('../config/config.php');
+require_once('../config/message.php');
+
+// 自動ログイン処理
+try {
+    $autoLoginToken = $_COOKIE['ocha_auto_login'];
+    if (isset($autoLoginToken)) {
+        $dbh = DatabaseConnection::Connection();
+        $sql = DatabaseStatement::SELECT_USER_AUTO;
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':autoLoginToken', $autoLoginToken);
+        $stmt->execute();
+        $fetchedUser = $stmt->fetch();
+
+        $token = bin2hex(random_bytes(32));
+        $_SESSION["token"] = $token;
+
+        $msg = message::LOGINED;
+        $_SESSION['userId'] = $fetchedUser['user_id'];
+        $_SESSION['profileImage'] = $fetchedUser['profile_image'];
+        $_SESSION['msg'] = $msg;
+
+        header('Location: ../view/admin');
+        exit;
+    }
+} catch (PDOException $e) {
+    $msg = $e->getMessage();
+    $_SESSION['msg'] = $msg;
+
+    header('Location: ../view/login');
+}
+?>
 
 <!DOCTYPE html>
 <html lang="ja" data-bs-theme="dark">
@@ -91,7 +125,8 @@
 </html>
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script>
-    (function() {
+    // フォームコントロールのバリデーション
+    $(function() {
         'use strict'
 
         // Fetch all the forms we want to apply custom Bootstrap validation styles to
@@ -110,6 +145,10 @@
                 }, false)
             })
     })();
+
+    // 最初にIDのフォームにフォーカスをする
     $('input:visible').eq(0).focus();
+
+    $()
 </script>
 <?php session_destroy(); ?>

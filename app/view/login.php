@@ -1,4 +1,38 @@
-<?php session_start(); ?>
+<?php session_start();
+require_once('../database/connection.php');
+require_once('../database/statement.php');
+require_once('../config/config.php');
+require_once('../config/message.php');
+
+// 自動ログイン処理
+try {
+    $autoLoginToken = $_COOKIE['ocha_auto_login'];
+    if (isset($autoLoginToken)) {
+        $dbh = DatabaseConnection::Connection();
+        $sql = DatabaseStatement::SELECT_USER_AUTO;
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':autoLoginToken', $autoLoginToken);
+        $stmt->execute();
+        $fetchedUser = $stmt->fetch();
+
+        $token = bin2hex(random_bytes(32));
+        $_SESSION["token"] = $token;
+        
+        $msg = message::LOGINED;
+        $_SESSION['userId'] = $fetchedUser['user_id'];
+        $_SESSION['profileImage'] = $fetchedUser['profile_image'];
+        $_SESSION['msg'] = $msg;
+
+        header('Location: ../view/admin');
+        exit;
+    }
+} catch (PDOException $e) {
+    $msg = $e->getMessage();
+    $_SESSION['msg'] = $msg;
+
+    header('Location: ../view/login');
+}
+?>
 
 <!DOCTYPE html>
 <html lang="ja" data-bs-theme="dark">
@@ -62,6 +96,10 @@
                     <div class="mb-3 form-floating">
                         <input type="password" class="form-control" id="userPassword" name="userPassword" placeholder="Password" required>
                         <label for="userPassword">Password</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="autoLogin" name="autoLogin">
+                        <label for="autoLogin" class="form-check-label">次回から自動でログイン</label>
                     </div>
                     <div class="row mb-3">
                         <label for="message" class="form-label text-center"><?php echo $_SESSION['msg']; ?></label>

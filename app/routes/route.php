@@ -11,12 +11,14 @@ $userMail = $_POST['userMail'];
 $loginFlag = $_POST['login'];
 $logoutFlag = $_POST['logout'];
 $registerFlag = $_POST['register'];
+$autoLoginCheck = $_POST['autoLogin'];
 
 $dbh = DatabaseConnection::Connection();
 
 if (isset($logoutFlag)) {
     // ログアウト処理
     unset($_SESSION['msg']);
+    setcookie("ocha_auto_login", "", time() - 20 * 24 * 60 * 60, '/', false);
     session_destroy();
     header('Location: ../view/login');
     exit;
@@ -43,12 +45,36 @@ if (isset($logoutFlag)) {
 
                 header('Location: ../view/login');
             } else {
+                // パスワードチェック
                 if (password_verify($userPassword, $fetchedUser['password'])) {
                     $msg = message::LOGINED;
                     $_SESSION['userId'] = $fetchedUser['user_id'];
                     $_SESSION['profileImage'] = $fetchedUser['profile_image'];
                     $_SESSION['msg'] = $msg;
                     $sessionToken = $_SESSION['token'];
+
+                    // 自動ログインチェック
+                    if (isset($autoLoginCheck) && $autoLoginCheck == "on") {
+                        $autoLoginToken = 'auto_login_' . bin2hex(random_bytes(32));
+
+                        $sql = DatabaseStatement::UPDATE_AUTO_USERS;
+                        $stmt = $dbh->prepare($sql);
+                        $stmt->bindValue(':autoLoginCheck', 'true');
+                        $stmt->bindValue(':autoLoginToken', $autoLoginToken);
+                        $stmt->bindValue(':userId', $userId);
+                        $stmt->execute();
+
+                        setcookie('ocha_auto_login', $autoLoginToken, time() + 20 * 24 * 60 * 60, '/', false);
+                    } else {
+                        $sql = DatabaseStatement::UPDATE_AUTO_USERS;
+                        $stmt = $dbh->prepare($sql);
+                        $stmt->bindValue(':autoLoginCheck', 'false');
+                        $stmt->bindValue(':autoLoginToken', NULL);
+                        $stmt->bindValue(':userId', $userId);
+                        $stmt->execute();
+
+                        setcookie('ocha_auto_login', '', time() - 20 * 24 * 60 * 60, '/', false);
+                    }
 
                     header('Location: ../view/admin');
                 } else {
