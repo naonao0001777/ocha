@@ -79,7 +79,13 @@
                     echo '<img src="../assets/default_leaf.png" class=" rounded-circle" width="100px" height="100px" alt="">';
                 }
                 echo '</div>';
-                echo '<div class="col-lg-3 col-xs-2"></div>';
+                echo '<div class="col-lg-3 col-xs-2 position-relative"><div class="position-absolute top-50 start-0 translate-middle-y">';
+                // echo '<button type="button" class="btn btn-dark rounded-circle p-0" data-bs-toggle="tooltip" data-bs-placement="top" title="URLをクリップボードにコピー" style="width:2rem;height:2rem;" id="copy-url">';
+                // echo '<span aria-hidden="true" data-url="';
+                // $_SERVER['HTTP_HOST'] . "/ u /" . $_SESSION['userId'];
+                // echo '" id="copy-url">';
+                // echo '<strong>⁝</strong></span></button>';
+                echo '</div></div>';
                 echo '</div>';
                 echo '<h3 class="mb-2 pb-3 text-center">';
                 echo $fetchedUser['user_id'];
@@ -130,3 +136,31 @@
 </body>
 
 </html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script>
+    // ツールチップ
+    $(function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    });
+
+    // クリップボードコピー
+    $(function() {
+        $('#copy-url').on('click', function() {
+            // data-urlの値を取得
+            const url = $(this).data('url');
+
+            // クリップボードにコピー
+            navigator.clipboard.writeText(url);
+
+            // フラッシュメッセージ表示
+            $('.success-msg').fadeIn("slow", function() {
+                $(this).delay(2000).fadeOut("slow");
+            });
+        });
+    });
+</script>
