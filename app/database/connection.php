@@ -11,7 +11,6 @@
 define('DATABASE_CONNECTION', 'pgsql:dbname=ocha_huc2; host= dpg-ck0ih89au56s73do38f0-a.singapore-postgres.render.com; port=5432;');
 define('DB_USER', 'ochauser');
 define('DB_PASSWORD', '8swvCRzD9OFD6T5FYVq4YDktDdRAsrJH');
-// define('DB_PASSWORD', 'ochapassword');
 
 class DatabaseConnection
 {
