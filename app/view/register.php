@@ -59,7 +59,7 @@ try {
             <div class="d-flex ms-auto">
                 <form method="post" action="../routes/route">
                     <div class="">
-                        <button type="submit" class="btn btn-link btn-sm mx-1" id="demo" name="demoLogin" value="demoLogin">デモログイン</button>
+                        <button type="submit" class="btn btn-outline-warning btn-sm mx-1" id="demo" name="demoLogin" value="demoLogin">DEMO</button>
                     </div>
                 </form>
                 <form method="post" action="./login">
