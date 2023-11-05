@@ -81,11 +81,13 @@
                 }
                 echo '</div>';
                 echo '<div class="col-lg-3 col-xs-2 position-relative"><div class="position-absolute top-50 start-0 translate-middle-y">';
-                // echo '<button type="button" class="btn btn-dark rounded-circle p-0" data-bs-toggle="tooltip" data-bs-placement="top" title="URLをクリップボードにコピー" style="width:2rem;height:2rem;" id="copy-url">';
-                // echo '<span aria-hidden="true" data-url="';
-                // $_SERVER['HTTP_HOST'] . "/ u /" . $_SESSION['userId'];
-                // echo '" id="copy-url">';
-                // echo '<strong>⁝</strong></span></button>';
+                echo '<button type="button" class="btn btn-dark rounded-circle p-0" data-bs-toggle="tooltip" data-bs-placement="top" title="URLをクリップボードにコピー" style="width:2rem;height:2rem;" id="copy">';
+                echo '<span aria-hidden="true" data-url="';
+                echo $_SERVER['HTTP_HOST'];
+                echo '/u/';
+                echo $_SESSION['userId'];
+                echo '" id="copy-url">';
+                echo '<strong>⁝</strong></span></button>';
                 echo '</div></div>';
                 echo '</div>';
                 echo '<h3 class="mb-2 pb-3 text-center">';

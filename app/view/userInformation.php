@@ -114,8 +114,11 @@ if (!isset($_SESSION['token'])) {
             <div class="col-lg-4 col-xs-2"></div>
             <div class="col-lg-4 col-xs-8">
                 <div class="mb-3">
+                    <label for="basic-url" class="form-label">プロフィールURL</label>
+                    <button type="button" class="btn btn-dark rounded-circle p-0" data-bs-toggle="tooltip" data-bs-placement="top" title="URLをクリップボードにコピー" style="width:2rem;height:2rem;" id="copy">
+                        <span aria-hidden="true" data-url="<?php echo $_SERVER['HTTP_HOST'] ?>/u/<?php echo $_SESSION['userId'] ?>" id="copy-url"><strong>⁝</strong></span>
+                    </button>
                     <fieldset disabled>
-                        <label for="basic-url" class="form-label">プロフィールURL</label>
                         <div class="input-group">
                             <span class="input-group-text" id="basic-addon3">
                                 <?php echo $_SERVER["HTTP_HOST"] . "/u/" ?>
@@ -180,11 +183,29 @@ if (!isset($_SESSION['token'])) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
         })
     });
+
     // ポップオーバー
     $(function() {
         const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
         const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
     });
+
+    // クリップボードコピー
+    $(function() {
+        $('#copy-url').on('click', function() {
+            // data-urlの値を取得
+            const url = $(this).data('url');
+
+            // クリップボードにコピー
+            navigator.clipboard.writeText(url);
+
+            // フラッシュメッセージ表示
+            $('.success-msg').fadeIn("slow", function() {
+                $(this).delay(2000).fadeOut("slow");
+            });
+        });
+    });
+
     // トースト
     const toastTrigger = document.getElementById('liveToastBtn')
     const toastLiveExample = document.getElementById('liveToast')
