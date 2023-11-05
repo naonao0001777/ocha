@@ -30,29 +30,15 @@ if (!isset($_SESSION['token'])) {
                     <path d="M272 96c-78.6 0-145.1 51.5-167.7 122.5c33.6-17 71.5-26.5 111.7-26.5h88c8.8 0 16 7.2 16 16s-7.2 16-16 16H288 216s0 0 0 0c-16.6 0-32.7 1.9-48.2 5.4c-25.9 5.9-50 16.4-71.4 30.7c0 0 0 0 0 0C38.3 298.8 0 364.9 0 440v16c0 13.3 10.7 24 24 24s24-10.7 24-24V440c0-48.7 20.7-92.5 53.8-123.2C121.6 392.3 190.3 448 272 448l1 0c132.1-.7 239-130.9 239-291.4c0-42.6-7.5-83.1-21.1-119.6c-2.6-6.9-12.7-6.6-16.2-.1C455.9 72.1 418.7 96 376 96L272 96z" />
                 </svg></a>
             <div class="d-flex ms-auto">
-                <!-- <div class="dropdown ">
-                    <button type="button" class="btn btn-outline-danger btn-sm mx-1 dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span>Help</span> <strong>?</strong>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end text-center">
-                        <h5>使い方</h5>
-                        <p>
-                            リンクを追加ボタンからタイトルとURLを追加できます。<br>
-                            画像をクリックして画像を変更することができます。
-
-                        </p>
-                    </ul>
-                </div> -->
+                <button type="button" class="btn btn-outline-danger btn-sm mx-2" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content="「リンクを追加」ボタンから+ボタンでプロフィールにリンクを追加することができます。">Help?</button>
                 <div class="dropdown ">
                     <button type="button" class="btn btn-outline-secondary btn-sm mx-1 dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                         ≡
                     </button>
                     <form method="post" action="../routes/route.php">
                         <ul class="dropdown-menu dropdown-menu-end text-center">
-                            <li><button type="submit" class="dropdown-item" name="logout" id="logout">Logout</button></li>
-                            <?php if ($_SESSION["token"] != "guestUserLoginToken") {
-                                echo '<li><button type="button" class="btn btn-danger btn-sm mx-1 rounded-pill mt-1" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">Delete Account</button></li>';
-                            } ?>
+                            <li><button type="submit" class="dropdown-item" name="userInformation" id="userInformation" value="userInformation">Settings</button></li>
+                            <li><button type="submit" class="dropdown-item" name="logout" id="logout" value="logout">Logout</button></li>
                         </ul>
                     </form>
                 </div>
@@ -89,11 +75,26 @@ if (!isset($_SESSION['token'])) {
             </div>
         </div> -->
         <div class="container text-center">
-            <?php if ($_SESSION["token"] == "guestUserLoginToken") {
-                echo '<div class="alert alert-warning alert-dismissible fade show" role="alert" id="alert" hidden>';
-                echo 'You logged in as a guest.';
-                echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="dismissAlert"></button></div>';
-            } ?>
+            <?php
+            if ($_SESSION['msgFlag']) {
+                echo '<div class="alert alert-info alert-dismissible fade show" role="alert">';
+                echo $_SESSION['msg'];
+                echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                echo '</div>';
+            }
+            unset($_SESSION['msgFlag']);
+            ?>
+            <!-- <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <img src="..." class="rounded me-2" alt="...">
+                    <strong class="me-auto">Bootstrap</strong>
+                    <small>11 mins ago</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Hello, world! This is a toast message.
+                </div>
+            </div> -->
             <div class="row justify-content-center m-2 p-2">
                 <div class="col-lg-4 col-xs-3"></div>
                 <div class="col-lg-4 col-xs-6">
@@ -113,6 +114,9 @@ if (!isset($_SESSION['token'])) {
                         $stmt->bindValue(':userId', $userId);
                         $stmt->execute();
                         $fetchedUser = $stmt->fetch();
+                        $_SESSION['userMail'] = $fetchedUser['mail'];
+                        $_SESSION['userName'] = $fetchedUser['user_name'];
+                        $userName = $_SESSION['userName'];
 
                         // DBのバイナリデータをbase64で出力
                         $profileImage = $fetchedUser['profile_image'];
@@ -157,17 +161,10 @@ if (!isset($_SESSION['token'])) {
                 </div>
                 <div class="col-lg-4 col-xs-3"></div>
             </div>
-            <div class="row justify-content-center g-2">
-                <div class="col-lg-4 col-xs-0"></div>
-                <div class="col-lg-auto col-xs-auto">
-                    <?php echo $_SESSION['msg'] ?>
-                </div>
-                <div class="col-lg-4 col-xs-0"></div>
-            </div>
             <div class="row justify-content-center mt-2 p-1">
                 <div class="col-lg-4 col-2"></div>
                 <div class="col-lg-auto col-auto">
-                    <h3 class="text-center"><?php echo $userId ?></h3>
+                    <h3 class="text-center"><?php echo $userName ?></h3>
                 </div>
                 <div class="col-lg-4 col-2 text-start">
                     <button onclick="window.open('/u/<?php echo $_SESSION['userId'] ?>','_blank')" type="button" class="btn btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="プロフィールURLに行く">
@@ -304,6 +301,21 @@ if (!isset($_SESSION['token'])) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
         })
     });
+    // ポップオーバー
+    $(function() {
+        const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+        const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+    });
+    // トースト
+    const toastTrigger = document.getElementById('liveToastBtn')
+    const toastLiveExample = document.getElementById('liveToast')
+
+    if (toastTrigger) {
+        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+        toastTrigger.addEventListener('click', () => {
+            toastBootstrap.show()
+        })
+    }
 
     // クリップボードコピー
     $(function() {
@@ -321,20 +333,20 @@ if (!isset($_SESSION['token'])) {
         });
     });
     // アラート文を表示する時のクッキーの扱い
-    $(function() {
-        if ($.cookie('clicked_alert_dismiss') == undefined) {
-            document.getElementById("alert").hidden = false;
-        }
-    });
+    // $(function() {
+    //     if ($.cookie('clicked_alert_dismiss') == undefined) {
+    //         document.getElementById("alert").hidden = false;
+    //     }
+    // });
 
-    $(function() {
-        $('#dismissAlert').on('click', function() {
-            $.cookie('clicked_alert_dismiss', 'on', {
-                expires: 1,
-                path: '/'
-            });
-        });
-    });
+    // $(function() {
+    //     $('#dismissAlert').on('click', function() {
+    //         $.cookie('clicked_alert_dismiss', 'on', {
+    //             expires: 1,
+    //             path: '/'
+    //         });
+    //     });
+    // });
     // 画像ファイルアップロードのボタンをクリックしたらファイルダイアログを表示させる
     $(function() {
         $('#fileUpload').on('click', function() {
