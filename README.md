@@ -1,2 +1,2 @@
-# ocha_render
-deploy
+# ocha
+host on render
