@@ -11,6 +11,9 @@ $userMail = $_POST['userMail'];
 $loginFlag = $_POST['login'];
 $logoutFlag = $_POST['logout'];
 $registerFlag = $_POST['register'];
+$userInformationFlag = $_POST['userInformation'];
+$updateUserName = $_POST['updateUserName'];
+$userAdminFlag = $_POST['userAdmin'];
 $autoLoginCheck = $_POST['autoLogin'];
 $guestUserLogin = $_POST['demoLogin'];
 
@@ -76,6 +79,7 @@ if (isset($logoutFlag)) {
 
                         setcookie('ocha_auto_login', '', time() - 20 * 24 * 60 * 60, '/', false);
                     }
+                    $_SESSION['msgFlag'] = true;
 
                     header('Location: ../view/admin');
                 } else {
@@ -121,6 +125,7 @@ if (isset($logoutFlag)) {
                 $stmt->bindvalue(':userId', $userId);
                 $stmt->bindvalue(':userMail', $userMail);
                 $stmt->bindvalue(':userPassword', $userPassword);
+                $stmt->bindvalue(':userName', $userId);
                 $stmt->execute();
 
                 //LinksテーブルにもユーザーIDを挿入
@@ -146,10 +151,12 @@ if (isset($logoutFlag)) {
         $stmt->bindValue(':userId', "guest");
         $stmt->execute();
         $fetchedUser = $stmt->fetch();
+        $_SESSION['msgFlag'] = true;
         if (password_verify($userPassword, $fetchedUser['password'])) {
-            $msg = message::LOGINED;
             $_SESSION['userId'] = $fetchedUser['user_id'];
             $_SESSION['profileImage'] = $fetchedUser['profile_image'];
+
+            $msg = message::LOGGED_IN_GUEST;
             $_SESSION['msg'] = $msg;
 
             $token = "guestUserLoginToken";
@@ -157,13 +164,35 @@ if (isset($logoutFlag)) {
 
             header('Location: ../view/admin');
         } else {
-            $msg = "ゲストユーザーのパスワードが違います。管理者にお問い合わせください。";
+            $msg = message::LOGGED_IN_GUEST_ERROR;
             $_SESSION['msg'] = $msg;
+
             header('Location: ../view/index');
         }
     } catch (PDOException $e) {
         $msg = $e->getMessage();
         $_SESSION['msg'] = $msg;
         header('Location: ../view/index');
+    }
+} elseif (isset($userInformationFlag) && $userInformationFlag == 'userInformation') {
+    header('Location: ../view/userInformation');
+} elseif (isset($userAdminFlag) && $userAdminFlag == 'userAdmin') {
+    header('Location: ../view/admin');
+} elseif (isset($updateUserName)) {
+    try {
+        $sql = DatabaseStatement::UPDATE_NAME_USERS;
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':userName', $updateUserName);
+        $stmt->bindValue(':userId', $_SESSION['userId']);
+        $stmt->execute();
+        $_SESSION['msgFlag'] = true;
+        $_SESSION['msg'] = message::UPDATED_USER_NAME;
+
+        header('Location: ../view/userInformation');
+    } catch (PDOException $e) {
+        $msg = $e->getMessage();
+        $_SESSION['msg'] = $msg;
+
+        header('Location: ../view/Index');
     }
 }

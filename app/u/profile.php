@@ -48,6 +48,7 @@
 
             $profileImage = $fetchedUser['profile_image'];
             $profileImageBlob = $fetchedUser['image_byte'];
+            $userName = $fetchedUser['user_name'];
 
             if ($fetchedUser) {
                 // DBのバイナリデータをbase64で出力
@@ -88,7 +89,7 @@
                 echo '</div></div>';
                 echo '</div>';
                 echo '<h3 class="mb-2 pb-3 text-center">';
-                echo $fetchedUser['user_id'];
+                echo $userName;
                 echo '</h3>';
                 echo '<div class="row justify-content-center">';
 
