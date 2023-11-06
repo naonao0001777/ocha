@@ -22,7 +22,9 @@ $dbh = DatabaseConnection::Connection();
 if (isset($_FILES['input-file-upload'])) {
     // アップロードファイルのエラー情報チェック
     if (!isset($uploadedFileErrorInfo) || !is_int($uploadedFileErrorInfo) || $uploadedFileErrorInfo != 0) {
-        $_SESSION['msg'] = "アップロード中にエラーが発生しました。エラーコード:" . $uploadedFileErrorInfo;
+        $msg = message::UPDATE_IMAGE_ERROR . $uploadedFileErrorInfo;;
+        $_SESSION['msg'] = $msg;
+        $_SESSION['msgFlag'] = true;
         header('Location: ../view/admin');
         exit;
     }
@@ -35,13 +37,15 @@ if (isset($_FILES['input-file-upload'])) {
         ),
         true
     )) {
-        $_SESSION['msg'] = "ファイルの拡張子をjpegかpngにしてください。";
+        $msg = message::CHANGE_IMAGE_EXT;
+        $_SESSION['msg'] = $msg;
+        $_SESSION['msgFlag'] = true;
         header('Location: ../view/admin');
         exit;
     }
     // ファイル名をユニファイ
     $uploadedFileName = uniqid(mt_rand(), true) . '.' . $extension;
-    
+
     // 画像が正方形でなかったり大きすぎた場合はリサイズする
     $uploadedFileResizeBefore = $uploadedFileTempName;
     $uploadedFileResizeAfter = '';
@@ -114,15 +118,20 @@ if (isset($_FILES['input-file-upload'])) {
             $fetchedUser = $stmt->fetch();
 
             // $_SESSION['msg'] = $uploadedFileErrorInfo . sys_get_temp_dir()."成功";
-            $_SESSION['msg'] = "ファイルはアップロードされました。";
+            $msg = message::UPDATE_IMAGE;
+            $_SESSION['msg'] = $msg;
+            $_SESSION['msgFlag'] = true;
             $_SESSION['profileImage'] = $uploadedFileName;
         } catch (PDOException $e) {
             $msg = $e->getMessage();
-            echo $msg;
+            $_SESSION['msg'] = $msg;
+            $_SESSION['msgFlag'] = true;
         }
     } else {
         // $_SESSION['msg'] = $uploadedFileErrorInfo . sys_get_temp_dir()."失敗";
-        $_SESSION['msg'] = "ファイルのアップロードに失敗しました。";
+        $_SESSION['msg'] = message::UPDATE_IMAGE_ERROR;
+        $_SESSION['msg'] = $msg;
+        $_SESSION['msgFlag'] = true;
     }
 } elseif (isset($fileDelete)) {
     // 画像ファイルを削除する処理
@@ -149,10 +158,13 @@ if (isset($_FILES['input-file-upload'])) {
         $stmt->execute();
         $fetchedUser = $stmt->fetch();
 
-        $_SESSION['msg'] = "ファイルは削除されました";
+        $msg = message::DELETE_IMAGE;
+        $_SESSION['msg'] = $msg;
+        $_SESSION['msgFlag'] = true;
     } catch (PDOException $e) {
         $msg = $e->getMessage();
-        echo $msg;
+        $_SESSION['msg'] = $msg;
+        $_SESSION['msgFlag'] = true;
     }
 }
 // リンクの追加処理
@@ -195,12 +207,14 @@ if (isset($_POST['add'])) {
 
             $msg = message::ADD_LINK;
             $_SESSION['msg'] = $msg;
+            $_SESSION['msgFlag'] = true;
         }
 
         header('Location: ../view/admin');
     } catch (PDOException $e) {
         $msg = $e->getMessage();
-        echo $msg;
+        $_SESSION['msg'] = $msg;
+        $_SESSION['msgFlag'] = true;
         header('Location: ../view/admin');
     }
     // 指定したカラムを更新
@@ -229,13 +243,15 @@ if (isset($_POST['add'])) {
         $_SESSION['title1'] = $titleData;
         $_SESSION['url1'] = $urlData;
 
-        $msg = "リンクを更新しました。";
+        $msg = message::UPDATE_LINK;
         $_SESSION['msg'] = $msg;
+        $_SESSION['msgFlag'] = true;
 
         header('Location: ../view/admin');
     } catch (PDOException $e) {
         $msg = $e->getMessage();
-        echo $msg;
+        $_SESSION['msg'] = $msg;
+        $_SESSION['msgFlag'] = true;
         header('Location: ../view/admin');
     }
     // カラム内データを削除して後ろのカラムを前に詰める
@@ -295,13 +311,15 @@ if (isset($_POST['add'])) {
                 }
             }
         }
-        $msg = "リンクを編集";
+        $msg = message::DELETE_LINK;
         $_SESSION['msg'] = $msg;
+        $_SESSION['msgFlag'] = true;
 
         header('Location: ../view/admin');
     } catch (PDOException $e) {
         $msg = $e->getMessage();
-        echo $msg;
+        $_SESSION['msg'] = $msg;
+        $_SESSION['msgFlag'] = true;
         header('Location: ../view/admin');
     }
 } else {
