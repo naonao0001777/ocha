@@ -179,32 +179,16 @@ if (isset($logoutFlag)) {
     header('Location: ../view/userInformation');
 } elseif (isset($userAdminFlag) && $userAdminFlag == 'userAdmin') {
     header('Location: ../view/admin');
-} elseif (isset($updateUserName)) {
+} elseif (isset($updateUserName) || isset($updateBiography)) {
     try {
-        $sql = DatabaseStatement::UPDATE_NAME_USERS;
+        $sql = DatabaseStatement::UPDATE_INFORMATION_USERS;
         $stmt = $dbh->prepare($sql);
         $stmt->bindValue(':userName', $updateUserName);
-        $stmt->bindValue(':userId', $_SESSION['userId']);
-        $stmt->execute();
-        $_SESSION['msgFlag'] = true;
-        $_SESSION['msg'] = message::UPDATED_USER_NAME;
-
-        header('Location: ../view/userInformation');
-    } catch (PDOException $e) {
-        $msg = $e->getMessage();
-        $_SESSION['msg'] = $msg;
-
-        header('Location: ../index');
-    }
-} elseif (isset($updateBiography)) {
-    try {
-        $sql = DatabaseStatement::UPDATE_BIO_USERS;
-        $stmt = $dbh->prepare($sql);
         $stmt->bindValue(':updateBiography', $updateBiography);
         $stmt->bindValue(':userId', $_SESSION['userId']);
         $stmt->execute();
         $_SESSION['msgFlag'] = true;
-        $_SESSION['msg'] = message::UPDATED_BIO;
+        $_SESSION['msg'] = message::UPDATED_USER_INFORMATION;
 
         header('Location: ../view/userInformation');
     } catch (PDOException $e) {
@@ -213,6 +197,6 @@ if (isset($logoutFlag)) {
 
         header('Location: ../index');
     }
-}else{
+} else {
     header('Location: ../view/userInformation');
 }

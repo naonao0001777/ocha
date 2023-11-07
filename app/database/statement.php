@@ -13,13 +13,7 @@ class DatabaseStatement
     const UPDATE_LINKS = '';
     const SELECT_FILE_USERS = 'SELECT * FROM users WHERE user_id = :userId;';
     const UPDATE_FILE_USERS = 'UPDATE users SET profile_image = :uploadedFileName, image_byte = :imageByte WHERE user_id = :userId;';
-    const UPDATE_NAME_USERS = 'UPDATE users SET user_name = :userName WHERE user_id = :userId;';
-    const UPDATE_BIO_USERS = 'UPDATE users SET biography = :updateBiography WHERE user_id = :userId;';
+    const UPDATE_INFORMATION_USERS = 'UPDATE users SET user_name = :userName, biography = :updateBiography WHERE user_id = :userId;';
     const UPDATE_AUTO_USERS = 'UPDATE users SET auto_login = :autoLoginCheck, auto_login_token = :autoLoginToken WHERE user_id = :userId;';
-    const UPDATE_YOUTUBE_USERS = 'UPDATE users SET youtube_account = :updateYoutube WHERE user_id = :userId;';
-    const UPDATE_X_USERS = 'UPDATE users SET x_account = :updateX WHERE user_id = :userId;';
-    const UPDATE_TWITCH_USERS = 'UPDATE users SET twitch_account = :updateTwitch WHERE user_id = :userId;';
-    const UPDATE_GITHUB_USERS = 'UPDATE users SET github_account = :updateGithub WHERE user_id = :userId;';
-    const UPDATE_INSTAGRAM_USERS = 'UPDATE users SET instagram_account = :updateInstagram WHERE user_id = :userId;';
-    const UPDATE_FACEBOOK_USERS = 'UPDATE users SET facebook_account = :updateFacebook WHERE user_id = :userId;';
+    const UPDATE_SNS_USERS = 'UPDATE users SET youtube_account = :updateYoutube, x_account = :updateX, twitch_account = :updateTwitch, github_account = :updateGithub, instagram_account = :updateInstagram, facebook_account = :updateFacebook WHERE user_id = :userId;';
 }

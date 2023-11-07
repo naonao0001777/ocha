@@ -71,7 +71,7 @@
                 $stmt->execute();
                 $fetchedUser = $stmt->fetch();
                 echo '<div class="row justify-content-md-center m-2 p-2">';
-                echo '<div class="col-lg-3 col-xs-2"></div>';
+                echo '<div class="col-lg-auto col-xs-auto"></div>';
                 echo '<div class="col-lg-auto col-xs-auto">';
                 if (isset($profileImageBlob)) {
                     if ($fileExtention = "png") {
@@ -87,14 +87,15 @@
                     echo '<img src="../assets/default_leaf.png" class=" rounded-circle" width="100px" height="100px" alt="">';
                 }
                 echo '</div>';
-                echo '<div class="col-lg-3 col-xs-2 position-relative"><div class="position-absolute top-50 start-0 translate-middle-y">';
-                echo '<button type="button" class="btn btn-dark rounded-circle p-0" data-bs-toggle="tooltip" data-bs-placement="top" title="URLをクリップボードにコピー" style="width:2rem;height:2rem;" id="copy">';
-                echo '<span aria-hidden="true" data-url="';
-                echo $_SERVER['HTTP_HOST'];
-                echo '/u/';
-                echo $_SESSION['userId'];
-                echo '" id="copy-url">';
-                echo '<strong>⁝</strong></span></button>';
+                echo '<div class="col-lg-auto col-xs-auto position-relative">';
+                echo '<div class="position-absolute top-50 start-0 translate-middle-y">';
+                // echo '<button type="button" class="btn btn-dark rounded-circle p-0" data-bs-toggle="tooltip" data-bs-placement="top" title="URLをクリップボードにコピー" style="width:2rem;height:2rem;" id="copy">';
+                // echo '<span aria-hidden="true" data-url="';
+                // echo $_SERVER['HTTP_HOST'];
+                // echo '/u/';
+                // echo $_SESSION['userId'];
+                // echo '" id="copy-url">';
+                // echo '<strong>⁝</strong></span></button>';
                 echo '</div></div>';
                 echo '</div>';
                 echo '<h3 class="mb-2 pb-3 text-center">';

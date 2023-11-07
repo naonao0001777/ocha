@@ -131,40 +131,33 @@ if (!isset($_SESSION['token'])) {
             </div>
             <div class="col-lg-4 col-xs-2"></div>
         </div>
-        <div class="row justify-content-md-center mt-4">
-            <div class="col-lg-4 col-xs-2"></div>
-            <div class="col-lg-4 col-xs-8">
-                <form method="post" action="../routes/route">
+        <form method="post" action="../routes/route">
+            <div class="row justify-content-md-center mt-4">
+                <div class="col-lg-4 col-xs-2"></div>
+                <div class="col-lg-4 col-xs-8">
                     <div class="mb-3">
                         <label for="basic-url" class="form-label">ユーザー名</label>
                         <input type="text" class="form-control" id="updateUserName" name="updateUserName" placeholder="Name" value="<?php echo $userName ?>" autocomplete="off" required>
                     </div>
-                    <div>
-                        <button class="btn btn-primary btn-sm" type="submit" id="updateUser" name="updateUser">
-                            更新する
-                        </button>
-                    </div>
-                </form>
+                </div>
+                <div class="col-lg-4 col-xs-2"></div>
             </div>
-            <div class="col-lg-4 col-xs-2"></div>
-        </div>
-        <div class="row justify-content-md-center mt-4">
-            <div class="col-lg-4 col-xs-2"></div>
-            <div class="col-lg-4 col-xs-8">
-                <form method="post" action="../routes/route">
+            <div class="row justify-content-md-center mt-4">
+                <div class="col-lg-4 col-xs-2"></div>
+                <div class="col-lg-4 col-xs-8">
                     <label for="basic-url" class="form-label">略歴・ひとこと</label>
                     <div class="input-group mb-3">
                         <textarea class="form-control" aria-label="With textarea" id="biography" name="biography" placeholder="Biography" autocomplete="off"><?php echo $biography ?></textarea>
                     </div>
                     <div>
-                        <button class="btn btn-primary btn-sm" type="submit" id="updateBio" name="updateBio">
+                        <button class="btn btn-primary btn-sm" type="submit" id="updateInformation" name="updateInformation">
                             更新する
                         </button>
                     </div>
-                </form>
+                </div>
+                <div class="col-lg-4 col-xs-2"></div>
             </div>
-            <div class="col-lg-4 col-xs-2"></div>
-        </div>
+        </form>
         <div class="row justify-content-md-center mt-4">
             <div class="col-lg-4 col-xs-2"></div>
             <div class="col-lg-4 col-xs-8">

@@ -19,6 +19,7 @@ class message
     const CHANGE_IMAGE_EXT = 'ファイルの拡張子をjpegかpngにしてください。';
     const LOGGED_IN_GUEST = 'ゲストとしてログインしました。 （ You Logged in as a guest. ）';
     const LOGGED_IN_GUEST_ERROR = 'ゲストとしてログイン中にエラーが発生しました。管理者にお問い合わせください。 （ Login error. ）';
+    const UPDATED_USER_INFORMATION = 'ユーザー情報が更新されました。（ Your profile informatoin was changed. Check it on Admin page or Profile page. ）';
     const UPDATED_USER_NAME = 'ユーザー名が更新されました。（ Your name was changed. Check it on Admin page or Profile page. ）';
     const UPDATED_BIO = '略歴・ひとことが更新されました。（ Your bio was updated. Check it on Admin page or Profile page. ）';
     const UPDATED_SNS = 'SNSアカウントが更新されました。（ Your SNS Account was updated. ）';

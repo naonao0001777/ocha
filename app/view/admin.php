@@ -168,22 +168,22 @@ if (!isset($_SESSION['token'])) {
                 <div class="col-lg-4 col-xs-3"></div>
             </div>
             <div class="row justify-content-center mt-2 p-1">
-                <div class="col-lg-4 col-2"></div>
+                <div class="col-lg-auto col-auto"></div>
                 <div class="col-lg-auto col-auto">
                     <h3 class="text-center"><?php echo $userName ?></h3>
                 </div>
-                <div class="col-lg-4 col-2 text-start">
+                <div class="col-lg-auto col-auto text-start">
                     <button onclick="window.open('/u/<?php echo $userId ?>','_blank')" type="button" class="btn btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="プロフィールURLに行く">
                         <img width="23px" height="23px" src="../assets/url_link.png" alt="urllink" />
                     </button>
                 </div>
             </div>
             <div class="row justify-content-center mt-1 p-1">
-                <div class="col-lg-4 col-2"></div>
+                <div class="col-lg-auto col-auto"></div>
                 <div class="col-lg-auto col-auto">
                     <p class="fw-bold text-center"><?php echo $biography ?></p>
                 </div>
-                <div class="col-lg-4 col-2"></div>
+                <div class="col-lg-auto col-auto"></div>
             </div>
             <div class="row justify-content-center mt-1 p-1">
                 <div class="col-lg-4 col-2"></div>
@@ -239,56 +239,41 @@ if (!isset($_SESSION['token'])) {
                 <div class="col-lg-3 col-xs-3"></div>
                 <div class="col-lg-6 col-xs-6 gap-2">
                     <button type="button" class="btn btn-success rounded-pill mb-2" data-bs-toggle="collapse" data-bs-target="#collapseAddButtonSNS" aria-expanded="false" aria-controls="collapseAddButton">
-                        ソーシャルメディア
+                        SNSアカウントを追加
                     </button>
                     <div class="collapse" id="collapseAddButtonSNS">
                         <div class="card card-body">
-                            <form method="post" action="../routes/adminEdit.php" name="youtubeUpdate">
+                            <form method="post" action="../routes/adminEdit.php" name="updateSNSAccount">
                                 <div class="mb-3">
                                     <lavel for="url" class="form-lavel">
                                         <p class="text-start"><img width="35px" height="35px" src="../assets/youtube_icon.png" alt="urllink" /> YouTube</p>
                                     </lavel>
                                     <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="youtubeUpdate" name="youtubeUpdate" value="<?php echo $youtubeAccount ?>" autocomplete="off">
                                 </div>
-                                <button type="submit" class="btn btn-success rounded-circle p-0" style="width:2rem;height:2rem;" name="+">＋</button>
-                            </form>
-                            <form method="post" action="../routes/adminEdit.php" name="twitchUpdate">
                                 <div class="mb-3">
                                     <lavel for="url" class="form-lavel">
                                         <p class="text-start"><img width="35px" height="35px" src="../assets/twitch_icon.png" alt="urllink" /> Twitch</p>
                                     </lavel>
                                     <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="twitchUpdate" name="twitchUpdate" value="<?php echo $twitchAccount ?>" autocomplete="off">
                                 </div>
-                                <button type="submit" class="btn btn-success rounded-circle p-0" style="width:2rem;height:2rem;" name="+">＋</button>
-                            </form>
-                            <form method="post" action="../routes/adminEdit.php" name="xUpdate">
                                 <div class="mb-3">
                                     <lavel for="url" class="form-lavel">
                                         <p class="text-start"><img width="35px" height="35px" src="../assets/icon_x.png" alt="urllink" /> X</p>
                                     </lavel>
                                     <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="xUpdate" name="xUpdate" value="<?php echo $xAccount ?>" autocomplete="off">
                                 </div>
-                                <button type="submit" class="btn btn-success rounded-circle p-0" style="width:2rem;height:2rem;" name="+">＋</button>
-                            </form>
-                            <form method="post" action="../routes/adminEdit.php" name="githubUpdate">
                                 <div class="mb-3">
                                     <lavel for="url" class="form-lavel">
                                         <p class="text-start"><img width="35px" height="35px" src="../assets/github_icon.png" alt="urllink" /> Github</p>
                                     </lavel>
                                     <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="githubUpdate" name="githubUpdate" value="<?php echo $githubAccount ?>" autocomplete="off">
                                 </div>
-                                <button type="submit" class="btn btn-success rounded-circle p-0" style="width:2rem;height:2rem;" name="+">＋</button>
-                            </form>
-                            <form method="post" action="../routes/adminEdit.php" name="instagramUpdate">
                                 <div class="mb-3">
                                     <lavel for="url" class="form-lavel">
                                         <p class="text-start"><img width="35px" height="35px" src="../assets/instagram_icon.png" alt="urllink" /> Instagram</p>
                                     </lavel>
                                     <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="instagramUpdate" name="instagramUpdate" value="<?php echo $instagramAccount ?>" autocomplete="off">
                                 </div>
-                                <button type="submit" class="btn btn-success rounded-circle p-0" style="width:2rem;height:2rem;" name="+">＋</button>
-                            </form>
-                            <form method="post" action="../routes/adminEdit.php" name="facebookUpdate">
                                 <div class="mb-3">
                                     <lavel for="url" class="form-lavel">
                                         <p class="text-start"><img width="35px" height="35px" src="../assets/facebook_icon.png" alt="urllink" /> FaceBook</p>
