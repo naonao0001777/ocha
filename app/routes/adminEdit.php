@@ -20,6 +20,8 @@ $youtubeUpdate = $_POST['youtubeUpdate'];
 $xUpdate = $_POST['xUpdate'];
 $twitchUpdate = $_POST['twitchUpdate'];
 $githubUpdate = $_POST['githubUpdate'];
+$instagramUpdate = $_POST['instagramUpdate'];
+$facebookUpdate = $_POST['facebookUpdate'];
 
 $dbh = DatabaseConnection::Connection();
 
@@ -385,6 +387,42 @@ if (isset($_POST['add'])) {
         $sql = DatabaseStatement::UPDATE_GITHUB_USERS;
         $stmt = $dbh->prepare($sql);
         $stmt->bindValue(':updateGithub', $githubUpdate);
+        $stmt->bindValue(':userId', $_SESSION['userId']);
+        $stmt->execute();
+        $_SESSION['msgFlag'] = true;
+        $_SESSION['msg'] = message::UPDATED_SNS;
+
+        header('Location: ../view/admin');
+    } catch (PDOException $e) {
+        $msg = $e->getMessage();
+        $_SESSION['msg'] = $msg;
+        $_SESSION['msgFlag'] = true;
+
+        header('Location: ../view/admin');
+    }
+} else if (isset($instagramUpdate)) {
+    try {
+        $sql = DatabaseStatement::UPDATE_INSTAGRAM_USERS;
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':updateInstagram', $instagramUpdate);
+        $stmt->bindValue(':userId', $_SESSION['userId']);
+        $stmt->execute();
+        $_SESSION['msgFlag'] = true;
+        $_SESSION['msg'] = message::UPDATED_SNS;
+
+        header('Location: ../view/admin');
+    } catch (PDOException $e) {
+        $msg = $e->getMessage();
+        $_SESSION['msg'] = $msg;
+        $_SESSION['msgFlag'] = true;
+
+        header('Location: ../view/admin');
+    }
+} else if (isset($facebookUpdate)) {
+    try {
+        $sql = DatabaseStatement::UPDATE_FACEBOOK_USERS;
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':updateFacebook', $facebookUpdate);
         $stmt->bindValue(':userId', $_SESSION['userId']);
         $stmt->execute();
         $_SESSION['msgFlag'] = true;

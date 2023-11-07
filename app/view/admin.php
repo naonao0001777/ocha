@@ -121,6 +121,8 @@ if (!isset($_SESSION['token'])) {
                         $xAccount = $fetchedUser['x_account'];
                         $twitchAccount = $fetchedUser['twitch_account'];
                         $githubAccount = $fetchedUser['github_account'];
+                        $instagramAccount = $fetchedUser['instagram_account'];
+                        $facebookAccount = $fetchedUser['facebook_account'];
 
                         // DBのバイナリデータをbase64で出力
                         $profileImage = $fetchedUser['profile_image'];
@@ -215,6 +217,20 @@ if (!isset($_SESSION['token'])) {
                         echo '<img width="35px" height="35px" src="../assets/github_icon.png" alt="urllink" />';
                         echo '</a>';
                     }
+                    if (isset($instagramAccount) && !empty($instagramAccount)) {
+                        echo '<a class="btn btn-sm" type="button" href="';
+                        echo $instagramAccount;
+                        echo '" target="_blank" rel="noopener noreferrer">';
+                        echo '<img width="35px" height="35px" src="../assets/instagram_icon.png" alt="urllink" />';
+                        echo '</a>';
+                    }
+                    if (isset($facebookAccount) && !empty($facebookAccount)) {
+                        echo '<a class="btn btn-sm" type="button" href="';
+                        echo $facebookAccount;
+                        echo '" target="_blank" rel="noopener noreferrer">';
+                        echo '<img width="35px" height="35px" src="../assets/facebook_icon.png" alt="urllink" />';
+                        echo '</a>';
+                    }
                     ?>
                 </div>
                 <div class="col-lg-4 col-2"></div>
@@ -235,7 +251,6 @@ if (!isset($_SESSION['token'])) {
                                     <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="youtubeUpdate" name="youtubeUpdate" value="<?php echo $youtubeAccount ?>" autocomplete="off">
                                 </div>
                                 <button type="submit" class="btn btn-success rounded-circle p-0" style="width:2rem;height:2rem;" name="+">＋</button>
-                                <!-- <input type="hidden" name="add" value="addSNSLink"> -->
                             </form>
                             <form method="post" action="../routes/adminEdit.php" name="twitchUpdate">
                                 <div class="mb-3">
@@ -245,7 +260,6 @@ if (!isset($_SESSION['token'])) {
                                     <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="twitchUpdate" name="twitchUpdate" value="<?php echo $twitchAccount ?>" autocomplete="off">
                                 </div>
                                 <button type="submit" class="btn btn-success rounded-circle p-0" style="width:2rem;height:2rem;" name="+">＋</button>
-                                <!-- <input type="hidden" name="add" value="addSNSLink"> -->
                             </form>
                             <form method="post" action="../routes/adminEdit.php" name="xUpdate">
                                 <div class="mb-3">
@@ -255,7 +269,6 @@ if (!isset($_SESSION['token'])) {
                                     <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="xUpdate" name="xUpdate" value="<?php echo $xAccount ?>" autocomplete="off">
                                 </div>
                                 <button type="submit" class="btn btn-success rounded-circle p-0" style="width:2rem;height:2rem;" name="+">＋</button>
-                                <!-- <input type="hidden" name="add" value="addSNSLink"> -->
                             </form>
                             <form method="post" action="../routes/adminEdit.php" name="githubUpdate">
                                 <div class="mb-3">
@@ -265,24 +278,25 @@ if (!isset($_SESSION['token'])) {
                                     <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="githubUpdate" name="githubUpdate" value="<?php echo $githubAccount ?>" autocomplete="off">
                                 </div>
                                 <button type="submit" class="btn btn-success rounded-circle p-0" style="width:2rem;height:2rem;" name="+">＋</button>
-                                <!-- <input type="hidden" name="add" value="addSNSLink"> -->
                             </form>
-                            <!-- <div class="mb-3">
+                            <form method="post" action="../routes/adminEdit.php" name="instagramUpdate">
+                                <div class="mb-3">
                                     <lavel for="url" class="form-lavel">
                                         <p class="text-start"><img width="35px" height="35px" src="../assets/instagram_icon.png" alt="urllink" /> Instagram</p>
                                     </lavel>
-                                    <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="url" name="url" required>
+                                    <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="instagramUpdate" name="instagramUpdate" value="<?php echo $instagramAccount ?>" autocomplete="off">
                                 </div>
                                 <button type="submit" class="btn btn-success rounded-circle p-0" style="width:2rem;height:2rem;" name="+">＋</button>
-                                <input type="hidden" name="add" value="addSNSLink">
+                            </form>
+                            <form method="post" action="../routes/adminEdit.php" name="facebookUpdate">
                                 <div class="mb-3">
                                     <lavel for="url" class="form-lavel">
-                                        <p class="text-start"><img width="35px" height="35px" src="../assets/facebook_icon.png" alt="urllink" /> Facebook</p>
+                                        <p class="text-start"><img width="35px" height="35px" src="../assets/facebook_icon.png" alt="urllink" /> FaceBook</p>
                                     </lavel>
-                                    <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="url" name="url" required>
+                                    <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="facebookUpdate" name="facebookUpdate" value="<?php echo $facebookAccount ?>" autocomplete="off">
                                 </div>
                                 <button type="submit" class="btn btn-success rounded-circle p-0" style="width:2rem;height:2rem;" name="+">＋</button>
-                                <input type="hidden" name="add" value="addSNSLink"> -->
+                            </form>
                         </div>
                     </div>
                 </div>

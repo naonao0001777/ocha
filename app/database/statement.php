@@ -20,4 +20,6 @@ class DatabaseStatement
     const UPDATE_X_USERS = 'UPDATE users SET x_account = :updateX WHERE user_id = :userId;';
     const UPDATE_TWITCH_USERS = 'UPDATE users SET twitch_account = :updateTwitch WHERE user_id = :userId;';
     const UPDATE_GITHUB_USERS = 'UPDATE users SET github_account = :updateGithub WHERE user_id = :userId;';
+    const UPDATE_INSTAGRAM_USERS = 'UPDATE users SET instagram_account = :updateInstagram WHERE user_id = :userId;';
+    const UPDATE_FACEBOOK_USERS = 'UPDATE users SET facebook_account = :updateFacebook WHERE user_id = :userId;';
 }

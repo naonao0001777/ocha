@@ -54,6 +54,8 @@
             $xAccount = $fetchedUser['x_account'];
             $twitchAccount = $fetchedUser['twitch_account'];
             $githubAccount = $fetchedUser['github_account'];
+            $instagramAccount = $fetchedUser['instagram_account'];
+            $facebookAccount = $fetchedUser['facebook_account'];
 
             if ($fetchedUser) {
                 // DBのバイナリデータをbase64で出力
@@ -128,6 +130,20 @@
                     echo $githubAccount;
                     echo '" target="_blank" rel="noopener noreferrer">';
                     echo '<img width="35px" height="35px" src="../assets/github_icon.png" alt="urllink" />';
+                    echo '</a>';
+                }
+                if (isset($instagramAccount) && !empty($instagramAccount)) {
+                    echo '<a class="btn btn-sm" type="button" href="';
+                    echo $instagramAccount;
+                    echo '" target="_blank" rel="noopener noreferrer">';
+                    echo '<img width="35px" height="35px" src="../assets/instagram_icon.png" alt="urllink" />';
+                    echo '</a>';
+                }
+                if (isset($facebookAccount) && !empty($facebookAccount)) {
+                    echo '<a class="btn btn-sm" type="button" href="';
+                    echo $facebookAccount;
+                    echo '" target="_blank" rel="noopener noreferrer">';
+                    echo '<img width="35px" height="35px" src="../assets/facebook_icon.png" alt="urllink" />';
                     echo '</a>';
                 }
                 echo '</div>';
