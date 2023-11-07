@@ -16,6 +16,10 @@ $uploadedFileErrorInfo = $_FILES['input-file-upload']['error'];
 $uploadedFileSize = $_FILES['input-file-upload']['size'];
 $uploadedFileTempName = $_FILES['input-file-upload']['tmp_name'];
 $fileDelete = $_POST['fileDelete'];
+$youtubeUpdate = $_POST['youtubeUpdate'];
+$xUpdate = $_POST['xUpdate'];
+$twitchUpdate = $_POST['twitchUpdate'];
+$githubUpdate = $_POST['githubUpdate'];
 
 $dbh = DatabaseConnection::Connection();
 
@@ -100,11 +104,11 @@ if (isset($_FILES['input-file-upload'])) {
             }
 
             // 画像ファイルをDBに入れる処理
-            $dbcon = pg_connect('host=dpg-ck0ih89au56s73do38f0-a.singapore-postgres.render.com dbname=ocha_huc2 user=ochauser password=8swvCRzD9OFD6T5FYVq4YDktDdRAsrJH');
+            $pgcon = pg_connect(POSTGRES_CONNECTION);
             $contentData = file_get_contents(config::USER_DIRECTORY_PATH . $userId . '/' . $uploadedFileName);
-            $escaped = pg_escape_bytea($dbcon, $contentData);
-            // $result = pg_query($dbcon, "UPDATE users SET image_byte='{$escaped}' WHERE user_id='{$userId}';");
-            pg_close($dbcon);
+            $escaped = pg_escape_bytea($pgcon, $contentData);
+            // $result = pg_query($pgcon, "UPDATE users SET image_byte='{$escaped}' WHERE user_id='{$userId}';");
+            pg_close($pgcon);
             $_SESSION['base64EncodedFile'] = $contentData;
 
             // $uploadedFileBlob = file_get_contents($uploadedFileTempName);
@@ -320,6 +324,78 @@ if (isset($_POST['add'])) {
         $msg = $e->getMessage();
         $_SESSION['msg'] = $msg;
         $_SESSION['msgFlag'] = true;
+        header('Location: ../view/admin');
+    }
+} else if (isset($youtubeUpdate)) {
+    try {
+        $sql = DatabaseStatement::UPDATE_YOUTUBE_USERS;
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':updateYoutube', $youtubeUpdate);
+        $stmt->bindValue(':userId', $_SESSION['userId']);
+        $stmt->execute();
+        $_SESSION['msgFlag'] = true;
+        $_SESSION['msg'] = message::UPDATED_SNS;
+
+        header('Location: ../view/admin');
+    } catch (PDOException $e) {
+        $msg = $e->getMessage();
+        $_SESSION['msg'] = $msg;
+        $_SESSION['msgFlag'] = true;
+
+        header('Location: ../view/admin');
+    }
+} else if (isset($xUpdate)) {
+    try {
+        $sql = DatabaseStatement::UPDATE_X_USERS;
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':updateX', $xUpdate);
+        $stmt->bindValue(':userId', $_SESSION['userId']);
+        $stmt->execute();
+        $_SESSION['msgFlag'] = true;
+        $_SESSION['msg'] = message::UPDATED_SNS;
+
+        header('Location: ../view/admin');
+    } catch (PDOException $e) {
+        $msg = $e->getMessage();
+        $_SESSION['msg'] = $msg;
+        $_SESSION['msgFlag'] = true;
+
+        header('Location: ../view/admin');
+    }
+} else if (isset($twitchUpdate)) {
+    try {
+        $sql = DatabaseStatement::UPDATE_TWITCH_USERS;
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':updateTwitch', $twitchUpdate);
+        $stmt->bindValue(':userId', $_SESSION['userId']);
+        $stmt->execute();
+        $_SESSION['msgFlag'] = true;
+        $_SESSION['msg'] = message::UPDATED_SNS;
+
+        header('Location: ../view/admin');
+    } catch (PDOException $e) {
+        $msg = $e->getMessage();
+        $_SESSION['msg'] = $msg;
+        $_SESSION['msgFlag'] = true;
+
+        header('Location: ../view/admin');
+    }
+} else if (isset($githubUpdate)) {
+    try {
+        $sql = DatabaseStatement::UPDATE_GITHUB_USERS;
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':updateGithub', $githubUpdate);
+        $stmt->bindValue(':userId', $_SESSION['userId']);
+        $stmt->execute();
+        $_SESSION['msgFlag'] = true;
+        $_SESSION['msg'] = message::UPDATED_SNS;
+
+        header('Location: ../view/admin');
+    } catch (PDOException $e) {
+        $msg = $e->getMessage();
+        $_SESSION['msg'] = $msg;
+        $_SESSION['msgFlag'] = true;
+
         header('Location: ../view/admin');
     }
 } else {

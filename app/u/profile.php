@@ -50,6 +50,10 @@
             $profileImageBlob = $fetchedUser['image_byte'];
             $userName = $fetchedUser['user_name'];
             $biography = $fetchedUser['biography'];
+            $youtubeAccount = $fetchedUser['youtube_account'];
+            $xAccount = $fetchedUser['x_account'];
+            $twitchAccount = $fetchedUser['twitch_account'];
+            $githubAccount = $fetchedUser['github_account'];
 
             if ($fetchedUser) {
                 // DBのバイナリデータをbase64で出力
@@ -97,24 +101,36 @@
                 echo '<p class="fw-bold mb-2 pb-3 text-center">';
                 echo $biography;
                 echo '</p>';
-                echo '<div class="row justify-content-center">';
-            //     echo '<div>';
-            //     <button class="btn btn-sm position-relative" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="プロフィールURLに行く">
-            //         <img width="35px" height="35px" src="../assets/youtube_icon.png" alt="urllink" />
-            //     </button>
-            //     <button class="btn btn-sm position-relative" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="プロフィールURLに行く">
-            //         <img width="35px" height="35px" src="../assets/icon_x.png" alt="urllink" />
-            //     </button>
-            //     <button class="btn btn-sm position-relative" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="プロフィールURLに行く">
-            //         <img width="35px" height="35px" src="../assets/twitch_icon.png" alt="urllink" />
-            //     </button>
-            //     <button class="btn btn-sm position-relative" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="プロフィールURLに行く">
-            //         <img width="35px" height="35px" src="../assets/instagram_icon.png" alt="urllink" />
-            //     </button>
-            //     <button class="btn btn-sm position-relative" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="プロフィールURLに行く">
-            //         <img width="35px" height="35px" src="../assets/facebook_icon.png" alt="urllink" />
-            //     </button>
-            // </div>
+                echo '<div class="mb-2 pb-3">';
+                if (isset($youtubeAccount) && !empty($youtubeAccount)) {
+                    echo '<a class="btn btn-sm" type="button" href="';
+                    echo $youtubeAccount;
+                    echo '" target="_blank" rel="noopener noreferrer">';
+                    echo '<img width="35px" height="35px" src="../assets/youtube_icon.png" alt="urllink" />';
+                    echo '</a>';
+                }
+                if (isset($xAccount) && !empty($xAccount)) {
+                    echo '<a class="btn btn-sm" type="button" href="';
+                    echo $xAccount;
+                    echo '" target="_blank" rel="noopener noreferrer">';
+                    echo '<img width="35px" height="35px" src="../assets/icon_x.png" alt="urllink" />';
+                    echo '</a>';
+                }
+                if (isset($twitchAccount) && !empty($twitchAccount)) {
+                    echo '<a class="btn btn-sm" type="button" href="';
+                    echo $twitchAccount;
+                    echo '" target="_blank" rel="noopener noreferrer">';
+                    echo '<img width="35px" height="35px" src="../assets/twitch_icon.png" alt="urllink" />';
+                    echo '</a>';
+                }
+                if (isset($githubAccount) && !empty($githubAccount)) {
+                    echo '<a class="btn btn-sm" type="button" href="';
+                    echo $githubAccount;
+                    echo '" target="_blank" rel="noopener noreferrer">';
+                    echo '<img width="35px" height="35px" src="../assets/github_icon.png" alt="urllink" />';
+                    echo '</a>';
+                }
+                echo '</div>';
                 for ($countColumn = 1; $countColumna <= (int)config::MAX_LINK; $countColumn++) {
                     $titleColumn = "title";
                     $urlColumn = "url";

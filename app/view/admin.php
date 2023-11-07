@@ -117,6 +117,10 @@ if (!isset($_SESSION['token'])) {
                         $_SESSION['userMail'] = $fetchedUser['mail'];
                         $userName = $fetchedUser['user_name'];
                         $biography = $fetchedUser['biography'];
+                        $youtubeAccount = $fetchedUser['youtube_account'];
+                        $xAccount = $fetchedUser['x_account'];
+                        $twitchAccount = $fetchedUser['twitch_account'];
+                        $githubAccount = $fetchedUser['github_account'];
 
                         // DBのバイナリデータをbase64で出力
                         $profileImage = $fetchedUser['profile_image'];
@@ -174,10 +178,115 @@ if (!isset($_SESSION['token'])) {
             </div>
             <div class="row justify-content-center mt-1 p-1">
                 <div class="col-lg-4 col-2"></div>
-                <div class="col-lg-4 col-auto">
+                <div class="col-lg-auto col-auto">
                     <p class="fw-bold text-center"><?php echo $biography ?></p>
                 </div>
                 <div class="col-lg-4 col-2"></div>
+            </div>
+            <div class="row justify-content-center mt-1 p-1">
+                <div class="col-lg-4 col-2"></div>
+                <div class="col-lg-auto col-auto">
+                    <?php
+                    if (isset($youtubeAccount) && !empty($youtubeAccount)) {
+                        echo '<a class="btn btn-sm" type="button" href="';
+                        echo $youtubeAccount;
+                        echo '" target="_blank" rel="noopener noreferrer">';
+                        echo '<img width="35px" height="35px" src="../assets/youtube_icon.png" alt="urllink" />';
+                        echo '</a>';
+                    }
+                    if (isset($xAccount) && !empty($xAccount)) {
+                        echo '<a class="btn btn-sm" type="button" href="';
+                        echo $xAccount;
+                        echo '" target="_blank" rel="noopener noreferrer">';
+                        echo '<img width="35px" height="35px" src="../assets/icon_x.png" alt="urllink" />';
+                        echo '</a>';
+                    }
+                    if (isset($twitchAccount) && !empty($twitchAccount)) {
+                        echo '<a class="btn btn-sm" type="button" href="';
+                        echo $twitchAccount;
+                        echo '" target="_blank" rel="noopener noreferrer">';
+                        echo '<img width="35px" height="35px" src="../assets/twitch_icon.png" alt="urllink" />';
+                        echo '</a>';
+                    }
+                    if (isset($githubAccount) && !empty($githubAccount)) {
+                        echo '<a class="btn btn-sm" type="button" href="';
+                        echo $githubAccount;
+                        echo '" target="_blank" rel="noopener noreferrer">';
+                        echo '<img width="35px" height="35px" src="../assets/github_icon.png" alt="urllink" />';
+                        echo '</a>';
+                    }
+                    ?>
+                </div>
+                <div class="col-lg-4 col-2"></div>
+            </div>
+            <div class="row justify-content-center m-2 p-1">
+                <div class="col-lg-3 col-xs-3"></div>
+                <div class="col-lg-6 col-xs-6 gap-2">
+                    <button type="button" class="btn btn-success rounded-pill mb-2" data-bs-toggle="collapse" data-bs-target="#collapseAddButtonSNS" aria-expanded="false" aria-controls="collapseAddButton">
+                        ソーシャルメディア
+                    </button>
+                    <div class="collapse" id="collapseAddButtonSNS">
+                        <div class="card card-body">
+                            <form method="post" action="../routes/adminEdit.php" name="youtubeUpdate">
+                                <div class="mb-3">
+                                    <lavel for="url" class="form-lavel">
+                                        <p class="text-start"><img width="35px" height="35px" src="../assets/youtube_icon.png" alt="urllink" /> YouTube</p>
+                                    </lavel>
+                                    <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="youtubeUpdate" name="youtubeUpdate" value="<?php echo $youtubeAccount ?>" autocomplete="off">
+                                </div>
+                                <button type="submit" class="btn btn-success rounded-circle p-0" style="width:2rem;height:2rem;" name="+">＋</button>
+                                <!-- <input type="hidden" name="add" value="addSNSLink"> -->
+                            </form>
+                            <form method="post" action="../routes/adminEdit.php" name="twitchUpdate">
+                                <div class="mb-3">
+                                    <lavel for="url" class="form-lavel">
+                                        <p class="text-start"><img width="35px" height="35px" src="../assets/twitch_icon.png" alt="urllink" /> Twitch</p>
+                                    </lavel>
+                                    <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="twitchUpdate" name="twitchUpdate" value="<?php echo $twitchAccount ?>" autocomplete="off">
+                                </div>
+                                <button type="submit" class="btn btn-success rounded-circle p-0" style="width:2rem;height:2rem;" name="+">＋</button>
+                                <!-- <input type="hidden" name="add" value="addSNSLink"> -->
+                            </form>
+                            <form method="post" action="../routes/adminEdit.php" name="xUpdate">
+                                <div class="mb-3">
+                                    <lavel for="url" class="form-lavel">
+                                        <p class="text-start"><img width="35px" height="35px" src="../assets/icon_x.png" alt="urllink" /> X</p>
+                                    </lavel>
+                                    <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="xUpdate" name="xUpdate" value="<?php echo $xAccount ?>" autocomplete="off">
+                                </div>
+                                <button type="submit" class="btn btn-success rounded-circle p-0" style="width:2rem;height:2rem;" name="+">＋</button>
+                                <!-- <input type="hidden" name="add" value="addSNSLink"> -->
+                            </form>
+                            <form method="post" action="../routes/adminEdit.php" name="githubUpdate">
+                                <div class="mb-3">
+                                    <lavel for="url" class="form-lavel">
+                                        <p class="text-start"><img width="35px" height="35px" src="../assets/github_icon.png" alt="urllink" /> Github</p>
+                                    </lavel>
+                                    <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="githubUpdate" name="githubUpdate" value="<?php echo $githubAccount ?>" autocomplete="off">
+                                </div>
+                                <button type="submit" class="btn btn-success rounded-circle p-0" style="width:2rem;height:2rem;" name="+">＋</button>
+                                <!-- <input type="hidden" name="add" value="addSNSLink"> -->
+                            </form>
+                            <!-- <div class="mb-3">
+                                    <lavel for="url" class="form-lavel">
+                                        <p class="text-start"><img width="35px" height="35px" src="../assets/instagram_icon.png" alt="urllink" /> Instagram</p>
+                                    </lavel>
+                                    <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="url" name="url" required>
+                                </div>
+                                <button type="submit" class="btn btn-success rounded-circle p-0" style="width:2rem;height:2rem;" name="+">＋</button>
+                                <input type="hidden" name="add" value="addSNSLink">
+                                <div class="mb-3">
+                                    <lavel for="url" class="form-lavel">
+                                        <p class="text-start"><img width="35px" height="35px" src="../assets/facebook_icon.png" alt="urllink" /> Facebook</p>
+                                    </lavel>
+                                    <input type="url" class="form-control" placeholder="https:// または http://で始まるURLを入れる" id="url" name="url" required>
+                                </div>
+                                <button type="submit" class="btn btn-success rounded-circle p-0" style="width:2rem;height:2rem;" name="+">＋</button>
+                                <input type="hidden" name="add" value="addSNSLink"> -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-xs-3"></div>
             </div>
             <!-- <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 ソーシャルメディアの追加

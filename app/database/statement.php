@@ -16,4 +16,8 @@ class DatabaseStatement
     const UPDATE_NAME_USERS = 'UPDATE users SET user_name = :userName WHERE user_id = :userId;';
     const UPDATE_BIO_USERS = 'UPDATE users SET biography = :updateBiography WHERE user_id = :userId;';
     const UPDATE_AUTO_USERS = 'UPDATE users SET auto_login = :autoLoginCheck, auto_login_token = :autoLoginToken WHERE user_id = :userId;';
+    const UPDATE_YOUTUBE_USERS = 'UPDATE users SET youtube_account = :updateYoutube WHERE user_id = :userId;';
+    const UPDATE_X_USERS = 'UPDATE users SET x_account = :updateX WHERE user_id = :userId;';
+    const UPDATE_TWITCH_USERS = 'UPDATE users SET twitch_account = :updateTwitch WHERE user_id = :userId;';
+    const UPDATE_GITHUB_USERS = 'UPDATE users SET github_account = :updateGithub WHERE user_id = :userId;';
 }
