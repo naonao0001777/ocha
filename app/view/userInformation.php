@@ -19,7 +19,8 @@ if (!isset($_SESSION['token'])) {
         $stmt->bindValue(':userId', $userId);
         $stmt->execute();
         $fetchedUser = $stmt->fetch();
-        $_SESSION['userName'] = $fetchedUser['user_name'];
+        $userName = $fetchedUser['user_name'];
+        $biography = $fetchedUser['biography'];
     } catch (PDOException $e) {
         $msg = $e->getMessage();
         $_SESSION['msg'] = $msg;
@@ -136,11 +137,28 @@ if (!isset($_SESSION['token'])) {
                 <form method="post" action="../routes/route">
                     <div class="mb-3">
                         <label for="basic-url" class="form-label">ユーザー名</label>
-                        <input type="text" class="form-control" id="updateUserName" name="updateUserName" placeholder="Name" value="<?php echo $_SESSION['userName'] ?>" autocomplete="off" required>
+                        <input type="text" class="form-control" id="updateUserName" name="updateUserName" placeholder="Name" value="<?php echo $userName ?>" autocomplete="off" required>
                     </div>
                     <div>
-                        <button class="btn btn-primary btn-sm" type="submit" id="update" name="update">
-                            変更する
+                        <button class="btn btn-primary btn-sm" type="submit" id="updateUser" name="updateUser">
+                            更新する
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-4 col-xs-2"></div>
+        </div>
+        <div class="row justify-content-md-center mt-4">
+            <div class="col-lg-4 col-xs-2"></div>
+            <div class="col-lg-4 col-xs-8">
+                <form method="post" action="../routes/route">
+                    <label for="basic-url" class="form-label">略歴・ひとこと</label>
+                    <div class="input-group mb-3">
+                        <textarea class="form-control" aria-label="With textarea" id="biography" name="biography" placeholder="Biography" autocomplete="off"><?php echo $biography ?></textarea>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary btn-sm" type="submit" id="updateBio" name="updateBio">
+                            更新する
                         </button>
                     </div>
                 </form>

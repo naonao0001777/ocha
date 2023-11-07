@@ -115,8 +115,8 @@ if (!isset($_SESSION['token'])) {
                         $stmt->execute();
                         $fetchedUser = $stmt->fetch();
                         $_SESSION['userMail'] = $fetchedUser['mail'];
-                        $_SESSION['userName'] = $fetchedUser['user_name'];
-                        $userName = $_SESSION['userName'];
+                        $userName = $fetchedUser['user_name'];
+                        $biography = $fetchedUser['biography'];
 
                         // DBのバイナリデータをbase64で出力
                         $profileImage = $fetchedUser['profile_image'];
@@ -167,11 +167,58 @@ if (!isset($_SESSION['token'])) {
                     <h3 class="text-center"><?php echo $userName ?></h3>
                 </div>
                 <div class="col-lg-4 col-2 text-start">
-                    <button onclick="window.open('/u/<?php echo $_SESSION['userId'] ?>','_blank')" type="button" class="btn btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="プロフィールURLに行く">
+                    <button onclick="window.open('/u/<?php echo $userId ?>','_blank')" type="button" class="btn btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="プロフィールURLに行く">
                         <img width="23px" height="23px" src="../assets/url_link.png" alt="urllink" />
                     </button>
                 </div>
             </div>
+            <div class="row justify-content-center mt-1 p-1">
+                <div class="col-lg-4 col-2"></div>
+                <div class="col-lg-4 col-auto">
+                    <p class="fw-bold text-center"><?php echo $biography ?></p>
+                </div>
+                <div class="col-lg-4 col-2"></div>
+            </div>
+            <!-- <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                ソーシャルメディアの追加
+            </button>
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">SNSコンテンツ</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>SNSのリンク</p>
+                            <div>
+                                <button class="btn btn-sm position-relative" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="プロフィールURLに行く">
+                                    <img width="35px" height="35px" src="../assets/youtube_icon.png" alt="urllink" />
+                                </button>
+                                <button class="btn btn-sm position-relative" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="プロフィールURLに行く">
+                                    <img width="35px" height="35px" src="../assets/icon_x.png" alt="urllink" />
+                                </button>
+                                <button class="btn btn-sm position-relative" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="プロフィールURLに行く">
+                                    <img width="35px" height="35px" src="../assets/twitch_icon.png" alt="urllink" />
+                                </button>
+                                <button class="btn btn-sm position-relative" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="プロフィールURLに行く">
+                                    <img width="35px" height="35px" src="../assets/github_icon.png" alt="urllink" />
+                                </button>
+                                <button class="btn btn-sm position-relative" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="プロフィールURLに行く">
+                                    <img width="35px" height="35px" src="../assets/instagram_icon.png" alt="urllink" />
+                                </button>
+                                <button class="btn btn-sm position-relative" type="button" data-bs-toggle="tooltip" data-bs-placement="top" title="プロフィールURLに行く">
+                                    <img width="35px" height="35px" src="../assets/facebook_icon.png" alt="urllink" />
+                                </button>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                            <button type="button" class="btn btn-primary">変更を保存</button>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
             <div class="row justify-content-center m-2 p-1">
                 <div class="col-lg-3 col-xs-3"></div>
                 <div class="col-lg-6 col-xs-6 gap-2">

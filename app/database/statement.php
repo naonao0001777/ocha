@@ -14,5 +14,6 @@ class DatabaseStatement
     const SELECT_FILE_USERS = 'SELECT * FROM users WHERE user_id = :userId;';
     const UPDATE_FILE_USERS = 'UPDATE users SET profile_image = :uploadedFileName, image_byte = :imageByte WHERE user_id = :userId;';
     const UPDATE_NAME_USERS = 'UPDATE users SET user_name = :userName WHERE user_id = :userId;';
+    const UPDATE_BIO_USERS = 'UPDATE users SET biography = :updateBiography WHERE user_id = :userId;';
     const UPDATE_AUTO_USERS = 'UPDATE users SET auto_login = :autoLoginCheck, auto_login_token = :autoLoginToken WHERE user_id = :userId;';
 }

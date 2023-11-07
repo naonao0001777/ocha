@@ -13,6 +13,7 @@ $logoutFlag = $_POST['logout'];
 $registerFlag = $_POST['register'];
 $userInformationFlag = $_POST['userInformation'];
 $updateUserName = $_POST['updateUserName'];
+$updateBiography = $_POST['biography'];
 $userAdminFlag = $_POST['userAdmin'];
 $autoLoginCheck = $_POST['autoLogin'];
 $guestUserLogin = $_POST['demoLogin'];
@@ -167,12 +168,12 @@ if (isset($logoutFlag)) {
             $msg = message::LOGGED_IN_GUEST_ERROR;
             $_SESSION['msg'] = $msg;
 
-            header('Location: ../view/index');
+            header('Location: ../index');
         }
     } catch (PDOException $e) {
         $msg = $e->getMessage();
         $_SESSION['msg'] = $msg;
-        header('Location: ../view/index');
+        header('Location: ../index');
     }
 } elseif (isset($userInformationFlag) && $userInformationFlag == 'userInformation') {
     header('Location: ../view/userInformation');
@@ -193,6 +194,25 @@ if (isset($logoutFlag)) {
         $msg = $e->getMessage();
         $_SESSION['msg'] = $msg;
 
-        header('Location: ../view/Index');
+        header('Location: ../index');
     }
+} elseif (isset($updateBiography)) {
+    try {
+        $sql = DatabaseStatement::UPDATE_BIO_USERS;
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':updateBiography', $updateBiography);
+        $stmt->bindValue(':userId', $_SESSION['userId']);
+        $stmt->execute();
+        $_SESSION['msgFlag'] = true;
+        $_SESSION['msg'] = message::UPDATED_BIO;
+
+        header('Location: ../view/userInformation');
+    } catch (PDOException $e) {
+        $msg = $e->getMessage();
+        $_SESSION['msg'] = $msg;
+
+        header('Location: ../index');
+    }
+}else{
+    header('Location: ../view/userInformation');
 }
