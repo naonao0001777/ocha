@@ -173,7 +173,7 @@ if (!isset($_SESSION['token'])) {
                     <h3 class="text-center"><?php echo $userName ?></h3>
                 </div>
                 <div class="col-lg-auto col-auto text-start">
-                    <button onclick="window.open('/u/<?php echo $userId ?>','_blank')" type="button" class="btn btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="プロフィールURLに行く">
+                    <button onclick="window.open('/u/<?php echo $userId ?>','_blank')" type="button" class="btn btn-sm rounded-circle p-1" data-bs-toggle="tooltip" data-bs-placement="top" title="プロフィールURLに行く">
                         <img width="23px" height="23px" src="../assets/url_link.png" alt="urllink" />
                     </button>
                 </div>
