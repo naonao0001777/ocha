@@ -186,46 +186,46 @@ if (!isset($_SESSION['token'])) {
                 <div class="col-lg-auto col-auto"></div>
             </div>
             <div class="row justify-content-center mt-1 p-1">
-                <div class="col-lg-4 col-2"></div>
+                <div class="col-lg-auto col-auto"></div>
                 <div class="col-lg-auto col-auto">
                     <?php
                     if (isset($youtubeAccount) && !empty($youtubeAccount)) {
-                        echo '<a class="btn btn-sm" type="button" href="';
+                        echo '<a class="d-inline-flex focus-ring p-0 m-2 rounded-circle" href="';
                         echo $youtubeAccount;
                         echo '" target="_blank" rel="noopener noreferrer">';
                         echo '<img width="35px" height="35px" src="../assets/youtube_icon.png" alt="urllink" />';
                         echo '</a>';
                     }
                     if (isset($xAccount) && !empty($xAccount)) {
-                        echo '<a class="btn btn-sm" type="button" href="';
+                        echo '<a class="d-inline-flex focus-ring p-0 m-2 rounded-circle" href="';
                         echo $xAccount;
                         echo '" target="_blank" rel="noopener noreferrer">';
                         echo '<img width="35px" height="35px" src="../assets/icon_x.png" alt="urllink" />';
                         echo '</a>';
                     }
                     if (isset($twitchAccount) && !empty($twitchAccount)) {
-                        echo '<a class="btn btn-sm" type="button" href="';
+                        echo '<a class="d-inline-flex focus-ring p-0 m-2 rounded-circle" href="';
                         echo $twitchAccount;
                         echo '" target="_blank" rel="noopener noreferrer">';
                         echo '<img width="35px" height="35px" src="../assets/twitch_icon.png" alt="urllink" />';
                         echo '</a>';
                     }
                     if (isset($githubAccount) && !empty($githubAccount)) {
-                        echo '<a class="btn btn-sm" type="button" href="';
+                        echo '<a class="d-inline-flex focus-ring p-0 m-2 rounded-circle" href="';
                         echo $githubAccount;
                         echo '" target="_blank" rel="noopener noreferrer">';
                         echo '<img width="35px" height="35px" src="../assets/github_icon.png" alt="urllink" />';
                         echo '</a>';
                     }
                     if (isset($instagramAccount) && !empty($instagramAccount)) {
-                        echo '<a class="btn btn-sm" type="button" href="';
+                        echo '<a class="d-inline-flex focus-ring p-0 m-2 rounded-circle" href="';
                         echo $instagramAccount;
                         echo '" target="_blank" rel="noopener noreferrer">';
                         echo '<img width="35px" height="35px" src="../assets/instagram_icon.png" alt="urllink" />';
                         echo '</a>';
                     }
                     if (isset($facebookAccount) && !empty($facebookAccount)) {
-                        echo '<a class="btn btn-sm" type="button" href="';
+                        echo '<a class="d-inline-flex focus-ring p-0 m-2 rounded-circle" href="';
                         echo $facebookAccount;
                         echo '" target="_blank" rel="noopener noreferrer">';
                         echo '<img width="35px" height="35px" src="../assets/facebook_icon.png" alt="urllink" />';
@@ -233,7 +233,7 @@ if (!isset($_SESSION['token'])) {
                     }
                     ?>
                 </div>
-                <div class="col-lg-4 col-2"></div>
+                <div class="col-lg-auto col-auto"></div>
             </div>
             <div class="row justify-content-center m-2 p-1">
                 <div class="col-lg-3 col-xs-3"></div>
