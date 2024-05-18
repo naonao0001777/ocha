@@ -1,4 +1,8 @@
-CREATE TABLE users (user_id varchar(255) NOT NULL PRIMARY KEY, mail varchar(255) NOT NULL, password varchar(255) NOT NULL, profile_image varchar(255));
+CREATE TABLE users (user_id varchar(255) NOT NULL PRIMARY KEY, mail varchar(255) NOT NULL, password varchar(255) NOT NULL, profile_image varchar(255), 
+user_name varchar(255) NOT NULL, biography varchar(255), image_byte bytea,
+auto_login_token varchar(255), auto_login boolean, youtube_account varchar(255), facebook_account varchar(255), 
+x_account varchar(255), instagram_account varchar(255), twitch_account varchar(255), github_account varchar(255));
+
 CREATE TABLE links (
 user_id varchar(255) NOT NULL PRIMARY KEY,
 title1 varchar(255) NULL,
