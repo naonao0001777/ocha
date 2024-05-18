@@ -1,5 +1,6 @@
 # ocha
 ## 再構築マニュアル
+Renderのデータベースは3ヵ月で削除されるため、再構築する必要がある
 ### Dockerイメージを作成する
 `docker image build . -t abinao/ocha`
 `docker compose up`
