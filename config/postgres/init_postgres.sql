@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS links (
 
 -- 管理者ユーザーを作成（パスワードは適切にハッシュ化してください）
 INSERT INTO users (username, password_hash, email, is_admin) 
-VALUES ('admin', '$2y$10$example_hash_here', 'admin@example.com', TRUE)
+VALUES ('admin', '$2y$10$u1Qw1Qw1Qw1Qw1Qw1Qw1Qw1Qw1Qw1Qw1Qw1Qw1Qw1Qw1Qw1Qw1Qw1Qw1Qw', 'admin@example.com', TRUE)
 ON CONFLICT (username) DO NOTHING;
 
 -- インデックスを作成
