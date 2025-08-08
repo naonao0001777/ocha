@@ -200,7 +200,11 @@ class FileUploadService
         }
 
         $escaped = pg_escape_bytea($pgConnection, $contentData);
-        pg_close($pgConnection);
+        if (!$pgConnection) {
+            return false;
+        }
+
+        $escaped = pg_escape_bytea($pgConnection, $contentData);
 
         return $escaped;
     }
