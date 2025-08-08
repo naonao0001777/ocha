@@ -28,7 +28,7 @@ if (isset($logoutFlag)) {
 } elseif (isset($loginFlag)) {
     // ログイン処理
     try {
-        if (!$_SESSION['token'] = $_POST['token']) {
+        if (!isset($_SESSION['token']) || !isset($_POST['token']) || $_SESSION['token'] !== $_POST['token']) {
             $_SESSION['msg'] = "不正なアクセス";
             session_destroy();
             header('Location: ../view/login');
