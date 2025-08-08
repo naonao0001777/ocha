@@ -10,23 +10,17 @@ services:
         ports:
             - "80:80"
         depends_on:
-            - postgres
-        environment:
-            - DOCKER_ENV=true
-            - DATABASE_HOST=postgres
-            - DATABASE_NAME=ocha_render
-            - DATABASE_USER=ochauser
-            - DATABASE_PASSWORD=ochapassword
-    postgres:
-        image: postgres:15
-        container_name: ocha-postgres
+            - mysql
+    mysql:
+        image: mysql:8.0
         volumes:
-            - ./config/postgres/data:/var/lib/postgresql/data
-            - ./config/postgres/init_postgres.sql:/docker-entrypoint-initdb.d/init.sql
-            - ./config/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+            - ./config/mysql/data:/var/lib/mysql
+            - ./config/mysql/mycnf:/etc/mysql/conf.d/my.cnf
         environment:
-            - POSTGRES_DB=ocha_render
-            - POSTGRES_USER=ochauser
-            - POSTGRES_PASSWORD=ochapassword
+            - MYSQL_DATABASE=ocha
+            - MYSQL_USER=ochauser
+            - MYSQL_PASSWORD=ochapassword
+            - MYSQL_ROOT_PASSWORD=password
         ports:
-            - "5432:5432"
+            - "4306:3306"
+        container_name: ocha-mysql

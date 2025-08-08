@@ -1,38 +1,39 @@
 <?php
 session_start();
 
-require_once('../database/PostgreSQLConnection.php');
+require_once('../database/connection.php');
 require_once('../database/statement.php');
 require_once('../config/config.php');
 require_once('../config/message.php');
 
 $userId = $_SESSION['userId'];
-$titleData = $_POST['title'] ?? '';
-$urlData = $_POST['url'] ?? '';
-$hiddenData = $_POST['hiddenLink'] ?? '';
-$uploadedFileName = $_FILES['input-file-upload']['name'] ?? '';
-$uploadedFileType = $_FILES['input-file-upload']['type'] ?? '';
-$uploadedFileErrorInfo = $_FILES['input-file-upload']['error'] ?? UPLOAD_ERR_NO_FILE;
-$uploadedFileSize = $_FILES['input-file-upload']['size'] ?? 0;
-$uploadedFileTempName = $_FILES['input-file-upload']['tmp_name'] ?? '';
-$fileDelete = $_POST['fileDelete'] ?? null;
-$youtubeUpdate = $_POST['youtubeUpdate'] ?? null;
-$xUpdate = $_POST['xUpdate'] ?? null;
-$twitchUpdate = $_POST['twitchUpdate'] ?? null;
-$githubUpdate = $_POST['githubUpdate'] ?? null;
-$instagramUpdate = $_POST['instagramUpdate'] ?? null;
-$facebookUpdate = $_POST['facebookUpdate'] ?? null;
+$titleData = $_POST['title'];
+$urlData = $_POST['url'];
+$hiddenData = $_POST['hiddenLink'];
+$uploadedFileName = $_FILES['input-file-upload']['name'];
+$uploadedFileType = $_FILES['input-file-upload']['type'];
+$uploadedFileErrorInfo = $_FILES['input-file-upload']['error'];
+$uploadedFileSize = $_FILES['input-file-upload']['size'];
+$uploadedFileTempName = $_FILES['input-file-upload']['tmp_name'];
+$fileDelete = $_POST['fileDelete'];
+$youtubeUpdate = $_POST['youtubeUpdate'];
+$xUpdate = $_POST['xUpdate'];
+$twitchUpdate = $_POST['twitchUpdate'];
+$githubUpdate = $_POST['githubUpdate'];
+$instagramUpdate = $_POST['instagramUpdate'];
+$facebookUpdate = $_POST['facebookUpdate'];
 
-if (isset($_FILES['input-file-upload']) && $uploadedFileErrorInfo !== UPLOAD_ERR_NO_FILE) {
+$dbh = DatabaseConnection::Connection();
+
+if (isset($_FILES['input-file-upload'])) {
     // アップロードファイルのエラー情報チェック
     if (!isset($uploadedFileErrorInfo) || !is_int($uploadedFileErrorInfo) || $uploadedFileErrorInfo != 0) {
-        $msg = message::UPDATE_IMAGE_ERROR . $uploadedFileErrorInfo;
+        $msg = message::UPDATE_IMAGE_ERROR . $uploadedFileErrorInfo;;
         $_SESSION['msg'] = $msg;
         $_SESSION['msgFlag'] = true;
         header('Location: ../view/admin');
         exit;
     }
-    
     // アップロードファイルの拡張子チェック
     if (!$extension = array_search(
         mime_content_type($uploadedFileTempName),
@@ -48,18 +49,22 @@ if (isset($_FILES['input-file-upload']) && $uploadedFileErrorInfo !== UPLOAD_ERR
         header('Location: ../view/admin');
         exit;
     }
-    
     // ファイル名をユニファイ
     $uploadedFileName = uniqid(mt_rand(), true) . '.' . $extension;
 
     // 画像が正方形でなかったり大きすぎた場合はリサイズする
     $uploadedFileResizeBefore = $uploadedFileTempName;
+    $uploadedFileResizeAfter = '';
 
     list($new_image_width, $new_image_height) = getimagesize($uploadedFileResizeBefore);
     $resize_width = intval(config::IMAGE_MAX_LENGTH);
-    $resize_height = intval(config::IMAGE_MAX_LENGTH);
+    $resize_height = intval(config::IMAGE_MAX_LENGTH); //$resize_width * $new_image_height / $new_image_width;
 
     if ($new_image_width > $resize_width || $new_image_height > $resize_height) {
+        // $zm = $new_image_height / $resize_height;
+        // $yoko = $new_image_width / $zm;
+        // $WantToWidth = ($yoko - $resize_width) / 2 * -1;
+
         $resize_image_p = imagecreatetruecolor($resize_width, $resize_height) or die('Cannot Initialize new GD image stream');
 
         if ($extension === 'jpg') {
@@ -80,121 +85,112 @@ if (isset($_FILES['input-file-upload']) && $uploadedFileErrorInfo !== UPLOAD_ERR
 
     // ユーザーフォルダが無ければ作成
     if (!file_exists(config::USER_DIRECTORY_PATH . $userId)) {
-        mkdir(config::USER_DIRECTORY_PATH . $userId, 0777, true);
+        if (mkdir(config::USER_DIRECTORY_PATH . $userId, 0777, true)) {
+        }
     }
-    
     // 画像ファイルの保存
     if (move_uploaded_file($uploadedFileTempName, config::USER_DIRECTORY_PATH . $userId . '/' . $uploadedFileName)) {
         try {
-            // 既存のユーザー情報を取得
             $sql = DatabaseStatement::SELECT_USER_ID;
-            $result = PostgreSQLConnection::queryParams($sql, [':userId' => $userId]);
-            
-            if (!$result) {
-                throw new Exception("ユーザー情報の取得に失敗しました: " . PostgreSQLConnection::getLastError());
-            }
-            
-            $fetchedUser = PostgreSQLConnection::fetchAssoc($result);
+            $stmt = $dbh->prepare($sql);
+            $stmt->bindvalue(':userId', $userId);
+            $stmt->execute();
+            $fetchedUser = $stmt->fetch();
 
             // サーバーに保存されている画像を削除
             if (isset($fetchedUser['profile_image'])) {
-                $oldImagePath = config::USER_DIRECTORY_PATH . $userId . '/' . $fetchedUser['profile_image'];
-                if (file_exists($oldImagePath)) {
-                    unlink($oldImagePath);
+                if (file_exists(config::USER_DIRECTORY_PATH . $userId . '/' . $fetchedUser['profile_image'])) {
+                    if (unlink(config::USER_DIRECTORY_PATH . $userId . '/' . $fetchedUser['profile_image'])) {
+                    }
                 }
             }
 
             // 画像ファイルをDBに入れる処理
+            $pgcon = pg_connect(POSTGRES_CONNECTION);
             $contentData = file_get_contents(config::USER_DIRECTORY_PATH . $userId . '/' . $uploadedFileName);
-            $escaped = PostgreSQLConnection::escapeBytea($contentData);
+            $escaped = pg_escape_bytea($pgcon, $contentData);
+            // $result = pg_query($pgcon, "UPDATE users SET image_byte='{$escaped}' WHERE user_id='{$userId}';");
+            pg_close($pgcon);
             $_SESSION['base64EncodedFile'] = $contentData;
 
+            // $uploadedFileBlob = file_get_contents($uploadedFileTempName);
             // データベースに保存されたファイル名を更新
             $sql = DatabaseStatement::UPDATE_FILE_USERS;
-            $result = PostgreSQLConnection::queryParams($sql, [
-                ':uploadedFileName' => $uploadedFileName,
-                ':imageByte' => $escaped,
-                ':userId' => $userId
-            ]);
-            
-            if (!$result) {
-                throw new Exception("データベースの更新に失敗しました: " . PostgreSQLConnection::getLastError());
-            }
+            $stmt = $dbh->prepare($sql);
+            $stmt->bindvalue(':uploadedFileName', $uploadedFileName);
+            $stmt->bindvalue(':imageByte', $escaped);
+            $stmt->bindvalue(':userId', $userId);
+            $stmt->execute();
+            $fetchedUser = $stmt->fetch();
 
+            // $_SESSION['msg'] = $uploadedFileErrorInfo . sys_get_temp_dir()."成功";
             $msg = message::UPDATE_IMAGE;
             $_SESSION['msg'] = $msg;
             $_SESSION['msgFlag'] = true;
             $_SESSION['profileImage'] = $uploadedFileName;
-            
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $msg = $e->getMessage();
             $_SESSION['msg'] = $msg;
             $_SESSION['msgFlag'] = true;
         }
     } else {
+        // $_SESSION['msg'] = $uploadedFileErrorInfo . sys_get_temp_dir()."失敗";
         $_SESSION['msg'] = message::UPDATE_IMAGE_ERROR;
+        $_SESSION['msg'] = $msg;
         $_SESSION['msgFlag'] = true;
     }
-    
 } elseif (isset($fileDelete)) {
     // 画像ファイルを削除する処理
     try {
         $sql = DatabaseStatement::SELECT_USER_ID;
-        $result = PostgreSQLConnection::queryParams($sql, [':userId' => $userId]);
-        
-        if (!$result) {
-            throw new Exception("ユーザー情報の取得に失敗しました: " . PostgreSQLConnection::getLastError());
-        }
-        
-        $fetchedUser = PostgreSQLConnection::fetchAssoc($result);
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindvalue(':userId', $userId);
+        $stmt->execute();
+        $fetchedUser = $stmt->fetch();
 
         // データベースに保存されているファイル名を取得して更新し、サーバーに保存されている画像を削除
         if (isset($fetchedUser['profile_image'])) {
-            $imagePath = config::USER_DIRECTORY_PATH . $userId . '/' . $fetchedUser['profile_image'];
-            if (file_exists($imagePath)) {
-                unlink($imagePath);
+            if (file_exists(config::USER_DIRECTORY_PATH . $userId . '/' . $fetchedUser['profile_image'])) {
+                if (unlink(config::USER_DIRECTORY_PATH . $userId . '/' . $fetchedUser['profile_image'])) {
+                }
             }
         }
-        
         // データベースに保存されたファイル名を更新
         $sql = DatabaseStatement::UPDATE_FILE_USERS;
-        $result = PostgreSQLConnection::queryParams($sql, [
-            ':uploadedFileName' => null,
-            ':imageByte' => null,
-            ':userId' => $userId
-        ]);
-        
-        if (!$result) {
-            throw new Exception("データベースの更新に失敗しました: " . PostgreSQLConnection::getLastError());
-        }
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindvalue(':uploadedFileName', NULL);
+        $stmt->bindvalue(':imageByte', NULL);
+        $stmt->bindvalue(':userId', $userId);
+        $stmt->execute();
+        $fetchedUser = $stmt->fetch();
 
         $msg = message::DELETE_IMAGE;
         $_SESSION['msg'] = $msg;
         $_SESSION['msgFlag'] = true;
-        
-    } catch (Exception $e) {
+    } catch (PDOException $e) {
         $msg = $e->getMessage();
         $_SESSION['msg'] = $msg;
         $_SESSION['msgFlag'] = true;
     }
 }
-
 // リンクの追加処理
 if (isset($_POST['add'])) {
     try {
         $sql = DatabaseStatement::SELECT_USER_LINKS;
-        $result = PostgreSQLConnection::queryParams($sql, [':userId' => $userId]);
-        
-        if (!$result) {
-            throw new Exception("リンク情報の取得に失敗しました: " . PostgreSQLConnection::getLastError());
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindvalue(':userId', $userId);
+        if (!$stmt) {
+            $msg = $dbh->errorInfo();
         }
-        
-        $fetchedUser = PostgreSQLConnection::fetchAssoc($result);
-        $maxLinkFlag = false;
+        $stmt->execute();
+        $fetchedUser = $stmt->fetch();
 
         for ($countColumn = 1; $countColumn <= (int)config::MAX_LINK; $countColumn++) {
-            $titleColumn = "title" . (string)$countColumn;
-            $urlColumn = "url" . (string)$countColumn;
+            $titleColumn = "title";
+            $urlColumn = "url";
+
+            $titleColumn = $titleColumn . (string)$countColumn;
+            $urlColumn = $urlColumn . (string)$countColumn;
 
             if ($countColumn >= (int)config::MAX_LINK && ($fetchedUser[$titleColumn] || $fetchedUser[$urlColumn])) {
                 $msg = message::CANT_ADD_LINK;
@@ -207,59 +203,49 @@ if (isset($_POST['add'])) {
                 break;
             }
         }
-        
         if (!$maxLinkFlag) {
             $sql = "UPDATE links SET " . $titleColumn . " = :titleData, " . $urlColumn . " = :urlData WHERE user_id = :userId";
-            $result = PostgreSQLConnection::queryParams($sql, [
-                ':userId' => $userId,
-                ':titleData' => $titleData,
-                ':urlData' => $urlData
-            ]);
-            
-            if (!$result) {
-                throw new Exception("リンクの追加に失敗しました: " . PostgreSQLConnection::getLastError());
-            }
+            $stmt = $dbh->prepare($sql);
+            $stmt->bindvalue(':userId', $userId);
+            $stmt->bindvalue(':titleData', $titleData);
+            $stmt->bindvalue(':urlData', $urlData);
+            $stmt->execute();
 
             $msg = message::ADD_LINK;
             $_SESSION['msg'] = $msg;
             $_SESSION['msgFlag'] = true;
         }
 
-    } catch (Exception $e) {
+        header('Location: ../view/admin');
+    } catch (PDOException $e) {
         $msg = $e->getMessage();
         $_SESSION['msg'] = $msg;
         $_SESSION['msgFlag'] = true;
+        header('Location: ../view/admin');
     }
-    header('Location: ../view/admin');
-    
-} elseif (isset($_POST['update'])) {
     // 指定したカラムを更新
+} elseif (isset($_POST['update'])) {
     try {
         $sql = DatabaseStatement::SELECT_USER_LINKS;
-        $result = PostgreSQLConnection::queryParams($sql, [':userId' => $userId]);
-        
-        if (!$result) {
-            throw new Exception("リンク情報の取得に失敗しました: " . PostgreSQLConnection::getLastError());
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindvalue(':userId', $userId);
+        if (!$stmt) {
+            $msg = $dbh->errorInfo();
         }
-        
-        $fetchedUser = PostgreSQLConnection::fetchAssoc($result);
+        $stmt->execute();
+        $fetchedUser = $stmt->fetch();
 
         if ($fetchedUser) {
             $deleteTitleColumn = "title" . (string)$hiddenData;
             $deleteUrlColumn = "url" . (string)$hiddenData;
 
             $sql = "UPDATE links SET " . $deleteTitleColumn . " = :titleData, " . $deleteUrlColumn . " = :urlData WHERE user_id = :userId";
-            $result = PostgreSQLConnection::queryParams($sql, [
-                ':userId' => $userId,
-                ':titleData' => $titleData,
-                ':urlData' => $urlData
-            ]);
-            
-            if (!$result) {
-                throw new Exception("リンクの更新に失敗しました: " . PostgreSQLConnection::getLastError());
-            }
+            $stmt = $dbh->prepare($sql);
+            $stmt->bindvalue(':userId', $userId);
+            $stmt->bindvalue(':titleData', $titleData);
+            $stmt->bindvalue(':urlData', $urlData);
+            $stmt->execute();
         }
-        
         $_SESSION['title1'] = $titleData;
         $_SESSION['url1'] = $urlData;
 
@@ -267,117 +253,104 @@ if (isset($_POST['add'])) {
         $_SESSION['msg'] = $msg;
         $_SESSION['msgFlag'] = true;
 
-    } catch (Exception $e) {
+        header('Location: ../view/admin');
+    } catch (PDOException $e) {
         $msg = $e->getMessage();
         $_SESSION['msg'] = $msg;
         $_SESSION['msgFlag'] = true;
+        header('Location: ../view/admin');
     }
-    header('Location: ../view/admin');
-    
-} elseif (isset($_POST['delete'])) {
     // カラム内データを削除して後ろのカラムを前に詰める
+} elseif (isset($_POST['delete'])) {
     try {
         $sql = DatabaseStatement::SELECT_USER_LINKS;
-        $result = PostgreSQLConnection::queryParams($sql, [':userId' => $userId]);
-        
-        if (!$result) {
-            throw new Exception("リンク情報の取得に失敗しました: " . PostgreSQLConnection::getLastError());
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindvalue(':userId', $userId);
+        if (!$stmt) {
+            $msg = $dbh->errorInfo();
         }
-        
-        $fetchedUser = PostgreSQLConnection::fetchAssoc($result);
+        $stmt->execute();
+        $fetchedUser = $stmt->fetch();
 
         if ($fetchedUser) {
             $deleteTitleColumn = "title" . (string)$hiddenData;
             $deleteUrlColumn = "url" . (string)$hiddenData;
+            $count = 1;
 
-            // delete対象のカラムをNULLにする
+            // delete対象からムをNULLにする
             $sql = "UPDATE links SET " . $deleteTitleColumn . " = :titleData, " . $deleteUrlColumn . " = :urlData WHERE user_id = :userId";
-            $result = PostgreSQLConnection::queryParams($sql, [
-                ':userId' => $userId,
-                ':titleData' => null,
-                ':urlData' => null
-            ]);
-            
-            if (!$result) {
-                throw new Exception("リンクの削除に失敗しました: " . PostgreSQLConnection::getLastError());
-            }
+            $stmt = $dbh->prepare($sql);
+            $stmt->bindvalue(':userId', $userId);
+            $stmt->bindvalue(':titleData', NULL);
+            $stmt->bindvalue(':urlData', NULL);
+            $stmt->execute();
 
-            // 後ろのカラムを前カラムに詰める
-            $hiddenDataInt = (int)$hiddenData;
-            for ($column = $hiddenDataInt; $column < (int)config::MAX_LINK; $column++) {
-                $titleColumn = "title" . (string)$column;
-                $urlColumn = "url" . (string)$column;
-                
-                $nextTitleColumn = "title" . (string)($column + 1);
-                $nextUrlColumn = "url" . (string)($column + 1);
-                
-                // 次カラムが存在している場合、前カラムにデータを移動
-                if (isset($fetchedUser[$nextTitleColumn]) || isset($fetchedUser[$nextUrlColumn])) {
+            //後ろのカラムを前カラムに詰める
+            $hiddenData = (int)$hiddenData; // delete対象のデータカラム番号
+            for ($hiddenData + 1; $hiddenData <= (int)config::MAX_LINK; $hiddenData++) {
+                $titleStr = "title";
+                $urlStr = "url";
+                $titleColumn = $titleStr . (string)$hiddenData; // delete対象のデータカラム名
+                $urlColumn = $urlStr . (string)$hiddenData; // delete対象のデータカラム名
+
+                $nextTitleColumn = $titleStr . (string)$hiddenData + 1; // delete対象の次カラム名
+                $nextUrlColumn = $urlStr . (string)$hiddenData + 1; // delete対象の次カラム名
+                // delete対象の次カラムが存在している場合、前カラムにデータを移動
+                if (isset($fetchedUser[$nextTitleColumn]) || isset($fetchedUser["url" . $nextUrlColumn])) {
                     $sql = "UPDATE links SET " . $titleColumn . " = :titleData, " . $urlColumn . " = :urlData WHERE user_id = :userId";
-                    $result = PostgreSQLConnection::queryParams($sql, [
-                        ':userId' => $userId,
-                        ':titleData' => $fetchedUser[$nextTitleColumn] ?? null,
-                        ':urlData' => $fetchedUser[$nextUrlColumn] ?? null
-                    ]);
-                    
-                    if (!$result) {
-                        throw new Exception("リンクの移動に失敗しました: " . PostgreSQLConnection::getLastError());
-                    }
+                    $stmt = $dbh->prepare($sql);
+                    $stmt->bindvalue(':userId', $userId);
+                    $stmt->bindvalue(':titleData', $fetchedUser[$nextTitleColumn]);
+                    $stmt->bindvalue(':urlData', $fetchedUser[$nextUrlColumn]);
+                    $stmt->execute();
                 } else {
-                    // 次カラムが存在してない場合はNULLにする
+                    // // 次カラムが存在してない場合前にデータを移動させた後なのでNULLにする
                     $sql = "UPDATE links SET " . $titleColumn . " = :titleData, " . $urlColumn . " = :urlData WHERE user_id = :userId";
-                    $result = PostgreSQLConnection::queryParams($sql, [
-                        ':userId' => $userId,
-                        ':titleData' => null,
-                        ':urlData' => null
-                    ]);
-                    
-                    if (!$result) {
-                        throw new Exception("リンクのクリアに失敗しました: " . PostgreSQLConnection::getLastError());
-                    }
+                    $stmt = $dbh->prepare($sql);
+                    $stmt->bindvalue(':userId', $userId);
+                    $stmt->bindvalue(':titleData', NULL);
+                    $stmt->bindvalue(':urlData', NULL);
+                    $stmt->execute();
+                    $_SESSION[$titleColumn] = $arrayTitleColumn[$titleColumn <= $fetchedUser[$titleColumn]];
+                    $_SESSION[$urlColumn] = $arrayTitleColumn[$urlColumn <= $fetchedUser[$urlColumn]];
                     break;
                 }
             }
         }
-        
         $msg = message::DELETE_LINK;
         $_SESSION['msg'] = $msg;
         $_SESSION['msgFlag'] = true;
 
-    } catch (Exception $e) {
+        header('Location: ../view/admin');
+    } catch (PDOException $e) {
         $msg = $e->getMessage();
         $_SESSION['msg'] = $msg;
         $_SESSION['msgFlag'] = true;
+        header('Location: ../view/admin');
     }
-    header('Location: ../view/admin');
-    
 } else if (isset($youtubeUpdate) || isset($xUpdate) || isset($twitchUpdate) || isset($githubUpdate) || isset($instagramUpdate) || isset($facebookUpdate)) {
     try {
         $sql = DatabaseStatement::UPDATE_SNS_USERS;
-        $result = PostgreSQLConnection::queryParams($sql, [
-            ':updateYoutube' => $youtubeUpdate,
-            ':updateX' => $xUpdate,
-            ':updateTwitch' => $twitchUpdate,
-            ':updateGithub' => $githubUpdate,
-            ':updateInstagram' => $instagramUpdate,
-            ':updateFacebook' => $facebookUpdate,
-            ':userId' => $_SESSION['userId']
-        ]);
-        
-        if (!$result) {
-            throw new Exception("SNS情報の更新に失敗しました: " . PostgreSQLConnection::getLastError());
-        }
-        
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':updateYoutube', $youtubeUpdate);
+        $stmt->bindValue(':updateX', $xUpdate);
+        $stmt->bindValue(':updateTwitch', $twitchUpdate);
+        $stmt->bindValue(':updateGithub', $githubUpdate);
+        $stmt->bindValue(':updateInstagram', $instagramUpdate);
+        $stmt->bindValue(':updateFacebook', $facebookUpdate);
+        $stmt->bindValue(':userId', $_SESSION['userId']);
+        $stmt->execute();
         $_SESSION['msgFlag'] = true;
         $_SESSION['msg'] = message::UPDATED_SNS;
 
-    } catch (Exception $e) {
+        header('Location: ../view/admin');
+    } catch (PDOException $e) {
         $msg = $e->getMessage();
         $_SESSION['msg'] = $msg;
         $_SESSION['msgFlag'] = true;
+
+        header('Location: ../view/admin');
     }
-    header('Location: ../view/admin');
-    
 } else {
     header('Location: ../view/admin');
 }
