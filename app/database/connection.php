@@ -1,6 +1,7 @@
 <?php
 
-class DatabaseConnection
+// Legacy class - keeping for backward compatibility
+class LegacyDatabaseConnection
 {
     public static function Connection()
     {
@@ -23,4 +24,9 @@ class DatabaseConnection
         $stmt->execute();
         return $stmt;
     }
+}
+
+// Alias for backward compatibility
+class DatabaseConnection extends LegacyDatabaseConnection
+{
 }

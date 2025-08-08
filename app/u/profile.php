@@ -28,7 +28,7 @@
         <?php
         // プロフィール画面表示処理
         require_once('../database/statement.php');
-        require_once('../database/connection.php');
+        require_once('../database/PostgreSQLConnection.php');
         require_once('../config/config.php');
         require_once('../config/session.php');
         require_once('../config/message.php');
@@ -37,14 +37,19 @@
         $startSubInt = strpos($requestUri, 'u/');
         $userId = substr($requestUri, $startSubInt + 2);
 
-        $dbh = DatabaseConnection::Connection();
-
         try {
             $sql = DatabaseStatement::SELECT_USER_ID;
-            $stmt = $dbh->prepare($sql);
-            $stmt->bindValue(':userId', $userId);
-            $stmt->execute();
-            $fetchedUser = $stmt->fetch();
+            $result = PostgreSQLConnection::queryParams($sql, [':userId' => $userId]);
+            
+            if (!$result) {
+                throw new Exception("ユーザー情報の取得に失敗しました: " . PostgreSQLConnection::getLastError());
+            }
+            
+            $fetchedUser = PostgreSQLConnection::fetchAssoc($result);
+
+            if (!$fetchedUser) {
+                throw new Exception("ユーザーが見つかりません");
+            }
 
             $profileImage = $fetchedUser['profile_image'];
             $profileImageBlob = $fetchedUser['image_byte'];
@@ -66,10 +71,13 @@
                 }
 
                 $sql = DatabaseStatement::SELECT_USER_LINKS;
-                $stmt = $dbh->prepare($sql);
-                $stmt->bindValue(':userId', $userId);
-                $stmt->execute();
-                $fetchedUser = $stmt->fetch();
+                $result = PostgreSQLConnection::queryParams($sql, [':userId' => $userId]);
+                
+                if (!$result) {
+                    throw new Exception("リンク情報の取得に失敗しました: " . PostgreSQLConnection::getLastError());
+                }
+                
+                $fetchedUser = PostgreSQLConnection::fetchAssoc($result);
                 echo '<div class="row justify-content-md-center m-2 p-2">';
                 echo '<div class="col-lg-auto col-xs-auto"></div>';
                 echo '<div class="col-lg-auto col-xs-auto">';
