@@ -99,21 +99,27 @@ if (!isset($_SESSION['token'])) {
                 <div class="col-lg-4 col-xs-3"></div>
                 <div class="col-lg-4 col-xs-6">
                     <?php
-                    require_once('../database/connection.php');
+                    require_once('../database/PostgreSQLConnection.php');
                     require_once('../database/statement.php');
                     require_once('../config/config.php');
                     require_once('../config/message.php');
 
                     try {
-                        $dbh = DatabaseConnection::Connection();
-
                         $userId = $_SESSION['userId'];
 
                         $sql = DatabaseStatement::SELECT_USER_ID;
-                        $stmt = $dbh->prepare($sql);
-                        $stmt->bindValue(':userId', $userId);
-                        $stmt->execute();
-                        $fetchedUser = $stmt->fetch();
+                        $result = PostgreSQLConnection::queryParams($sql, [':userId' => $userId]);
+                        
+                        if (!$result) {
+                            throw new Exception("ユーザー情報の取得に失敗しました: " . PostgreSQLConnection::getLastError());
+                        }
+                        
+                        $fetchedUser = PostgreSQLConnection::fetchAssoc($result);
+                        
+                        if (!$fetchedUser) {
+                            throw new Exception("ユーザーが見つかりません");
+                        }
+                        
                         $_SESSION['userMail'] = $fetchedUser['mail'];
                         $userName = $fetchedUser['user_name'];
                         $biography = $fetchedUser['biography'];
@@ -365,10 +371,13 @@ if (!isset($_SESSION['token'])) {
 
                 try {
                     $sql = DatabaseStatement::SELECT_USER_LINKS;
-                    $stmt = $dbh->prepare($sql);
-                    $stmt->bindValue(':userId', $userId);
-                    $stmt->execute();
-                    $fetchedUser = $stmt->fetch();
+                    $result = PostgreSQLConnection::queryParams($sql, [':userId' => $userId]);
+                    
+                    if (!$result) {
+                        throw new Exception("リンク情報の取得に失敗しました: " . PostgreSQLConnection::getLastError());
+                    }
+                    
+                    $fetchedUser = PostgreSQLConnection::fetchAssoc($result);
 
                     for ($countColumn = 1; $countColumna <= (int)config::MAX_LINK; $countColumn++) {
                         $titleColumn = "title";
