@@ -1,36 +1,32 @@
 <?php session_start();
-require_once('../database/PostgreSQLConnection.php');
+require_once('../database/connection.php');
 require_once('../database/statement.php');
 require_once('../config/config.php');
 require_once('../config/message.php');
 
 // 自動ログイン処理
 try {
-    $autoLoginToken = $_COOKIE['ocha_auto_login'] ?? null;
+    $autoLoginToken = $_COOKIE['ocha_auto_login'];
     if (isset($autoLoginToken)) {
+        $dbh = DatabaseConnection::Connection();
         $sql = DatabaseStatement::SELECT_USER_AUTO;
-        $result = PostgreSQLConnection::queryParams($sql, [':autoLoginToken' => $autoLoginToken]);
-        
-        if (!$result) {
-            throw new Exception("自動ログイン処理に失敗しました: " . PostgreSQLConnection::getLastError());
-        }
-        
-        $fetchedUser = PostgreSQLConnection::fetchAssoc($result);
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':autoLoginToken', $autoLoginToken);
+        $stmt->execute();
+        $fetchedUser = $stmt->fetch();
 
-        if ($fetchedUser) {
-            $token = bin2hex(random_bytes(32));
-            $_SESSION["token"] = $token;
+        $token = bin2hex(random_bytes(32));
+        $_SESSION["token"] = $token;
 
-            $msg = message::LOGINED;
-            $_SESSION['userId'] = $fetchedUser['user_id'];
-            $_SESSION['profileImage'] = $fetchedUser['profile_image'];
-            $_SESSION['msg'] = $msg;
+        $msg = message::LOGINED;
+        $_SESSION['userId'] = $fetchedUser['user_id'];
+        $_SESSION['profileImage'] = $fetchedUser['profile_image'];
+        $_SESSION['msg'] = $msg;
 
-            header('Location: ../view/admin');
-            exit;
-        }
+        header('Location: ../view/admin');
+        exit;
     }
-} catch (Exception $e) {
+} catch (PDOException $e) {
     $msg = $e->getMessage();
     $_SESSION['msg'] = $msg;
 

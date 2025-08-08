@@ -1,22 +1,24 @@
 <?php
 session_start();
 
-require_once('../database/PostgreSQLConnection.php');
+require_once('../database/connection.php');
 require_once('../database/statement.php');
 require_once('../config/config.php');
 require_once('../config/message.php');
 
-$userId = $_POST['userId'] ?? '';
-$userMail = $_POST['userMail'] ?? '';
-$loginFlag = $_POST['login'] ?? null;
-$logoutFlag = $_POST['logout'] ?? null;
-$registerFlag = $_POST['register'] ?? null;
-$userInformationFlag = $_POST['userInformation'] ?? null;
-$updateUserName = $_POST['updateUserName'] ?? '';
-$updateBiography = $_POST['biography'] ?? '';
-$userAdminFlag = $_POST['userAdmin'] ?? null;
-$autoLoginCheck = $_POST['autoLogin'] ?? null;
-$guestUserLogin = $_POST['demoLogin'] ?? null;
+$userId = $_POST['userId'];
+$userMail = $_POST['userMail'];
+$loginFlag = $_POST['login'];
+$logoutFlag = $_POST['logout'];
+$registerFlag = $_POST['register'];
+$userInformationFlag = $_POST['userInformation'];
+$updateUserName = $_POST['updateUserName'];
+$updateBiography = $_POST['biography'];
+$userAdminFlag = $_POST['userAdmin'];
+$autoLoginCheck = $_POST['autoLogin'];
+$guestUserLogin = $_POST['demoLogin'];
+
+$dbh = DatabaseConnection::Connection();
 
 if (isset($logoutFlag)) {
     // ログアウト処理
@@ -28,26 +30,24 @@ if (isset($logoutFlag)) {
 } elseif (isset($loginFlag)) {
     // ログイン処理
     try {
-        if (!($_SESSION['token'] ?? null) || $_SESSION['token'] !== ($_POST['token'] ?? '')) {
+        if (!$_SESSION['token'] = $_POST['token']) {
             $_SESSION['msg'] = "不正なアクセス";
             session_destroy();
             header('Location: ../view/login');
             exit;
         } else {
-            $userPassword = $_POST['userPassword'] ?? '';
+            $userPassword = $_POST['userPassword'];
 
             $sql = DatabaseStatement::SELECT_USER_ID;
-            $result = PostgreSQLConnection::queryParams($sql, [':userId' => $userId]);
-            
-            if (!$result) {
-                throw new Exception("ユーザー情報の取得に失敗しました: " . PostgreSQLConnection::getLastError());
-            }
-            
-            $fetchedUser = PostgreSQLConnection::fetchAssoc($result);
+            $stmt = $dbh->prepare($sql);
+            $stmt->bindValue(':userId', $userId);
+            $stmt->execute();
+            $fetchedUser = $stmt->fetch();
 
             if (!$fetchedUser) {
                 $msg = message::UNMATCH_USER_PASSWORD;
                 $_SESSION['msg'] = $msg;
+
                 header('Location: ../view/login');
             } else {
                 // パスワードチェック
@@ -63,28 +63,20 @@ if (isset($logoutFlag)) {
                         $autoLoginToken = 'auto_login_' . bin2hex(random_bytes(32));
 
                         $sql = DatabaseStatement::UPDATE_AUTO_USERS;
-                        $result = PostgreSQLConnection::queryParams($sql, [
-                            ':autoLoginCheck' => true,
-                            ':autoLoginToken' => $autoLoginToken,
-                            ':userId' => $userId
-                        ]);
-                        
-                        if (!$result) {
-                            throw new Exception("自動ログイン設定の更新に失敗しました: " . PostgreSQLConnection::getLastError());
-                        }
+                        $stmt = $dbh->prepare($sql);
+                        $stmt->bindValue(':autoLoginCheck', 'true');
+                        $stmt->bindValue(':autoLoginToken', $autoLoginToken);
+                        $stmt->bindValue(':userId', $userId);
+                        $stmt->execute();
 
                         setcookie('ocha_auto_login', $autoLoginToken, time() + 20 * 24 * 60 * 60, '/', false);
                     } else {
                         $sql = DatabaseStatement::UPDATE_AUTO_USERS;
-                        $result = PostgreSQLConnection::queryParams($sql, [
-                            ':autoLoginCheck' => false,
-                            ':autoLoginToken' => null,
-                            ':userId' => $userId
-                        ]);
-                        
-                        if (!$result) {
-                            throw new Exception("自動ログイン設定の更新に失敗しました: " . PostgreSQLConnection::getLastError());
-                        }
+                        $stmt = $dbh->prepare($sql);
+                        $stmt->bindValue(':autoLoginCheck', 'false');
+                        $stmt->bindValue(':autoLoginToken', NULL);
+                        $stmt->bindValue(':userId', $userId);
+                        $stmt->execute();
 
                         setcookie('ocha_auto_login', '', time() - 20 * 24 * 60 * 60, '/', false);
                     }
@@ -94,11 +86,12 @@ if (isset($logoutFlag)) {
                 } else {
                     $msg = message::UNMATCH_USER_PASSWORD;
                     $_SESSION['msg'] = $msg;
+
                     header('Location: ../view/login');
                 }
             }
         }
-    } catch (Exception $e) {
+    } catch (PDOException $e) {
         $msg = $e->getMessage();
         $_SESSION['msg'] = $msg;
         header('Location: ../index');
@@ -109,71 +102,58 @@ if (isset($logoutFlag)) {
         $userPassword = password_hash($_POST['userPassword'], PASSWORD_DEFAULT);
 
         $sql = DatabaseStatement::SELECT_USER_ID_MAIL;
-        $result = PostgreSQLConnection::queryParams($sql, [
-            ':userMail' => $userMail,
-            ':userId' => $userId
-        ]);
-        
-        if (!$result) {
-            throw new Exception("ユーザー情報の確認に失敗しました: " . PostgreSQLConnection::getLastError());
-        }
-        
-        $fetchedUser = PostgreSQLConnection::fetchAssoc($result);
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindvalue(':userMail', $userMail);
+        $stmt->bindvalue(':userId', $userId);
+        $stmt->execute();
+        $fetchedUser = $stmt->fetch();
 
         // アカウントを登録
-        if ($fetchedUser && $fetchedUser['mail'] == $userMail) {
+        if ($fetchedUser['mail'] == $userMail) {
             $msg = message::MAIL_IS_USED;
             $_SESSION['msg'] = $msg;
-            header("Location: ../view/register");
-        } elseif ($fetchedUser && $fetchedUser['user_id'] == $userId) {
-            $msg = message::USER_ID_IS_USED;
-            $_SESSION['msg'] = $msg;
+
             header("Location: ../view/register");
         } else {
-            $sql = DatabaseStatement::INSERT_USER_USERS;
-            $result = PostgreSQLConnection::queryParams($sql, [
-                ':userId' => $userId,
-                ':userMail' => $userMail,
-                ':userPassword' => $userPassword,
-                ':userName' => $userId
-            ]);
-            
-            if (!$result) {
-                throw new Exception("ユーザーの作成に失敗しました: " . PostgreSQLConnection::getLastError());
-            }
+            if ($fetchedUser['user_id'] == $userId) {
+                $msg = message::USER_ID_IS_USED;
+                $_SESSION['msg'] = $msg;
 
-            //LinksテーブルにもユーザーIDを挿入
-            $sql = DatabaseStatement::INSERT_USER_LINKS;
-            $result = PostgreSQLConnection::queryParams($sql, [':userId' => $userId]);
-            
-            if (!$result) {
-                throw new Exception("ユーザーリンクの作成に失敗しました: " . PostgreSQLConnection::getLastError());
+                header("Location: ../view/register");
+            } else {
+                $sql = DatabaseStatement::INSERT_USER_USERS;
+                $stmt = $dbh->prepare($sql);
+                $stmt->bindvalue(':userId', $userId);
+                $stmt->bindvalue(':userMail', $userMail);
+                $stmt->bindvalue(':userPassword', $userPassword);
+                $stmt->bindvalue(':userName', $userId);
+                $stmt->execute();
+
+                //LinksテーブルにもユーザーIDを挿入
+                $sql = DatabaseStatement::INSERT_USER_LINKS;
+                $stmt = $dbh->prepare($sql);
+                $stmt->bindvalue(':userId', $userId);
+                $stmt->execute();
+                $_SESSION['userId'] = $userId;
+                $msg = message::REGISTERD;
+
+                header('Location: ../view/login');
             }
-            
-            $_SESSION['userId'] = $userId;
-            $msg = message::REGISTERD;
-            header('Location: ../view/login');
         }
-    } catch (Exception $e) {
+    } catch (PDOException $e) {
         $msg = $e->getMessage();
-        $_SESSION['msg'] = $msg;
-        header('Location: ../view/register');
     }
 } elseif (isset($guestUserLogin) && $guestUserLogin == 'demoLogin') {
     try {
         $userPassword = "guestpassword";
 
         $sql = DatabaseStatement::SELECT_USER_ID;
-        $result = PostgreSQLConnection::queryParams($sql, [':userId' => "guest"]);
-        
-        if (!$result) {
-            throw new Exception("ゲストユーザー情報の取得に失敗しました: " . PostgreSQLConnection::getLastError());
-        }
-        
-        $fetchedUser = PostgreSQLConnection::fetchAssoc($result);
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':userId', "guest");
+        $stmt->execute();
+        $fetchedUser = $stmt->fetch();
         $_SESSION['msgFlag'] = true;
-        
-        if ($fetchedUser && password_verify($userPassword, $fetchedUser['password'])) {
+        if (password_verify($userPassword, $fetchedUser['password'])) {
             $_SESSION['userId'] = $fetchedUser['user_id'];
             $_SESSION['profileImage'] = $fetchedUser['profile_image'];
 
@@ -187,9 +167,10 @@ if (isset($logoutFlag)) {
         } else {
             $msg = message::LOGGED_IN_GUEST_ERROR;
             $_SESSION['msg'] = $msg;
+
             header('Location: ../index');
         }
-    } catch (Exception $e) {
+    } catch (PDOException $e) {
         $msg = $e->getMessage();
         $_SESSION['msg'] = $msg;
         header('Location: ../index');
@@ -201,23 +182,19 @@ if (isset($logoutFlag)) {
 } elseif (isset($updateUserName) || isset($updateBiography)) {
     try {
         $sql = DatabaseStatement::UPDATE_INFORMATION_USERS;
-        $result = PostgreSQLConnection::queryParams($sql, [
-            ':userName' => $updateUserName,
-            ':updateBiography' => $updateBiography,
-            ':userId' => $_SESSION['userId']
-        ]);
-        
-        if (!$result) {
-            throw new Exception("ユーザー情報の更新に失敗しました: " . PostgreSQLConnection::getLastError());
-        }
-        
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':userName', $updateUserName);
+        $stmt->bindValue(':updateBiography', $updateBiography);
+        $stmt->bindValue(':userId', $_SESSION['userId']);
+        $stmt->execute();
         $_SESSION['msgFlag'] = true;
         $_SESSION['msg'] = message::UPDATED_USER_INFORMATION;
 
         header('Location: ../view/userInformation');
-    } catch (Exception $e) {
+    } catch (PDOException $e) {
         $msg = $e->getMessage();
         $_SESSION['msg'] = $msg;
+
         header('Location: ../index');
     }
 } else {

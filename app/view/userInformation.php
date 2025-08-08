@@ -5,29 +5,23 @@ if (!isset($_SESSION['token'])) {
 } else {
 
     try {
-        require_once('../database/PostgreSQLConnection.php');
+        require_once('../database/connection.php');
         require_once('../database/statement.php');
         require_once('../config/config.php');
         require_once('../config/message.php');
 
+        $dbh = DatabaseConnection::Connection();
+
         $userId = $_SESSION['userId'];
 
         $sql = DatabaseStatement::SELECT_USER_ID;
-        $result = PostgreSQLConnection::queryParams($sql, [':userId' => $userId]);
-        
-        if (!$result) {
-            throw new Exception("ユーザー情報の取得に失敗しました: " . PostgreSQLConnection::getLastError());
-        }
-        
-        $fetchedUser = PostgreSQLConnection::fetchAssoc($result);
-        
-        if (!$fetchedUser) {
-            throw new Exception("ユーザーが見つかりません");
-        }
-        
+        $stmt = $dbh->prepare($sql);
+        $stmt->bindValue(':userId', $userId);
+        $stmt->execute();
+        $fetchedUser = $stmt->fetch();
         $userName = $fetchedUser['user_name'];
         $biography = $fetchedUser['biography'];
-    } catch (Exception $e) {
+    } catch (PDOException $e) {
         $msg = $e->getMessage();
         $_SESSION['msg'] = $msg;
         header('Location: ../index');
