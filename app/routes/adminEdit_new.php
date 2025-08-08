@@ -128,7 +128,31 @@ function handleLinkAddition(string $userId, ServiceContainer $container): void
                 return;
             }
         }
-    } catch (PDOException $e) {
+ * リンク追加処理の新しい実装
+ * LinkServiceを利用してリンク追加処理を行う
+ */
+function handleLinkAddition(string $userId, ServiceContainer $container): void
+{
+    // LinkServiceをサービスコンテナから取得
+    $linkService = $container->getLinkService();
+    try {
+        $userLinks = $linkService->getUserLinks($userId);
+        for ($countColumn = 1; $countColumn <= (int)config::MAX_LINK; $countColumn++) {
+            $titleColumn = "title" . (string)$countColumn;
+            $urlColumn = "url" . (string)$countColumn;
+
+            if ($countColumn >= (int)config::MAX_LINK && (!empty($userLinks[$titleColumn]) || !empty($userLinks[$urlColumn]))) {
+                $_SESSION['msg'] = message::CANT_ADD_LINK;
+                return;
+            } elseif (empty($userLinks[$titleColumn]) && empty($userLinks[$urlColumn])) {
+                $titleData = $_POST['title'] ?? '';
+                $urlData = $_POST['url'] ?? '';
+                $linkService->updateUserLink($userId, $titleColumn, $titleData, $urlColumn, $urlData);
+                $_SESSION['msg'] = message::ADD_LINK;
+                return;
+            }
+        }
+    } catch (Exception $e) {
         $_SESSION['msg'] = $e->getMessage();
     }
 }
