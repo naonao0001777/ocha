@@ -28,10 +28,11 @@ app.add_middleware(
         "http://localhost:3000",
         "http://localhost:3001",  # Next.js dev server alternative port
         "https://*.vercel.app",
-        "https://ocha.onrender.com"
+        "https://ocha.onrender.com",
+        "*"  # 本番環境では適切なドメインに制限
     ],
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_credentials=False,  # Lambdaでは通常False
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -169,6 +170,11 @@ class LoginResponse(BaseModel):
 @app.get("/")
 async def root():
     return {"message": "Ocha Profile API", "version": "1.0.0"}
+
+@app.get("/health")
+async def health_check():
+    """ヘルスチェックエンドポイント"""
+    return {"status": "healthy", "timestamp": datetime.utcnow().isoformat()}
 
 @app.get("/users/{user_id}", response_model=UserProfileResponse)
 async def get_user_profile(user_id: str, sb: Client = Depends(get_supabase_client)):

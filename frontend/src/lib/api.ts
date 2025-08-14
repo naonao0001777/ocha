@@ -7,7 +7,7 @@ const SUPABASE_BUCKET = (process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET as stri
 
 const supabase = SUPABASE_URL && SUPABASE_ANON_KEY
   ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-  : null as any;
+  : null;
 
 export interface User {
   id: string;
