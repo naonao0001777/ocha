@@ -33,9 +33,30 @@ const UserProfileView: React.FC<UserProfileViewProps> = ({ profile }) => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen">
+      {/* Background: Beautiful tea field landscape */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        {/* Tea field inspired gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-green-400 via-emerald-500 to-green-600 dark:from-green-800 dark:via-emerald-900 dark:to-green-900" />
+        
+        {/* Layered mountain hills effect */}
+        <div className="absolute inset-0">
+          <div className="absolute bottom-0 w-full h-64 bg-gradient-to-t from-green-600 to-transparent opacity-80" />
+          <div className="absolute bottom-0 w-full h-48 bg-gradient-to-t from-green-700 to-transparent opacity-60" />
+          <div className="absolute bottom-0 w-full h-32 bg-gradient-to-t from-green-800 to-transparent opacity-40" />
+        </div>
+        
+        {/* Subtle texture overlay */}
+        <div className="absolute inset-0 opacity-20 bg-gradient-to-br from-transparent via-white to-transparent mix-blend-overlay" />
+        
+        {/* Sky gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-100 via-transparent to-transparent dark:from-blue-900 dark:via-transparent dark:to-transparent opacity-60" />
+        
+        {/* Content readability overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-white/10 to-transparent dark:from-black/30 dark:via-black/20 dark:to-transparent" />
+      </div>
       {/* ナビゲーション */}
-      <nav className="border-b bg-card/80 backdrop-blur-sm">
+      <nav className="border-b border-white/20 dark:border-white/10 bg-white/30 dark:bg-neutral-900/20 backdrop-blur-lg">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center text-xl font-bold text-foreground hover:text-primary transition-colors">
@@ -115,7 +136,7 @@ const UserProfileView: React.FC<UserProfileViewProps> = ({ profile }) => {
             <Button
               key={link.id}
               variant="outline"
-              className="w-full py-6 text-lg justify-between group hover:bg-accent"
+              className="w-full py-6 text-lg justify-between group border-white/20 dark:border-white/10 bg-white/30 dark:bg-neutral-900/20 backdrop-blur-lg hover:bg-white/40 dark:hover:bg-neutral-900/30 shadow-lg"
               onClick={() => handleLinkClick(link.url)}
             >
               <span className="truncate">{link.title}</span>

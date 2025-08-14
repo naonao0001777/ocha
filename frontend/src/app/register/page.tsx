@@ -40,13 +40,13 @@ export default function Register() {
     setMessage('');
     
     if (formData.password !== formData.confirmPassword) {
-      setMessage(locale === 'ja' ? 'パスワードが一致しません' : 'Passwords do not match');
+      setMessage(t('passwordMismatch'));
       setIsLoading(false);
       return;
     }
     
     if (formData.password.length < 4) {
-      setMessage(locale === 'ja' ? 'パスワードは4文字以上で入力してください' : 'Password must be at least 4 characters');
+      setMessage(t('passwordTooShort'));
       setIsLoading(false);
       return;
     }
@@ -56,11 +56,12 @@ export default function Register() {
       await apiClient.createUser({
         user_name: formData.userId,
         name: formData.userName,
+        email: formData.email,
         password: formData.password,
         biography: ''
       });
       
-      setMessage(locale === 'ja' ? 'アカウントが作成されました！ログイン画面に移動します...' : 'Account created! Redirecting to sign in...');
+      setMessage(t('accountCreated'));
       
       // 2秒後にログイン画面にリダイレクト
       setTimeout(() => {
@@ -68,15 +69,26 @@ export default function Register() {
       }, 2000);
       
     } catch (error) {
-      console.error('User creation error:', error);
+      // コンソールエラーは開発時のみ表示
+      if (process.env.NODE_ENV === 'development') {
+        console.error('User creation error:', error);
+      }
+      
       if (error instanceof ApiError) {
         if (error.status === 400) {
-          setMessage(locale === 'ja' ? 'このユーザーIDは既に使用されています' : 'This user ID is already taken');
+          const errorMessage = error.message.toLowerCase();
+          if (errorMessage.includes('username already exists') || errorMessage.includes('already taken')) {
+            setMessage(t('usernameExists'));
+          } else if (errorMessage.includes('email address is already in use') || errorMessage.includes('email') && errorMessage.includes('already')) {
+            setMessage(t('emailExists'));
+          } else {
+            setMessage(t('registrationFailed'));
+          }
         } else {
-          setMessage(locale === 'ja' ? 'アカウントの作成に失敗しました' : 'Failed to create account');
+          setMessage(t('registrationFailed'));
         }
       } else {
-        setMessage(locale === 'ja' ? 'ネットワークエラーが発生しました' : 'A network error occurred');
+        setMessage(t('networkError'));
       }
     } finally {
       setIsLoading(false);
@@ -150,7 +162,7 @@ export default function Register() {
 
                 <div className="space-y-2">
                   <Label htmlFor="userName" className="text-sm font-medium">
-                    User Name
+                    Name
                   </Label>
                   <Input
                     id="userName"

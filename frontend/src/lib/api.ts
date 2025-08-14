@@ -13,6 +13,7 @@ export interface User {
   id: string;
   user_name: string;
   name: string;
+  email: string;
   biography?: string;
   profile_image?: string;
   created_at: string;
@@ -41,6 +42,7 @@ export interface UserProfile {
 export interface CreateUserRequest {
   user_name: string;
   name: string;
+  email: string;
   password?: string;
   biography?: string;
 }
@@ -311,6 +313,13 @@ export const apiClient = {
   // リンク削除
   deleteLink: async (userId: string, linkId: number): Promise<void> => {
     return fetchApi<void>(`/users/${userId}/links/${linkId}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // アカウント削除
+  deleteAccount: async (userId: string): Promise<void> => {
+    return fetchApi<void>(`/users/${userId}`, {
       method: 'DELETE',
     });
   },

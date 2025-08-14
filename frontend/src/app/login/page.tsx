@@ -5,11 +5,13 @@ import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Layout/Navbar';
 import LoginPage from '@/components/LoginPage/LoginPage';
 import { apiClient, ApiError, tokenManager } from '@/lib/api';
+import { useLanguage } from '@/components/providers/LanguageProvider';
 
 export default function Login() {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error'>('error');
   const router = useRouter();
+  const { t } = useLanguage();
 
   const handleLogin = async (userId: string, password: string, autoLogin: boolean) => {
     try {
@@ -27,25 +29,32 @@ export default function Login() {
         setMessageType('success');
         
         // プロフィール管理画面にリダイレクト
+        // window.location.href を使用してハードリダイレクト
         setTimeout(() => {
-          router.push('/profile');
-        }, 1500);
+          window.location.href = '/profile';
+        }, 1000);
         
       } else {
-        setMessage('ログインに失敗しました');
+        setMessage(t('loginFailed'));
         setMessageType('error');
       }
     } catch (error) {
-      console.error('Login error:', error);
+      // コンソールエラーは開発時のみ表示
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Login error:', error);
+      }
+      
       setMessageType('error');
       if (error instanceof ApiError) {
         if (error.status === 401) {
-          setMessage('ユーザーIDまたはパスワードが間違っています');
+          setMessage(t('invalidCredentials'));
+        } else if (error.status === 404) {
+          setMessage(t('accountNotExists'));
         } else {
-          setMessage('ログインに失敗しました');
+          setMessage(t('loginFailed'));
         }
       } else {
-        setMessage('ネットワークエラーが発生しました');
+        setMessage(t('networkError'));
       }
     }
   };

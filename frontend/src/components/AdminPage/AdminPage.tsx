@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Upload, ChevronDown, ChevronUp, ExternalLink, Plus } from 'lucide-react';
+import { useLanguage } from '@/components/providers/LanguageProvider';
 
 const OchaIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
@@ -61,6 +62,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
   onLinkUpdate,
   onLinkDelete
 }) => {
+   const { t } = useLanguage();
    const [showSNSCollapse, setShowSNSCollapse] = useState(false);
    const [showLinkCollapse, setShowLinkCollapse] = useState(false);
    const [socialAccounts, setSocialAccounts] = useState(userProfile.socialAccounts);
@@ -172,7 +174,30 @@ const AdminPage: React.FC<AdminPageProps> = ({
   };
 
   return (
-    <div className="container mx-auto px-4 text-center max-w-2xl">
+    <div className="relative min-h-screen">
+      {/* Background: Beautiful tea field landscape */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        {/* Tea field inspired gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-green-400 via-emerald-500 to-green-600 dark:from-green-800 dark:via-emerald-900 dark:to-green-900" />
+        
+        {/* Layered mountain hills effect */}
+        <div className="absolute inset-0">
+          <div className="absolute bottom-0 w-full h-64 bg-gradient-to-t from-green-600 to-transparent opacity-80" />
+          <div className="absolute bottom-0 w-full h-48 bg-gradient-to-t from-green-700 to-transparent opacity-60" />
+          <div className="absolute bottom-0 w-full h-32 bg-gradient-to-t from-green-800 to-transparent opacity-40" />
+        </div>
+        
+        {/* Subtle texture overlay */}
+        <div className="absolute inset-0 opacity-20 bg-gradient-to-br from-transparent via-white to-transparent mix-blend-overlay" />
+        
+        {/* Sky gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-100 via-transparent to-transparent dark:from-blue-900 dark:via-transparent dark:to-transparent opacity-60" />
+        
+        {/* Content readability overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-white/10 to-transparent dark:from-black/30 dark:via-black/20 dark:to-transparent" />
+      </div>
+
+      <div className="container mx-auto px-4 text-center max-w-2xl py-8">
       {/* hidden file input for profile upload */}
       <input
         ref={fileInputRef}
@@ -297,13 +322,13 @@ const AdminPage: React.FC<AdminPageProps> = ({
         <Collapsible open={showSNSCollapse} onOpenChange={setShowSNSCollapse}>
           <CollapsibleTrigger asChild>
             <Button className="rounded-full mb-4 w-full max-w-md">
-              SNSアカウントを追加
+              {t('addSocialAccount')}
               {showSNSCollapse ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />}
             </Button>
           </CollapsibleTrigger>
           
           <CollapsibleContent>
-            <Card className="max-w-md mx-auto">
+            <Card className="max-w-md mx-auto border border-white/20 dark:border-white/5 bg-white/30 dark:bg-neutral-900/20 backdrop-blur-lg shadow-2xl">
               <CardContent className="pt-6">
                 <form onSubmit={handleSocialAccountSubmit} className="space-y-4">
                   <div>
@@ -313,7 +338,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
                     </Label>
                     <Input
                       type="url"
-                      placeholder="https:// または http://で始まるURLを入れる"
+                      placeholder={t('urlPlaceholder')}
                       value={socialAccounts.youtube || ''}
                       onChange={(e) => handleSocialAccountChange('youtube', e.target.value)}
                     />
@@ -326,7 +351,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
                     </Label>
                     <Input
                       type="url"
-                      placeholder="https:// または http://で始まるURLを入れる"
+                      placeholder={t('urlPlaceholder')}
                       value={socialAccounts.twitch || ''}
                       onChange={(e) => handleSocialAccountChange('twitch', e.target.value)}
                     />
@@ -339,7 +364,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
                     </Label>
                     <Input
                       type="url"
-                      placeholder="https:// または http://で始まるURLを入れる"
+                      placeholder={t('urlPlaceholder')}
                       value={socialAccounts.x || ''}
                       onChange={(e) => handleSocialAccountChange('x', e.target.value)}
                     />
@@ -352,7 +377,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
                     </Label>
                     <Input
                       type="url"
-                      placeholder="https:// または http://で始まるURLを入れる"
+                      placeholder={t('urlPlaceholder')}
                       value={socialAccounts.github || ''}
                       onChange={(e) => handleSocialAccountChange('github', e.target.value)}
                     />
@@ -365,7 +390,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
                     </Label>
                     <Input
                       type="url"
-                      placeholder="https:// または http://で始まるURLを入れる"
+                      placeholder={t('urlPlaceholder')}
                       value={socialAccounts.instagram || ''}
                       onChange={(e) => handleSocialAccountChange('instagram', e.target.value)}
                     />
@@ -378,7 +403,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
                     </Label>
                     <Input
                       type="url"
-                      placeholder="https:// または http://で始まるURLを入れる"
+                      placeholder={t('urlPlaceholder')}
                       value={socialAccounts.facebook || ''}
                       onChange={(e) => handleSocialAccountChange('facebook', e.target.value)}
                     />
@@ -405,20 +430,20 @@ const AdminPage: React.FC<AdminPageProps> = ({
         <Collapsible open={showLinkCollapse} onOpenChange={setShowLinkCollapse}>
           <CollapsibleTrigger asChild>
             <Button className="rounded-full mb-4 w-full max-w-md">
-              リンクを追加
+              {t('addLink')}
               {showLinkCollapse ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />}
             </Button>
           </CollapsibleTrigger>
           
           <CollapsibleContent>
-            <Card className="max-w-md mx-auto">
+            <Card className="max-w-md mx-auto border border-white/20 dark:border-white/5 bg-white/30 dark:bg-neutral-900/20 backdrop-blur-lg shadow-2xl">
               <CardContent className="pt-6">
                 <form onSubmit={handleNewLinkSubmit} className="space-y-4">
                   <div>
-                    <Label className="text-left mb-2 block">タイトル</Label>
+                    <Label className="text-left mb-2 block">{t('editLinkTitle')}</Label>
                     <Input
                       type="text"
-                      placeholder="リンク名を入れる"
+                      placeholder={t('linkNamePlaceholder')}
                       value={newLink.title}
                       onChange={(e) => setNewLink(prev => ({ ...prev, title: e.target.value }))}
                       required
@@ -426,10 +451,10 @@ const AdminPage: React.FC<AdminPageProps> = ({
                   </div>
                   
                   <div>
-                    <Label className="text-left mb-2 block">URL</Label>
+                    <Label className="text-left mb-2 block">{t('editLinkUrl')}</Label>
                     <Input
                       type="url"
-                      placeholder="https:// または http://で始まるURLを入れる"
+                      placeholder={t('urlPlaceholder')}
                       value={newLink.url}
                       onChange={(e) => setNewLink(prev => ({ ...prev, url: e.target.value }))}
                       required
@@ -474,14 +499,14 @@ const AdminPage: React.FC<AdminPageProps> = ({
               }
             }}>
               <CollapsibleContent>
-                <Card className="mt-2">
+                <Card className="mt-2 border border-white/20 dark:border-white/5 bg-white/25 dark:bg-neutral-900/15 backdrop-blur-lg">
                   <CardContent className="pt-6">
                     <div className="space-y-4">
                       <div>
-                        <Label className="text-left mb-2 block">タイトル</Label>
+                        <Label className="text-left mb-2 block">{t('editLinkTitle')}</Label>
                         <Input
                           type="text"
-                          placeholder="リンク名を入れる"
+                          placeholder={t('linkNamePlaceholder')}
                           value={editingLinks[link.id]?.title || ''}
                           onChange={(e) => setEditingLinks(prev => ({
                             ...prev,
@@ -491,10 +516,10 @@ const AdminPage: React.FC<AdminPageProps> = ({
                       </div>
                       
                       <div>
-                        <Label className="text-left mb-2 block">URL</Label>
+                        <Label className="text-left mb-2 block">{t('editLinkUrl')}</Label>
                         <Input
                           type="url"
-                          placeholder="https:// または http://で始まるURLを入れる"
+                          placeholder={t('urlPlaceholder')}
                           value={editingLinks[link.id]?.url || ''}
                           onChange={(e) => setEditingLinks(prev => ({
                             ...prev,
@@ -509,7 +534,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
                           className="rounded-full"
                           onClick={() => handleLinkUpdate(link.id)}
                         >
-                          リンク更新
+                          {t('updateLink')}
                         </Button>
                         <Button
                           variant="outline"
@@ -517,7 +542,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
                           className="rounded-full"
                           onClick={() => onLinkDelete && onLinkDelete(link.id)}
                         >
-                          削除
+                          {t('deleteLink')}
                         </Button>
                       </div>
                     </div>
@@ -527,6 +552,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
             </Collapsible>
           </div>
         ))}
+      </div>
       </div>
     </div>
   );
