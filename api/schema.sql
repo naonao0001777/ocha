@@ -7,6 +7,7 @@ create table public.users (
   auth_uid uuid unique, -- supabase auth のユーザーIDを格納（将来の認証連携用）
   user_name text unique not null, -- プロフィールURL用のユーザー名 (/u/{user_name})
   name text not null, -- 表示名
+  email text unique not null, -- メールアドレス（重複不可）
   password_hash text not null, -- パスワードハッシュ（認証用）
   biography text, -- プロフィール文
   profile_image text, -- プロフィール画像のURL（Supabase Storage）
@@ -40,6 +41,7 @@ create table public.social_accounts (
 
 -- インデックス作成
 create index idx_users_user_name on public.users(user_name);
+create index idx_users_email on public.users(email);
 create index idx_users_auth_uid on public.users(auth_uid);
 create index idx_links_user_id on public.links(user_id);
 create index idx_links_order on public.links(user_id, order_index);
@@ -117,9 +119,9 @@ create trigger handle_social_accounts_updated_at
 -- 注：実際のSupabaseでは認証なしでのINSERTを許可するため、一時的にRLSを無効にする必要があります
 
 -- デモユーザー作成
-insert into public.users (user_name, name, biography, created_at, updated_at) values
-  ('demo', 'デモユーザー', 'これはデモプロフィールです。', now(), now()),
-  ('sample', 'サンプル太郎', 'サンプルのプロフィールページです。', now(), now());
+insert into public.users (user_name, name, email, biography, created_at, updated_at) values
+  ('demo', 'デモユーザー', 'demo@example.com', 'これはデモプロフィールです。', now(), now()),
+  ('sample', 'サンプル太郎', 'sample@example.com', 'サンプルのプロフィールページです。', now(), now());
 
 -- デモリンク作成
 insert into public.links (user_id, title, url, order_index, created_at, updated_at)

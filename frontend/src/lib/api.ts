@@ -13,7 +13,7 @@ export interface User {
   id: string;
   user_name: string;
   name: string;
-  email: string;
+  email: string; // 追加
   biography?: string;
   profile_image?: string;
   created_at: string;
@@ -42,7 +42,7 @@ export interface UserProfile {
 export interface CreateUserRequest {
   user_name: string;
   name: string;
-  email: string;
+  email: string; // 追加（バックエンド必須）
   password?: string;
   biography?: string;
 }

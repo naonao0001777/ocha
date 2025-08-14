@@ -107,6 +107,7 @@ class UserResponse(BaseModel):
     id: str
     user_name: str
     name: str
+    email: str
     biography: Optional[str] = None
     profile_image: Optional[str] = None
     created_at: str
@@ -131,6 +132,7 @@ class UserProfileResponse(BaseModel):
 class CreateUserRequest(BaseModel):
     user_name: str = Field(..., min_length=1, max_length=50)
     name: str = Field(..., min_length=1, max_length=100)
+    email: str = Field(..., min_length=1, max_length=255, pattern=r'^[^@]+@[^@]+\.[^@]+$')
     password: Optional[str] = Field(None, min_length=4)
     biography: Optional[str] = Field(None, max_length=500)
 
@@ -175,13 +177,25 @@ async def health_check():
     """ヘルスチェックエンドポイント"""
     return {"status": "healthy", "timestamp": datetime.utcnow().isoformat()}
 
+@app.get("/debug/users")
+async def debug_users(sb: Client = Depends(get_supabase_client)):
+    """デバッグ用: ユーザー一覧を取得"""
+    try:
+        result = sb.table('users').select('id, user_name, email, is_deleted, created_at').limit(10).execute()
+        return {"users": result.data}
+    except Exception as e:
+        return {"error": str(e)}
+
 @app.get("/users/{user_id}", response_model=UserProfileResponse)
 async def get_user_profile(user_id: str, sb: Client = Depends(get_supabase_client)):
     """ユーザープロフィール取得"""
     
-    # ユーザー情報取得
-    user_result = sb.table('users').select('*').eq('user_name', user_id).single().execute()
-    if not user_result.data:
+    # ユーザー情報取得（論理削除されていないもののみ）
+    try:
+        user_result = sb.table('users').select('*').eq('user_name', user_id).eq('is_deleted', False).single().execute()
+        if not user_result.data:
+            raise HTTPException(status_code=404, detail="User not found")
+    except Exception:
         raise HTTPException(status_code=404, detail="User not found")
     
     user = user_result.data
@@ -204,10 +218,15 @@ async def get_user_profile(user_id: str, sb: Client = Depends(get_supabase_clien
 async def create_user(user_data: CreateUserRequest, sb: Client = Depends(get_supabase_client)):
     """ユーザー作成"""
     
-    # ユーザー名重複チェック
-    existing = sb.table('users').select('id').eq('user_name', user_data.user_name).execute()
-    if existing.data:
+    # ユーザー名重複チェック（論理削除されていないもののみ）
+    existing_username = sb.table('users').select('id').eq('user_name', user_data.user_name).eq('is_deleted', False).execute()
+    if existing_username.data:
         raise HTTPException(status_code=400, detail="Username already exists")
+    
+    # メールアドレス重複チェック（論理削除関係なく全てのレコード）
+    existing_email = sb.table('users').select('id').eq('email', user_data.email).execute()
+    if existing_email.data:
+        raise HTTPException(status_code=400, detail="Email address is already in use")
     
     # パスワードをハッシュ化
     password_to_hash = user_data.password or "password"  # パスワードが提供されない場合のデフォルト
@@ -218,16 +237,33 @@ async def create_user(user_data: CreateUserRequest, sb: Client = Depends(get_sup
     user_insert = {
         'user_name': user_data.user_name,
         'name': user_data.name,
+        'email': user_data.email,
         'password_hash': password_hash,
         'biography': user_data.biography,
         'created_at': now,
         'updated_at': now
     }
     
-    result = sb.table('users').insert(user_insert).execute()
-    
-    if not result.data:
-        raise HTTPException(status_code=500, detail="Failed to create user")
+    try:
+        result = sb.table('users').insert(user_insert).execute()
+        
+        if not result.data:
+            raise HTTPException(status_code=500, detail="Failed to create user")
+    except Exception as e:
+        # データベースの制約エラーをキャッチ
+        error_str = str(e)
+        print(f"[ERROR] User creation failed: {error_str}")
+        print(f"[ERROR] User data: {user_insert}")
+        import traceback
+        traceback.print_exc()
+        
+        if "duplicate key" in error_str or "already exists" in error_str:
+            if "email" in error_str:
+                raise HTTPException(status_code=400, detail="Email address is already in use")
+            else:
+                raise HTTPException(status_code=400, detail="Username already exists")
+        else:
+            raise HTTPException(status_code=500, detail=f"Database error: {error_str}")
     
     # 作成されたユーザーを取得
     created_user = sb.table('users').select('*').eq('user_name', user_data.user_name).single().execute()
@@ -279,13 +315,25 @@ async def update_user_profile(user_id: str, profile_data: UpdateUserProfileReque
 async def login(login_data: LoginRequest, sb: Client = Depends(get_supabase_client)):
     """ユーザーログイン"""
     
-    # ユーザー検索
-    user_result = sb.table('users').select('*').eq('user_name', login_data.user_id).single().execute()
-    
-    if not user_result.data:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-    
-    user = user_result.data
+    # まずユーザーの存在確認（論理削除チェック含む）
+    try:
+        user_result = sb.table('users').select('*').eq('user_name', login_data.user_id).single().execute()
+        if not user_result.data:
+            # ユーザーが存在しない
+            raise HTTPException(status_code=404, detail="Account does not exist")
+        
+        user = user_result.data
+        
+        # 論理削除されているかチェック
+        if user.get('is_deleted', False):
+            raise HTTPException(status_code=404, detail="Account does not exist")
+            
+    except HTTPException:
+        # HTTPExceptionはそのまま再発生
+        raise
+    except Exception:
+        # その他のエラー（データベース接続エラーなど）はアカウント存在しないエラーとして扱う
+        raise HTTPException(status_code=404, detail="Account does not exist")
     
     # パスワードハッシュの存在確認
     if not user.get('password_hash'):
@@ -489,6 +537,34 @@ async def create_presigned_url(sb: Client = Depends(get_supabase_client)):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to create presigned URL: {str(e)}")
+
+@app.delete("/users/{user_id}", status_code=204)
+async def delete_user_account(user_id: str, current_user: str = Depends(verify_token), sb: Client = Depends(get_supabase_client)):
+    """アカウント削除（論理削除）"""
+    
+    # 所有者チェック - 自分のアカウントのみ削除可能
+    if current_user != user_id:
+        raise HTTPException(status_code=403, detail="Permission denied")
+    
+    # ユーザー存在確認
+    user_result = sb.table('users').select('id, is_deleted').eq('user_name', user_id).single().execute()
+    if not user_result.data:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # 既に削除済みかチェック
+    if user_result.data.get('is_deleted', False):
+        raise HTTPException(status_code=400, detail="Account is already deleted")
+    
+    # 論理削除実行
+    update_data = {
+        'is_deleted': True,
+        'updated_at': datetime.utcnow().isoformat()
+    }
+    
+    result = sb.table('users').update(update_data).eq('user_name', user_id).execute()
+    
+    if not result.data:
+        raise HTTPException(status_code=500, detail="Failed to delete account")
 
 @app.post("/auth/test-hash")
 async def test_hash(request: dict):
