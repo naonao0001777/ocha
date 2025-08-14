@@ -2,7 +2,7 @@ resource "aws_lambda_function" "api" {
   function_name = "${var.project}-${var.environment}-api"
   role          = aws_iam_role.lambda_exec.arn
   runtime       = "python3.11"
-  handler       = "handler.lambda_handler"
+  handler       = "lambda_function.lambda_handler"
   timeout       = 30
   memory_size   = 512
 
