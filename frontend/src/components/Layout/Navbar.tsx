@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Menu } from 'lucide-react';
+import { useLanguage } from '@/components/providers/LanguageProvider';
 
 interface NavbarProps {
   isAuthenticated?: boolean;
@@ -25,6 +26,8 @@ const OchaIcon = () => (
 );
 
 const Navbar: React.FC<NavbarProps> = ({ isAuthenticated = false, onDemoLogin, onLogout }) => {
+  const { t, locale, setLocale } = useLanguage();
+
   return (
     <nav className="border-b bg-card/80 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4">
@@ -38,6 +41,18 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated = false, onDemoLogin, o
           {/* Navigation */}
           <div className="flex items-center space-x-2">
             <ThemeToggle />
+
+            {/* Language Switcher */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">{locale === 'ja' ? '日本語' : 'English'}</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-36">
+                <DropdownMenuItem onClick={() => setLocale('ja')} className="cursor-pointer">日本語</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLocale('en')} className="cursor-pointer">English</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             {!isAuthenticated ? (
               <>
                 <Button 
@@ -53,14 +68,14 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated = false, onDemoLogin, o
                   size="sm"
                   asChild
                 >
-                  <Link href="/login">Sign in</Link>
+                  <Link href="/login">{t('signIn')}</Link>
                 </Button>
                 <Button 
                   size="sm"
                   asChild
                   className="bg-primary hover:bg-primary/90"
                 >
-                  <Link href="/register">Sign up</Link>
+                  <Link href="/register">{t('signUp')}</Link>
                 </Button>
               </>
             ) : (
@@ -74,11 +89,11 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated = false, onDemoLogin, o
                   <DropdownMenuContent align="end" className="w-40">
                     <DropdownMenuItem asChild>
                       <Link href="/profile_edit" className="cursor-pointer">
-                        Edit profile
+                        {t('editProfile')}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={onLogout} className="cursor-pointer">
-                      Logout
+                      {t('logout')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

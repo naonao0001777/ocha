@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
 import Navbar from '@/components/Layout/Navbar';
 import { apiClient, ApiError } from '@/lib/api';
+import { useLanguage } from '@/components/providers/LanguageProvider';
 
 const OchaIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" height="1.5em" viewBox="0 0 512 512" className="inline ml-2">
@@ -17,6 +18,7 @@ const OchaIcon = () => (
 );
 
 export default function Register() {
+  const { t, locale } = useLanguage();
   const [formData, setFormData] = useState({
     email: '',
     userId: '',
@@ -38,13 +40,13 @@ export default function Register() {
     setMessage('');
     
     if (formData.password !== formData.confirmPassword) {
-      setMessage('パスワードが一致しません');
+      setMessage(locale === 'ja' ? 'パスワードが一致しません' : 'Passwords do not match');
       setIsLoading(false);
       return;
     }
     
     if (formData.password.length < 4) {
-      setMessage('パスワードは4文字以上で入力してください');
+      setMessage(locale === 'ja' ? 'パスワードは4文字以上で入力してください' : 'Password must be at least 4 characters');
       setIsLoading(false);
       return;
     }
@@ -58,7 +60,7 @@ export default function Register() {
         biography: ''
       });
       
-      setMessage('アカウントが作成されました！ログイン画面に移動します...');
+      setMessage(locale === 'ja' ? 'アカウントが作成されました！ログイン画面に移動します...' : 'Account created! Redirecting to sign in...');
       
       // 2秒後にログイン画面にリダイレクト
       setTimeout(() => {
@@ -69,12 +71,12 @@ export default function Register() {
       console.error('User creation error:', error);
       if (error instanceof ApiError) {
         if (error.status === 400) {
-          setMessage('このユーザーIDは既に使用されています');
+          setMessage(locale === 'ja' ? 'このユーザーIDは既に使用されています' : 'This user ID is already taken');
         } else {
-          setMessage('アカウントの作成に失敗しました');
+          setMessage(locale === 'ja' ? 'アカウントの作成に失敗しました' : 'Failed to create account');
         }
       } else {
-        setMessage('ネットワークエラーが発生しました');
+        setMessage(locale === 'ja' ? 'ネットワークエラーが発生しました' : 'A network error occurred');
       }
     } finally {
       setIsLoading(false);
@@ -100,14 +102,14 @@ export default function Register() {
           <Card className="w-full max-w-lg shadow-2xl border-muted">
             <CardHeader className="text-center pb-8">
               <CardTitle className="text-2xl font-bold flex items-center justify-center">
-                サインアップ
+                {locale === 'ja' ? 'サインアップ' : 'Sign Up'}
                 <OchaIcon />
               </CardTitle>
             </CardHeader>
             
             <CardContent className="space-y-6">
               {message && (
-                <Alert variant={message.includes('エラー') ? 'destructive' : 'default'} className="mb-6">
+                <Alert variant={message.includes('エラー') || message.includes('失敗') ? 'destructive' : 'default'} className="mb-6">
                   <AlertDescription>{message}</AlertDescription>
                 </Alert>
               )}
@@ -137,7 +139,7 @@ export default function Register() {
                     id="userId"
                     name="userId"
                     type="text"
-                    placeholder="ユーザーIDを入力"
+                    placeholder={locale === 'ja' ? 'ユーザーIDを入力' : 'Enter user ID'}
                     value={formData.userId}
                     onChange={handleChange}
                     autoComplete="username"
@@ -154,7 +156,7 @@ export default function Register() {
                     id="userName"
                     name="userName"
                     type="text"
-                    placeholder="表示名を入力"
+                    placeholder={locale === 'ja' ? '表示名を入力' : 'Enter display name'}
                     value={formData.userName}
                     onChange={handleChange}
                     required
@@ -170,7 +172,7 @@ export default function Register() {
                     id="password"
                     name="password"
                     type="password"
-                    placeholder="パスワードを入力"
+                    placeholder={locale === 'ja' ? 'パスワードを入力' : 'Enter password'}
                     value={formData.password}
                     onChange={handleChange}
                     autoComplete="new-password"
@@ -187,7 +189,7 @@ export default function Register() {
                     id="confirmPassword"
                     name="confirmPassword"
                     type="password"
-                    placeholder="パスワードを再入力"
+                    placeholder={locale === 'ja' ? 'パスワードを再入力' : 'Re-enter password'}
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     autoComplete="new-password"
@@ -202,7 +204,7 @@ export default function Register() {
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-lg font-semibold"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'アカウント作成中...' : 'Sign up'}
+                  {isLoading ? t('creatingAccount') : t('signUp')}
                 </Button>
               </form>
             </CardContent>

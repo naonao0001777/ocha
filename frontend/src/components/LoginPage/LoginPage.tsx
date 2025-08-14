@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { useLanguage } from '@/components/providers/LanguageProvider';
 
 const OchaIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" height="1.5em" viewBox="0 0 512 512" className="inline ml-2">
@@ -21,6 +22,7 @@ interface LoginPageProps {
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ message, messageType = 'error', onLogin }) => {
+  const { t, locale } = useLanguage();
   const [formData, setFormData] = useState({
     userId: '',
     userPassword: '',
@@ -74,7 +76,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ message, messageType = 'error', o
         <Card className="w-full max-w-md shadow-2xl border-muted">
           <CardHeader className="text-center pb-8">
             <CardTitle className="text-2xl font-bold flex items-center justify-center">
-              サインイン
+              {locale === 'ja' ? 'サインイン' : 'Sign In'}
               <OchaIcon />
             </CardTitle>
           </CardHeader>
@@ -96,7 +98,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ message, messageType = 'error', o
                   id="userId"
                   name="userId"
                   type="text"
-                  placeholder="ユーザーIDを入力"
+                  placeholder={locale === 'ja' ? 'ユーザーIDを入力' : 'Enter user ID'}
                   value={formData.userId}
                   onChange={handleChange}
                   autoComplete="username"
@@ -113,7 +115,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ message, messageType = 'error', o
                   id="userPassword"
                   name="userPassword"
                   type="password"
-                  placeholder="パスワードを入力"
+                  placeholder={locale === 'ja' ? 'パスワードを入力' : 'Enter password'}
                   value={formData.userPassword}
                   onChange={handleChange}
                   autoComplete="current-password"
@@ -132,7 +134,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ message, messageType = 'error', o
                   htmlFor="autoLogin" 
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  次回から自動でログイン
+                  {t('autoLogin')}
                 </Label>
               </div>
 
@@ -141,7 +143,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ message, messageType = 'error', o
                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-lg font-semibold"
                 disabled={isLoading}
               >
-                {isLoading ? 'サインイン中...' : 'Sign in'}
+                {isLoading ? t('signingIn') : t('signIn')}
               </Button>
               
               <input type="hidden" name="token" value={token} />

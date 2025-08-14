@@ -1,18 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import { ExternalLink } from 'lucide-react';
+import { useLanguage } from '@/components/providers/LanguageProvider';
 
 const OchaIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 512 512" className="inline ml-2">
@@ -24,16 +18,37 @@ interface HomePageProps {
   message?: string;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ message }) => {
-  const [showDataPolicy, setShowDataPolicy] = useState(false);
-
+const HomePage = ({ message }: HomePageProps) => {
+  const { t } = useLanguage();
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
+    <div className="relative min-h-screen">
+      {/* Background: Beautiful tea field landscape */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        {/* Tea field inspired gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-green-400 via-emerald-500 to-green-600 dark:from-green-800 dark:via-emerald-900 dark:to-green-900" />
+        
+        {/* Layered mountain hills effect */}
+        <div className="absolute inset-0">
+          <div className="absolute bottom-0 w-full h-64 bg-gradient-to-t from-green-600 to-transparent opacity-80" />
+          <div className="absolute bottom-0 w-full h-48 bg-gradient-to-t from-green-700 to-transparent opacity-60" />
+          <div className="absolute bottom-0 w-full h-32 bg-gradient-to-t from-green-800 to-transparent opacity-40" />
+        </div>
+        
+        {/* Subtle texture overlay */}
+        <div className="absolute inset-0 opacity-20 bg-gradient-to-br from-transparent via-white to-transparent mix-blend-overlay" />
+        
+        {/* Sky gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-100 via-transparent to-transparent dark:from-blue-900 dark:via-transparent dark:to-transparent opacity-60" />
+        
+        {/* Content readability overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-white/10 to-transparent dark:from-black/30 dark:via-black/20 dark:to-transparent" />
+      </div>
+
       <div className="container mx-auto px-4 py-8">
         {/* Hero Section */}
-        <Card className="mb-12 border-0 bg-gradient-to-r from-card/80 to-card shadow-2xl">
+        <Card className="mb-12 border border-white/20 dark:border-white/5 bg-white/30 dark:bg-neutral-900/20 backdrop-blur-lg shadow-2xl">
           <CardContent className="p-8 md:p-12 text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 flex items-center justify-center">
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6 flex items-center justify-center">
               Ocha
               <OchaIcon />
             </h1>
@@ -46,8 +61,8 @@ const HomePage: React.FC<HomePageProps> = ({ message }) => {
               </Alert>
             )}
             
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-              Ochaはリンクをまとめてプロフィールに追加することができるプロフィールサービスです
+            <p className="text-xl text-gray-800 dark:text-gray-100 mb-8 max-w-2xl mx-auto leading-relaxed">
+              {t('heroDescription')}
             </p>
             
             <Button 
@@ -56,7 +71,7 @@ const HomePage: React.FC<HomePageProps> = ({ message }) => {
               className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
             >
               <Link href="/register">
-                はじめる
+                {t('getStarted')}
               </Link>
             </Button>
           </CardContent>
@@ -64,110 +79,59 @@ const HomePage: React.FC<HomePageProps> = ({ message }) => {
 
         {/* Features Section */}
         <div className="grid md:grid-cols-3 gap-8 mb-12">
-          <Card className="hover:shadow-lg transition-shadow duration-200 border-muted">
+          <Card className="hover:shadow-xl transition-all duration-300 border border-white/20 dark:border-white/5 bg-white/25 dark:bg-neutral-900/15 backdrop-blur-lg">
             <CardContent className="p-6">
-              <h3 className="text-xl font-semibold mb-3 text-foreground">最大10個まで</h3>
-              <p className="text-muted-foreground">
-                リンクを追加することができるのは最大10個までです。
+              <h3 className="text-xl font-semibold mb-3 text-gray-800 dark:text-white">{t('features1Title')}</h3>
+              <p className="text-gray-700 dark:text-gray-200">
+                {t('features1Desc')}
               </p>
             </CardContent>
           </Card>
           
-          <Card className="hover:shadow-lg transition-shadow duration-200 border-muted">
+          <Card className="hover:shadow-xl transition-all duration-300 border border-white/20 dark:border-white/5 bg-white/25 dark:bg-neutral-900/15 backdrop-blur-lg">
             <CardContent className="p-6">
-              <h3 className="text-xl font-semibold mb-3 text-foreground">プロフィール画像を追加</h3>
-              <p className="text-muted-foreground">
-                png,jpeg形式の画像をプロフィール画像として使用できます。もちろん使用しなくてもデフォルトのアイコンが当てられます。
+              <h3 className="text-xl font-semibold mb-3 text-gray-800 dark:text-white">{t('features2Title')}</h3>
+              <p className="text-gray-700 dark:text-gray-200">
+                {t('features2Desc')}
               </p>
             </CardContent>
           </Card>
           
-          <Card className="hover:shadow-lg transition-shadow duration-200 border-muted">
+          <Card className="hover:shadow-xl transition-all duration-300 border border-white/20 dark:border-white/5 bg-white/25 dark:bg-neutral-900/15 backdrop-blur-lg">
             <CardContent className="p-6">
-              <h3 className="text-xl font-semibold mb-3 text-foreground">アカウントを作成</h3>
-              <p className="text-muted-foreground">
-                アカウントを作成していただきますが、もちろん削除してもう一度再利用することができます。
+              <h3 className="text-xl font-semibold mb-3 text-gray-800 dark:text-white">{t('features3Title')}</h3>
+              <p className="text-gray-700 dark:text-gray-200">
+                {t('features3Desc')}
               </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Data Policy Section */}
+        {/* Footer Links and Author Info */}
         <div className="text-center">
-          <Dialog open={showDataPolicy} onOpenChange={setShowDataPolicy}>
-            <DialogTrigger asChild>
-              <Button variant="link" className="text-muted-foreground hover:text-primary">
-                データの取扱いについて
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="text-xl font-semibold">データの取扱いについて</DialogTitle>
-              </DialogHeader>
-              
-              <div className="space-y-4 text-sm text-muted-foreground">
-                <ul className="space-y-3 list-disc list-inside">
-                  <li>
-                    このサイトは
-                    <a 
-                      href="https://render.com/" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline mx-1"
-                    >
-                      Render
-                    </a>
-                    によってDDos攻撃などからのセキュリティを保障されています。
-                  </li>
-                  <li>
-                    このサイトに登録をされたことによって得たデータは、全てRenderに建てているデータベースに保管され、このサイトに使用される目的でのみ情報を取扱します。
-                  </li>
-                  <li>
-                    また、アカウントを作成する際に入力するメールアドレスは適当なもので大丈夫です。
-                  </li>
-                  <li>
-                    例えば、&quot;a@example.com&quot;など本来使用しているメールアドレスでなくともメール認証機能を実装していないため、他のユーザーとの被りがない限り本サイトを使用することができます。
-                  </li>
-                  <li>
-                    また、アカウントを削除することで、ご登録いただいたメールアドレス、ID、パスワードはデータベースから削除されます。
-                  </li>
-                  <li>
-                    当サイトはRenderにホストされていますが、無料枠での利用のため、15分間操作がない場合、サーバーの再起動が必要になります。
-                  </li>
-                  <li>
-                    サーバーは再起動に最大30秒ほど要します。
-                  </li>
-                  <li>
-                    また、データベース内に保管されたデータは3ヶ月後に全て消去されます。その際には再度ご登録いただく形になります。如何せん商用に使っていない個人開発ですので、その点ご了承ください。
-                  </li>
-                </ul>
-                
-                <div className="pt-6 border-t">
-                  <h4 className="font-semibold mb-4 text-foreground">当サイト制作者の情報</h4>
-                  <div className="flex justify-center space-x-6">
-                    <a 
-                      href="https://twitter.com/salty_special" 
-                      target="_blank" 
-                      rel="noopener noreferrer nofollow"
-                      className="flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors"
-                    >
-                      <img src="/assets/icon_x.png" className="w-8 h-8" alt="X" />
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
-                    <a 
-                      href="https://github.com/naonao0001777" 
-                      target="_blank" 
-                      rel="noopener noreferrer nofollow"
-                      className="flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors"
-                    >
-                      <img src="/assets/github.png" className="w-8 h-8" alt="GitHub" />
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <div className="mb-6 text-sm">
+            <Link href="/privacy" className="text-gray-700 dark:text-gray-300 hover:text-primary underline underline-offset-4 mr-4">
+              {t('privacy')}
+            </Link>
+            <Link href="/terms" className="text-gray-700 dark:text-gray-300 hover:text-primary underline underline-offset-4">
+              {t('terms')}
+            </Link>
+          </div>
+
+          <div className="pt-6 border-t">
+            <h4 className="font-semibold mb-4 text-gray-800 dark:text-white">{t('authorInfo')}</h4>
+            <div className="flex justify-center space-x-6">
+              <a 
+                href="https://github.com/naonao0001777" 
+                target="_blank" 
+                rel="noopener noreferrer nofollow"
+                className="flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors"
+              >
+                <Image src="/assets/github.png" width={32} height={32} className="w-8 h-8" alt="GitHub" />
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -10,6 +10,7 @@ create table public.users (
   password_hash text not null, -- パスワードハッシュ（認証用）
   biography text, -- プロフィール文
   profile_image text, -- プロフィール画像のURL（Supabase Storage）
+  is_deleted boolean not null default false, -- アカウント論理削除フラグ
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
