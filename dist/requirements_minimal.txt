@@ -1,7 +1,0 @@
-fastapi==0.111.0
-starlette==0.37.2
-pydantic==2.7.1
-pydantic-core==2.18.2
-mangum==0.17.0
-typing-extensions==4.8.0
-annotated-types==0.6.0

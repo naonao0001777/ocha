@@ -451,7 +451,12 @@ async def delete_link(user_id: str, link_id: int, current_user: str = Depends(ve
 async def create_presigned_url(sb: Client = Depends(get_supabase_client)):
     """ファイルアップロード用の署名URL生成"""
     
-    bucket_name = os.environ.get('SUPABASE_STORAGE_BUCKET', 'profile-images')
+    # 環境変数の名称ゆれ対策（Terraformでは FILES_BUCKET を設定）
+    bucket_name = (
+        os.environ.get('SUPABASE_STORAGE_BUCKET')
+        or os.environ.get('FILES_BUCKET')
+        or 'profile-images'
+    )
     
     # ユニークなファイルキー生成
     timestamp = int(datetime.utcnow().timestamp())
