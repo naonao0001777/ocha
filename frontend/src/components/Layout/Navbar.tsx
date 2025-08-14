@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
-import { Menu, HelpCircle } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
 interface NavbarProps {
   isAuthenticated?: boolean;
@@ -65,15 +65,6 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated = false, onDemoLogin, o
               </>
             ) : (
               <>
-                <Button 
-                  variant="outline"
-                  size="sm"
-                  className="text-red-600 border-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:border-red-400 dark:hover:bg-red-950 dark:hover:text-red-300"
-                  title="「リンクを追加」ボタンから+ボタンでプロフィールにリンクを追加することができます。"
-                >
-                  <HelpCircle className="h-4 w-4 mr-1" />
-                  Help
-                </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
@@ -82,8 +73,8 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated = false, onDemoLogin, o
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-40">
                     <DropdownMenuItem asChild>
-                      <Link href="/settings" className="cursor-pointer">
-                        Settings
+                      <Link href="/profile_edit" className="cursor-pointer">
+                        Edit profile
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={onLogout} className="cursor-pointer">

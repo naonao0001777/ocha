@@ -1,8 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Container, Row, Col, Button, Dropdown, Modal, Collapse, Card, Form, FloatingLabel, Alert } from 'react-bootstrap';
-import { Upload, Trash2 } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Upload, ChevronDown, ChevronUp, ExternalLink, Plus } from 'lucide-react';
 
 const OchaIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
@@ -55,14 +61,29 @@ const AdminPage: React.FC<AdminPageProps> = ({
   onLinkUpdate,
   onLinkDelete
 }) => {
-  const [showSNSCollapse, setShowSNSCollapse] = useState(false);
-  const [showLinkCollapse, setShowLinkCollapse] = useState(false);
-  const [socialAccounts, setSocialAccounts] = useState(userProfile.socialAccounts);
-  const [newLink, setNewLink] = useState({ title: '', url: '' });
-  const [editingLinks, setEditingLinks] = useState<{[key: number]: {title: string, url: string}}>({});
+   const [showSNSCollapse, setShowSNSCollapse] = useState(false);
+   const [showLinkCollapse, setShowLinkCollapse] = useState(false);
+   const [socialAccounts, setSocialAccounts] = useState(userProfile.socialAccounts);
+   const [newLink, setNewLink] = useState({ title: '', url: '' });
+   const [editingLinks, setEditingLinks] = useState<{[key: number]: {title: string, url: string}}>({});
+  const [showMessage, setShowMessage] = useState(false);
+  const messageRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (message) {
+      setShowMessage(true);
+      // メッセージが更新されたら自動で表示位置までスクロール
+      setTimeout(() => {
+        messageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 0);
+    }
+  }, [message]);
+   
+   // Dropdown とは独立した hidden file input（メニュー閉鎖で DOM から消えないようにする）
+   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    console.log('[AdminPage] handleFileUpload fired. File:', file?.name, file?.type, file?.size);
     if (file && onProfileImageUpload) {
       onProfileImageUpload(file);
     }
@@ -91,10 +112,17 @@ const AdminPage: React.FC<AdminPageProps> = ({
   };
 
   const handleLinkEdit = (linkId: number, title: string, url: string) => {
-    setEditingLinks(prev => ({
-      ...prev,
-      [linkId]: { title, url }
-    }));
+    setEditingLinks(prev => {
+      if (prev[linkId]) {
+        const newEditing = { ...prev };
+        delete newEditing[linkId];
+        return newEditing;
+      }
+      return {
+        ...prev,
+        [linkId]: { title, url }
+      };
+    });
   };
 
   const handleLinkUpdate = (linkId: number) => {
@@ -111,363 +139,396 @@ const AdminPage: React.FC<AdminPageProps> = ({
 
   const renderSocialIcon = (platform: string, url?: string) => {
     if (!url) return null;
-    
+
+    // プラットフォームごとのアイコンマップ（Xのみ特例: icon_x.png）
+    const iconMap: Record<string, string> = {
+      youtube: '/assets/youtube_icon.png',
+      icon_x: '/assets/icon_x.png', // 呼び出し側が 'icon_x' を渡す想定に対応
+      x: '/assets/icon_x.png',      // 念のため 'x' でも対応
+      twitch: '/assets/twitch_icon.png',
+      github: '/assets/github_icon.png',
+      instagram: '/assets/instagram_icon.png',
+      facebook: '/assets/facebook_icon.png',
+    };
+
+    const src = iconMap[platform] ?? `/assets/${platform}_icon.png`;
+
     return (
       <a 
-        className="d-inline-flex focus-ring p-0 m-2 rounded-circle"
+        className="inline-flex focus:ring-2 focus:ring-offset-2 focus:ring-primary rounded-full p-1 hover:bg-accent transition-colors"
         href={url}
         target="_blank" 
         rel="noopener noreferrer"
       >
         <img 
-          width="35px" 
-          height="35px" 
-          src={`/assets/${platform}_icon.png`} 
+          width="35" 
+          height="35" 
+          src={src}
           alt={platform} 
+          className="rounded-full"
         />
       </a>
     );
   };
 
   return (
-    <Container className="text-center">
-      {message && (
-        <Alert variant="info" dismissible>
-          {message}
-        </Alert>
-      )}
+    <div className="container mx-auto px-4 text-center max-w-2xl">
+      {/* hidden file input for profile upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/png,image/jpeg"
+        className="hidden"
+        onChange={handleFileUpload}
+      />
+      {message && showMessage && (
+        <Alert className="mb-4 text-center relative scroll-mt-24 md:scroll-mt-28">
+           <button
+             type="button"
+             aria-label="閉じる"
+             className="absolute right-2 top-2 text-muted-foreground hover:text-foreground"
+             onClick={() => setShowMessage(false)}
+           >
+             ×
+           </button>
+           <AlertDescription className="text-foreground">
+             <div ref={messageRef} className="whitespace-nowrap overflow-hidden text-ellipsis">
+               {message}
+             </div>
+           </AlertDescription>
+         </Alert>
+       )}
 
       {/* Profile Image Section */}
-      <Row className="justify-content-center m-2 p-2">
-        <Col lg={4} xs={3}></Col>
-        <Col lg={4} xs={6}>
-          <Dropdown>
-            <Dropdown.Toggle
-              variant="link"
-              className="btn rounded-circle border-0 position-relative p-0"
-              style={{ background: 'none', border: 'none' }}
-            >
-              <div 
-                className="bg-dark position-absolute bottom-0 start-0 rounded text-center border border-1 d-flex align-items-center justify-content-center"
-                style={{ width: '60px', height: '30px', fontSize: '12px' }}
+      <div className="flex justify-center my-8">
+        <div className="relative">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="relative p-0 rounded-full hover:bg-transparent"
               >
-                <Upload size={13} className="me-1" />
-                <strong>Edit</strong>
-              </div>
-              {userProfile.profileImage ? (
-                <img 
-                  src={userProfile.profileImage} 
-                  className="rounded-circle" 
-                  width="100px" 
-                  height="100px" 
-                  alt="Profile" 
-                />
-              ) : (
-                <img 
-                  src="/assets/default_leaf.png" 
-                  className="rounded-circle" 
-                  width="100px" 
-                  height="100px" 
-                  alt="Default Profile" 
-                />
-              )}
-            </Dropdown.Toggle>
+                <div className="absolute -bottom-2 -right-2 bg-primary text-primary-foreground rounded text-center border flex items-center justify-center z-10"
+                     style={{ width: '60px', height: '30px', fontSize: '12px' }}>
+                  <Upload size={13} className="mr-1" />
+                  <strong>Edit</strong>
+                </div>
+                {userProfile.profileImage ? (
+                  <img 
+                    src={userProfile.profileImage} 
+                    className="rounded-full" 
+                    width="100" 
+                    height="100" 
+                    alt="Profile" 
+                  />
+                ) : (
+                  <img 
+                    src="/assets/default_leaf.png" 
+                    className="rounded-full" 
+                    width="100" 
+                    height="100" 
+                    alt="Default Profile" 
+                  />
+                )}
+              </Button>
+            </DropdownMenuTrigger>
             
-            <Dropdown.Menu align="start" className="text-start">
-              <Dropdown.Item as="label" htmlFor="file-upload" style={{ cursor: 'pointer' }}>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  // メニューのデフォルト動作（即閉じ）を防ぎつつ、ファイルダイアログを開く
+                  e.preventDefault();
+                  fileInputRef.current?.click();
+                }}
+              >
                 Upload a Photo
-                <input
-                  id="file-upload"
-                  type="file"
-                  accept="image/png,image/jpeg"
-                  style={{ display: 'none' }}
-                  onChange={handleFileUpload}
-                />
-              </Dropdown.Item>
-              <Dropdown.Item onClick={onProfileImageDelete}>
-                Remove Photo
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </Col>
-        <Col lg={4} xs={3}></Col>
-      </Row>
+              </DropdownMenuItem>
+               <DropdownMenuItem
+                onSelect={(e) => {
+                  // メニュークローズのタイミングと競合しないよう抑止し、後段で非同期に発火
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('[AdminPage] Remove Photo selected');
+                  setTimeout(() => {
+                    onProfileImageDelete?.();
+                  }, 0);
+                }}
+               >
+                  Remove Photo
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
 
       {/* User Name and Profile URL */}
-      <Row className="justify-content-center mt-2 p-1">
-        <Col lg="auto" xs="auto"></Col>
-        <Col lg="auto" xs="auto">
-          <h3 className="text-center">{userProfile.userName}</h3>
-        </Col>
-        <Col lg="auto" xs="auto" className="text-start">
-          <Button
-            variant="link"
-            size="sm"
-            className="rounded-circle p-1"
-            onClick={() => window.open(`/u/${userProfile.userId}`, '_blank')}
-            title="プロフィールURLに行く"
-          >
-            <img width="23px" height="23px" src="/assets/url_link.png" alt="urllink" />
-          </Button>
-        </Col>
-      </Row>
+      <div className="flex justify-center items-center mt-4 mb-2">
+        <h3 className="text-2xl font-bold mr-2">{userProfile.userName}</h3>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="rounded-full p-2 h-8 w-8"
+          onClick={() => window.open(`/u/${userProfile.userId}`, '_blank')}
+          title="プロフィールURLに行く"
+        >
+          <ExternalLink size={16} />
+        </Button>
+      </div>
 
       {/* Biography */}
-      <Row className="justify-content-center mt-1 p-1">
-        <Col lg="auto" xs="auto">
-          <p className="fw-bold text-center">{userProfile.biography}</p>
-        </Col>
-      </Row>
+      <div className="flex justify-center mt-2 mb-4">
+        <p className="font-semibold text-center">{userProfile.biography}</p>
+      </div>
 
       {/* Social Media Icons */}
-      <Row className="justify-content-center mt-1 p-1">
-        <Col lg="auto" xs="auto">
+      <div className="flex justify-center mt-2 mb-4">
+        <div className="flex space-x-2">
           {renderSocialIcon('youtube', socialAccounts.youtube)}
           {renderSocialIcon('icon_x', socialAccounts.x)}
           {renderSocialIcon('twitch', socialAccounts.twitch)}
           {renderSocialIcon('github', socialAccounts.github)}
           {renderSocialIcon('instagram', socialAccounts.instagram)}
           {renderSocialIcon('facebook', socialAccounts.facebook)}
-        </Col>
-      </Row>
+        </div>
+      </div>
 
       {/* SNS Account Addition */}
-      <Row className="justify-content-center m-2 p-1">
-        <Col lg={3} xs={3}></Col>
-        <Col lg={6} xs={6} className="gap-2">
-          <Button
-            variant="success"
-            className="rounded-pill mb-2"
-            onClick={() => setShowSNSCollapse(!showSNSCollapse)}
-          >
-            SNSアカウントを追加
-          </Button>
+      <div className="my-6">
+        <Collapsible open={showSNSCollapse} onOpenChange={setShowSNSCollapse}>
+          <CollapsibleTrigger asChild>
+            <Button className="rounded-full mb-4 w-full max-w-md">
+              SNSアカウントを追加
+              {showSNSCollapse ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />}
+            </Button>
+          </CollapsibleTrigger>
           
-          <Collapse in={showSNSCollapse}>
-            <Card className="card-body">
-              <Form onSubmit={handleSocialAccountSubmit}>
-                <div className="mb-3">
-                  <div className="text-start mb-2">
-                    <img width="35px" height="35px" src="/assets/youtube_icon.png" alt="YouTube" className="me-2" />
-                    YouTube
+          <CollapsibleContent>
+            <Card className="max-w-md mx-auto">
+              <CardContent className="pt-6">
+                <form onSubmit={handleSocialAccountSubmit} className="space-y-4">
+                  <div>
+                    <Label className="flex items-center text-left mb-2">
+                      <img width="35" height="35" src="/assets/youtube_icon.png" alt="YouTube" className="mr-2" />
+                      YouTube
+                    </Label>
+                    <Input
+                      type="url"
+                      placeholder="https:// または http://で始まるURLを入れる"
+                      value={socialAccounts.youtube || ''}
+                      onChange={(e) => handleSocialAccountChange('youtube', e.target.value)}
+                    />
                   </div>
-                  <Form.Control
-                    type="url"
-                    placeholder="https:// または http://で始まるURLを入れる"
-                    value={socialAccounts.youtube || ''}
-                    onChange={(e) => handleSocialAccountChange('youtube', e.target.value)}
-                  />
-                </div>
 
-                <div className="mb-3">
-                  <div className="text-start mb-2">
-                    <img width="35px" height="35px" src="/assets/twitch_icon.png" alt="Twitch" className="me-2" />
-                    Twitch
+                  <div>
+                    <Label className="flex items-center text-left mb-2">
+                      <img width="35" height="35" src="/assets/twitch_icon.png" alt="Twitch" className="mr-2" />
+                      Twitch
+                    </Label>
+                    <Input
+                      type="url"
+                      placeholder="https:// または http://で始まるURLを入れる"
+                      value={socialAccounts.twitch || ''}
+                      onChange={(e) => handleSocialAccountChange('twitch', e.target.value)}
+                    />
                   </div>
-                  <Form.Control
-                    type="url"
-                    placeholder="https:// または http://で始まるURLを入れる"
-                    value={socialAccounts.twitch || ''}
-                    onChange={(e) => handleSocialAccountChange('twitch', e.target.value)}
-                  />
-                </div>
 
-                <div className="mb-3">
-                  <div className="text-start mb-2">
-                    <img width="35px" height="35px" src="/assets/icon_x.png" alt="X" className="me-2" />
-                    X
+                  <div>
+                    <Label className="flex items-center text-left mb-2">
+                      <img width="35" height="35" src="/assets/icon_x.png" alt="X" className="mr-2" />
+                      X
+                    </Label>
+                    <Input
+                      type="url"
+                      placeholder="https:// または http://で始まるURLを入れる"
+                      value={socialAccounts.x || ''}
+                      onChange={(e) => handleSocialAccountChange('x', e.target.value)}
+                    />
                   </div>
-                  <Form.Control
-                    type="url"
-                    placeholder="https:// または http://で始まるURLを入れる"
-                    value={socialAccounts.x || ''}
-                    onChange={(e) => handleSocialAccountChange('x', e.target.value)}
-                  />
-                </div>
 
-                <div className="mb-3">
-                  <div className="text-start mb-2">
-                    <img width="35px" height="35px" src="/assets/github_icon.png" alt="GitHub" className="me-2" />
-                    GitHub
+                  <div>
+                    <Label className="flex items-center text-left mb-2">
+                      <img width="35" height="35" src="/assets/github_icon.png" alt="GitHub" className="mr-2" />
+                      GitHub
+                    </Label>
+                    <Input
+                      type="url"
+                      placeholder="https:// または http://で始まるURLを入れる"
+                      value={socialAccounts.github || ''}
+                      onChange={(e) => handleSocialAccountChange('github', e.target.value)}
+                    />
                   </div>
-                  <Form.Control
-                    type="url"
-                    placeholder="https:// または http://で始まるURLを入れる"
-                    value={socialAccounts.github || ''}
-                    onChange={(e) => handleSocialAccountChange('github', e.target.value)}
-                  />
-                </div>
 
-                <div className="mb-3">
-                  <div className="text-start mb-2">
-                    <img width="35px" height="35px" src="/assets/instagram_icon.png" alt="Instagram" className="me-2" />
-                    Instagram
+                  <div>
+                    <Label className="flex items-center text-left mb-2">
+                      <img width="35" height="35" src="/assets/instagram_icon.png" alt="Instagram" className="mr-2" />
+                      Instagram
+                    </Label>
+                    <Input
+                      type="url"
+                      placeholder="https:// または http://で始まるURLを入れる"
+                      value={socialAccounts.instagram || ''}
+                      onChange={(e) => handleSocialAccountChange('instagram', e.target.value)}
+                    />
                   </div>
-                  <Form.Control
-                    type="url"
-                    placeholder="https:// または http://で始まるURLを入れる"
-                    value={socialAccounts.instagram || ''}
-                    onChange={(e) => handleSocialAccountChange('instagram', e.target.value)}
-                  />
-                </div>
 
-                <div className="mb-3">
-                  <div className="text-start mb-2">
-                    <img width="35px" height="35px" src="/assets/facebook_icon.png" alt="Facebook" className="me-2" />
-                    Facebook
+                  <div>
+                    <Label className="flex items-center text-left mb-2">
+                      <img width="35" height="35" src="/assets/facebook_icon.png" alt="Facebook" className="mr-2" />
+                      Facebook
+                    </Label>
+                    <Input
+                      type="url"
+                      placeholder="https:// または http://で始まるURLを入れる"
+                      value={socialAccounts.facebook || ''}
+                      onChange={(e) => handleSocialAccountChange('facebook', e.target.value)}
+                    />
                   </div>
-                  <Form.Control
-                    type="url"
-                    placeholder="https:// または http://で始まるURLを入れる"
-                    value={socialAccounts.facebook || ''}
-                    onChange={(e) => handleSocialAccountChange('facebook', e.target.value)}
-                  />
-                </div>
 
-                <Button
-                  type="submit"
-                  variant="success"
-                  className="rounded-circle p-0"
-                  style={{ width: '2rem', height: '2rem' }}
-                >
-                  ＋
-                </Button>
-              </Form>
+                  <div className="flex justify-center">
+                    <Button
+                      type="submit"
+                      size="sm"
+                      className="rounded-full w-8 h-8 p-0"
+                    >
+                      <Plus size={16} />
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
             </Card>
-          </Collapse>
-        </Col>
-        <Col lg={3} xs={3}></Col>
-      </Row>
+          </CollapsibleContent>
+        </Collapsible>
+      </div>
 
       {/* Link Addition */}
-      <Row className="justify-content-center m-2 p-1">
-        <Col lg={3} xs={3}></Col>
-        <Col lg={6} xs={6} className="gap-2">
-          <Button
-            variant="success"
-            className="rounded-pill mb-2"
-            onClick={() => setShowLinkCollapse(!showLinkCollapse)}
-          >
-            リンクを追加
-          </Button>
+      <div className="my-6">
+        <Collapsible open={showLinkCollapse} onOpenChange={setShowLinkCollapse}>
+          <CollapsibleTrigger asChild>
+            <Button className="rounded-full mb-4 w-full max-w-md">
+              リンクを追加
+              {showLinkCollapse ? <ChevronUp className="ml-2 h-4 w-4" /> : <ChevronDown className="ml-2 h-4 w-4" />}
+            </Button>
+          </CollapsibleTrigger>
           
-          <Collapse in={showLinkCollapse}>
-            <Card className="card-body">
-              <Form onSubmit={handleNewLinkSubmit}>
-                <div className="mb-3">
-                  <div className="text-start mb-2">タイトル</div>
-                  <Form.Control
-                    type="text"
-                    placeholder="リンク名を入れる"
-                    value={newLink.title}
-                    onChange={(e) => setNewLink(prev => ({ ...prev, title: e.target.value }))}
-                    required
-                  />
-                </div>
-                
-                <div className="mb-3">
-                  <div className="text-start mb-2">URL</div>
-                  <Form.Control
-                    type="url"
-                    placeholder="https:// または http://で始まるURLを入れる"
-                    value={newLink.url}
-                    onChange={(e) => setNewLink(prev => ({ ...prev, url: e.target.value }))}
-                    required
-                  />
-                </div>
-                
-                <Button
-                  type="submit"
-                  variant="success"
-                  className="rounded-circle p-0"
-                  style={{ width: '2rem', height: '2rem' }}
-                >
-                  ＋
-                </Button>
-              </Form>
+          <CollapsibleContent>
+            <Card className="max-w-md mx-auto">
+              <CardContent className="pt-6">
+                <form onSubmit={handleNewLinkSubmit} className="space-y-4">
+                  <div>
+                    <Label className="text-left mb-2 block">タイトル</Label>
+                    <Input
+                      type="text"
+                      placeholder="リンク名を入れる"
+                      value={newLink.title}
+                      onChange={(e) => setNewLink(prev => ({ ...prev, title: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label className="text-left mb-2 block">URL</Label>
+                    <Input
+                      type="url"
+                      placeholder="https:// または http://で始まるURLを入れる"
+                      value={newLink.url}
+                      onChange={(e) => setNewLink(prev => ({ ...prev, url: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  
+                  <div className="flex justify-center">
+                    <Button
+                      type="submit"
+                      size="sm"
+                      className="rounded-full w-8 h-8 p-0"
+                    >
+                      <Plus size={16} />
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
             </Card>
-          </Collapse>
-        </Col>
-        <Col lg={3} xs={3}></Col>
-      </Row>
+          </CollapsibleContent>
+        </Collapsible>
+      </div>
 
       {/* Existing Links */}
-      <Row className="justify-content-center">
+      <div className="space-y-4">
         {userProfile.links.map((link) => (
-          <Row key={link.id} className="justify-content-center mb-3">
-            <Col lg={3} xs={2}></Col>
-            <Col lg={6} xs={8} className="d-grid gap-2">
-              <Button
-                variant="outline-success"
-                className="text-success-emphasis btn-lg rounded-pill"
-                style={{ 
-                  '--bs-btn-padding-y': '.70rem',
-                  '--bs-btn-padding-x': '.5rem'
-                } as React.CSSProperties}
-                onClick={() => handleLinkEdit(link.id, link.title, link.url)}
-              >
-                {link.title}
-              </Button>
-              
-              <Collapse in={!!editingLinks[link.id]}>
-                <Card className="card-body">
-                  <Form>
-                    <div className="mb-3">
-                      <div className="text-start mb-2">タイトル</div>
-                      <Form.Control
-                        type="text"
-                        placeholder="リンク名を入れる"
-                        value={editingLinks[link.id]?.title || ''}
-                        onChange={(e) => setEditingLinks(prev => ({
-                          ...prev,
-                          [link.id]: { ...prev[link.id], title: e.target.value }
-                        }))}
-                      />
-                    </div>
-                    
-                    <div className="mb-3">
-                      <div className="text-start mb-2">URL</div>
-                      <Form.Control
-                        type="url"
-                        placeholder="https:// または http://で始まるURLを入れる"
-                        value={editingLinks[link.id]?.url || ''}
-                        onChange={(e) => setEditingLinks(prev => ({
-                          ...prev,
-                          [link.id]: { ...prev[link.id], url: e.target.value }
-                        }))}
-                      />
-                    </div>
-                    
-                    <Row>
-                      <Col></Col>
-                      <Col xs={5}>
+          <div key={link.id} className="w-full max-w-md mx-auto">
+            <Button
+              variant="outline"
+              className="w-full rounded-full py-3 text-lg"
+              onClick={() => handleLinkEdit(link.id, link.title, link.url)}
+            >
+              {link.title}
+            </Button>
+            
+            <Collapsible open={!!editingLinks[link.id]} onOpenChange={(open) => {
+              if (!open) {
+                setEditingLinks(prev => {
+                  const newEditing = { ...prev };
+                  delete newEditing[link.id];
+                  return newEditing;
+                });
+              }
+            }}>
+              <CollapsibleContent>
+                <Card className="mt-2">
+                  <CardContent className="pt-6">
+                    <div className="space-y-4">
+                      <div>
+                        <Label className="text-left mb-2 block">タイトル</Label>
+                        <Input
+                          type="text"
+                          placeholder="リンク名を入れる"
+                          value={editingLinks[link.id]?.title || ''}
+                          onChange={(e) => setEditingLinks(prev => ({
+                            ...prev,
+                            [link.id]: { ...prev[link.id], title: e.target.value }
+                          }))}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label className="text-left mb-2 block">URL</Label>
+                        <Input
+                          type="url"
+                          placeholder="https:// または http://で始まるURLを入れる"
+                          value={editingLinks[link.id]?.url || ''}
+                          onChange={(e) => setEditingLinks(prev => ({
+                            ...prev,
+                            [link.id]: { ...prev[link.id], url: e.target.value }
+                          }))}
+                        />
+                      </div>
+                      
+                      <div className="flex gap-2 justify-center">
                         <Button
-                          variant="success"
-                          className="rounded-pill"
+                          size="sm"
+                          className="rounded-full"
                           onClick={() => handleLinkUpdate(link.id)}
                         >
                           リンク更新
                         </Button>
-                      </Col>
-                      <Col>
                         <Button
-                          variant="outline-secondary"
-                          className="rounded-pill"
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full"
                           onClick={() => onLinkDelete && onLinkDelete(link.id)}
                         >
                           削除
                         </Button>
-                      </Col>
-                    </Row>
-                  </Form>
+                      </div>
+                    </div>
+                  </CardContent>
                 </Card>
-              </Collapse>
-            </Col>
-            <Col lg={3} xs={2}></Col>
-          </Row>
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
         ))}
-      </Row>
-    </Container>
+      </div>
+    </div>
   );
 };
 

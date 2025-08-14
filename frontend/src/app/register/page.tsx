@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
 import Navbar from '@/components/Layout/Navbar';
+import { apiClient, ApiError } from '@/lib/api';
 
 const OchaIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" height="1.5em" viewBox="0 0 512 512" className="inline ml-2">
@@ -24,14 +26,16 @@ export default function Register() {
   });
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleDemoLogin = () => {
-    console.log('Demo login clicked');
+    router.push('/login');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setMessage('');
     
     if (formData.password !== formData.confirmPassword) {
       setMessage('パスワードが一致しません');
@@ -39,10 +43,39 @@ export default function Register() {
       return;
     }
     
+    if (formData.password.length < 4) {
+      setMessage('パスワードは4文字以上で入力してください');
+      setIsLoading(false);
+      return;
+    }
+    
     try {
-      console.log('Register attempt:', formData);
-      // 実際の実装では、APIを呼び出してユーザー登録処理を行う
-      setMessage('アカウントが作成されました！');
+      // APIを呼び出してユーザー作成
+      await apiClient.createUser({
+        user_name: formData.userId,
+        name: formData.userName,
+        password: formData.password,
+        biography: ''
+      });
+      
+      setMessage('アカウントが作成されました！ログイン画面に移動します...');
+      
+      // 2秒後にログイン画面にリダイレクト
+      setTimeout(() => {
+        router.push('/login');
+      }, 2000);
+      
+    } catch (error) {
+      console.error('User creation error:', error);
+      if (error instanceof ApiError) {
+        if (error.status === 400) {
+          setMessage('このユーザーIDは既に使用されています');
+        } else {
+          setMessage('アカウントの作成に失敗しました');
+        }
+      } else {
+        setMessage('ネットワークエラーが発生しました');
+      }
     } finally {
       setIsLoading(false);
     }

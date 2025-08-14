@@ -16,10 +16,11 @@ const OchaIcon = () => (
 
 interface LoginPageProps {
   message?: string;
+  messageType?: 'success' | 'error';
   onLogin?: (userId: string, password: string, autoLogin: boolean) => void;
 }
 
-const LoginPage: React.FC<LoginPageProps> = ({ message, onLogin }) => {
+const LoginPage: React.FC<LoginPageProps> = ({ message, messageType = 'error', onLogin }) => {
   const [formData, setFormData] = useState({
     userId: '',
     userPassword: '',
@@ -80,7 +81,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ message, onLogin }) => {
           
           <CardContent className="space-y-6">
             {message && (
-              <Alert variant="destructive" className="mb-6">
+              <Alert variant={messageType === 'success' ? 'default' : 'destructive'} 
+                     className={`mb-6 ${messageType === 'success' ? 'border-blue-500 text-blue-700 dark:text-blue-400' : ''}`}>
                 <AlertDescription>{message}</AlertDescription>
               </Alert>
             )}

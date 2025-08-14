@@ -1,0 +1,5 @@
+- Demo login changed to demo/test
+- Replaced /admin with /profile and /profile_edit
+- Removed Help button from Navbar
+- Moved Edit badge position on profile image
+- Will remove /settings route (deprecated)
