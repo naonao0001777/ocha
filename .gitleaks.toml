@@ -1,0 +1,21 @@
+title = "Gitleaks Config"
+
+[extend]
+  # You can extend built-in rulesets; here we use the community default
+  repos = []
+
+[allowlist]
+  description = "files to allow"
+  # Ignore common binary and build dirs
+  files = [
+    "node_modules/",
+    "frontend/.next/",
+    "api/.lambda_build/",
+    "config/mysql/data/",
+    "infra/.terraform/",
+  ]
+  # Example: ignore fake keys used in tests/examples
+  regexes = [
+    '''example(_|-)key''',
+    '''dummy(_|-)secret''',
+  ]
