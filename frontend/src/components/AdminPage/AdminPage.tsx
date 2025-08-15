@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Upload, ChevronDown, ChevronUp, ExternalLink, Plus } from 'lucide-react';
+import { Upload, ChevronDown, ChevronUp, ExternalLink, Plus, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 
 const OchaIcon = () => (
@@ -47,6 +47,7 @@ interface AdminPageProps {
   onProfileImageUpload?: (file: File) => void;
   onProfileImageDelete?: () => void;
   onSocialAccountUpdate?: (accounts: SocialAccount) => void;
+  onSocialAccountDelete?: (platform: keyof SocialAccount) => void;
   onLinkAdd?: (title: string, url: string) => void;
   onLinkUpdate?: (linkId: number, title: string, url: string) => void;
   onLinkDelete?: (linkId: number) => void;
@@ -58,6 +59,7 @@ const AdminPage: React.FC<AdminPageProps> = ({
   onProfileImageUpload,
   onProfileImageDelete,
   onSocialAccountUpdate,
+  onSocialAccountDelete,
   onLinkAdd,
   onLinkUpdate,
   onLinkDelete
@@ -335,6 +337,20 @@ const AdminPage: React.FC<AdminPageProps> = ({
                     <Label className="flex items-center text-left mb-2">
                       <img width="35" height="35" src="/assets/youtube_icon.png" alt="YouTube" className="mr-2" />
                       YouTube
+                      {socialAccounts.youtube && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="ml-auto h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                          onClick={() => {
+                            setSocialAccounts(prev => ({ ...prev, youtube: '' }));
+                            onSocialAccountDelete?.('youtube');
+                          }}
+                        >
+                          <Trash2 size={12} />
+                        </Button>
+                      )}
                     </Label>
                     <Input
                       type="url"
@@ -348,6 +364,20 @@ const AdminPage: React.FC<AdminPageProps> = ({
                     <Label className="flex items-center text-left mb-2">
                       <img width="35" height="35" src="/assets/twitch_icon.png" alt="Twitch" className="mr-2" />
                       Twitch
+                      {socialAccounts.twitch && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="ml-auto h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                          onClick={() => {
+                            setSocialAccounts(prev => ({ ...prev, twitch: '' }));
+                            onSocialAccountDelete?.('twitch');
+                          }}
+                        >
+                          <Trash2 size={12} />
+                        </Button>
+                      )}
                     </Label>
                     <Input
                       type="url"
@@ -361,6 +391,20 @@ const AdminPage: React.FC<AdminPageProps> = ({
                     <Label className="flex items-center text-left mb-2">
                       <img width="35" height="35" src="/assets/icon_x.png" alt="X" className="mr-2" />
                       X
+                      {socialAccounts.x && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="ml-auto h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                          onClick={() => {
+                            setSocialAccounts(prev => ({ ...prev, x: '' }));
+                            onSocialAccountDelete?.('x');
+                          }}
+                        >
+                          <Trash2 size={12} />
+                        </Button>
+                      )}
                     </Label>
                     <Input
                       type="url"
@@ -374,6 +418,20 @@ const AdminPage: React.FC<AdminPageProps> = ({
                     <Label className="flex items-center text-left mb-2">
                       <img width="35" height="35" src="/assets/github_icon.png" alt="GitHub" className="mr-2" />
                       GitHub
+                      {socialAccounts.github && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="ml-auto h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                          onClick={() => {
+                            setSocialAccounts(prev => ({ ...prev, github: '' }));
+                            onSocialAccountDelete?.('github');
+                          }}
+                        >
+                          <Trash2 size={12} />
+                        </Button>
+                      )}
                     </Label>
                     <Input
                       type="url"
@@ -387,6 +445,20 @@ const AdminPage: React.FC<AdminPageProps> = ({
                     <Label className="flex items-center text-left mb-2">
                       <img width="35" height="35" src="/assets/instagram_icon.png" alt="Instagram" className="mr-2" />
                       Instagram
+                      {socialAccounts.instagram && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="ml-auto h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                          onClick={() => {
+                            setSocialAccounts(prev => ({ ...prev, instagram: '' }));
+                            onSocialAccountDelete?.('instagram');
+                          }}
+                        >
+                          <Trash2 size={12} />
+                        </Button>
+                      )}
                     </Label>
                     <Input
                       type="url"
@@ -400,6 +472,20 @@ const AdminPage: React.FC<AdminPageProps> = ({
                     <Label className="flex items-center text-left mb-2">
                       <img width="35" height="35" src="/assets/facebook_icon.png" alt="Facebook" className="mr-2" />
                       Facebook
+                      {socialAccounts.facebook && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="ml-auto h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                          onClick={() => {
+                            setSocialAccounts(prev => ({ ...prev, facebook: '' }));
+                            onSocialAccountDelete?.('facebook');
+                          }}
+                        >
+                          <Trash2 size={12} />
+                        </Button>
+                      )}
                     </Label>
                     <Input
                       type="url"

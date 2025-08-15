@@ -57,6 +57,12 @@ export interface CreateSocialAccountRequest {
   url: string;
 }
 
+// 追加: SNSアカウント更新用の型（部分更新を許可）
+export interface UpdateSocialAccountRequest {
+  platform?: 'youtube' | 'x' | 'twitch' | 'github' | 'instagram' | 'facebook';
+  url?: string;
+}
+
 export interface UpdateUserProfileRequest {
   name?: string;
   biography?: string;
@@ -219,6 +225,25 @@ export const apiClient = {
     return fetchApi<SocialAccount>(`/users/${userId}/social-accounts`, {
       method: 'POST',
       body: JSON.stringify(socialData),
+    });
+  },
+
+  // 追加: SNSアカウント更新
+  updateSocialAccount: async (
+    userId: string,
+    socialId: number,
+    socialData: UpdateSocialAccountRequest
+  ): Promise<SocialAccount> => {
+    return fetchApi<SocialAccount>(`/users/${userId}/social-accounts/${socialId}`, {
+      method: 'PUT',
+      body: JSON.stringify(socialData),
+    });
+  },
+
+  // 追加: SNSアカウント削除
+  deleteSocialAccount: async (userId: string, socialId: number): Promise<void> => {
+    return fetchApi<void>(`/users/${userId}/social-accounts/${socialId}`, {
+      method: 'DELETE',
     });
   },
 

@@ -149,6 +149,28 @@ export default function ProfileAdmin() {
     }
   };
 
+  const handleSocialAccountDelete = async (platform: keyof AdminUserProfile['socialAccounts']) => {
+    try {
+      setMessage('SNSアカウントを削除中...');
+      if (!currentUserId) throw new Error('User not authenticated');
+      
+      // プロフィールから該当プラットフォームのソーシャルアカウントIDを取得
+      const profile = await apiClient.getUserProfile(currentUserId);
+      const socialAccount = profile.social_accounts.find(acc => acc.platform === platform);
+      
+      if (socialAccount) {
+        await apiClient.deleteSocialAccount(currentUserId, socialAccount.id);
+        setMessage('SNSアカウントを削除しました');
+        await loadUserProfile();
+      } else {
+        setError('削除対象のSNSアカウントが見つかりません');
+      }
+    } catch (err) {
+      console.error('Social account delete failed:', err);
+      setError('SNSアカウントの削除に失敗しました');
+    }
+  };
+
   const handleLinkAdd = async (title: string, url: string) => {
     try {
       setMessage('リンクを追加中...');
@@ -230,6 +252,7 @@ export default function ProfileAdmin() {
            onProfileImageUpload={handleProfileImageUpload}
            onProfileImageDelete={handleProfileImageDelete}
            onSocialAccountUpdate={handleSocialAccountUpdate}
+           onSocialAccountDelete={handleSocialAccountDelete}
            onLinkAdd={handleLinkAdd}
            onLinkUpdate={handleLinkUpdate}
            onLinkDelete={handleLinkDelete}

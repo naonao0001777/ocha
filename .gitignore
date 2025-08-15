@@ -31,8 +31,12 @@ config/mysql/data/**
 
 # Env
 .env
+.env.*
+*.env
 api/.env
+api/.env.*
 frontend/.env
+frontend/.env.*
 
 # Logs
 *.log
