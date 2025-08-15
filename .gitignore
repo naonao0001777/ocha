@@ -18,6 +18,13 @@ __pycache__/
 *.pyc
 api/.lambda_build/
 
+# Terraform
+infra/.terraform/
+infra/.terraform/**
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
 # Containers/DB data
 config/mysql/data/
 config/mysql/data/**
