@@ -49,7 +49,7 @@ export default function EditProfilePage() {
   const [editingSocialId, setEditingSocialId] = useState<number | null>(null);
   const [editSocialPlatform, setEditSocialPlatform] = useState<'youtube' | 'x' | 'twitch' | 'github' | 'instagram' | 'facebook'>('youtube');
   const [editSocialUrl, setEditSocialUrl] = useState('');
-  
+
   // Account deletion state
   const [isDeleting, setIsDeleting] = useState(false);
 
