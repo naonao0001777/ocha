@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Alert } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { apiClient, tokenManager, ApiError, type UserProfile, type Link, type SocialAccount, type CreateLinkRequest, type CreateSocialAccountRequest } from '@/lib/api';
-import { Plus, Trash2, ExternalLink } from 'lucide-react';
+import { Plus, Trash2, ExternalLink, Edit, Check, X } from 'lucide-react';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import {
   AlertDialog,
@@ -44,6 +44,11 @@ export default function EditProfilePage() {
   // New social account form
   const [newSocialPlatform, setNewSocialPlatform] = useState<'youtube' | 'x' | 'twitch' | 'github' | 'instagram' | 'facebook'>('youtube');
   const [newSocialUrl, setNewSocialUrl] = useState('');
+  
+  // Edit social account state
+  const [editingSocialId, setEditingSocialId] = useState<number | null>(null);
+  const [editSocialPlatform, setEditSocialPlatform] = useState<'youtube' | 'x' | 'twitch' | 'github' | 'instagram' | 'facebook'>('youtube');
+  const [editSocialUrl, setEditSocialUrl] = useState('');
   
   // Account deletion state
   const [isDeleting, setIsDeleting] = useState(false);
@@ -146,6 +151,68 @@ export default function EditProfilePage() {
     } catch (err) {
       const e = err as ApiError;
       setError(e?.message || 'Failed to add social account');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Delete social account
+  const handleDeleteSocial = async (socialId: number) => {
+    const userId = tokenManager.getCurrentUserId();
+    if (!userId) return;
+
+    try {
+      setLoading(true);
+      await apiClient.deleteSocialAccount(userId, socialId);
+      setSocialAccounts(socialAccounts.filter(social => social.id !== socialId));
+      setSuccess(t('snsDeleted'));
+    } catch (err) {
+      const e = err as ApiError;
+      setError(e?.message || 'Failed to delete social account');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Start editing social account
+  const handleEditSocial = (social: SocialAccount) => {
+    setEditingSocialId(social.id);
+    setEditSocialPlatform(social.platform as typeof editSocialPlatform);
+    setEditSocialUrl(social.url);
+  };
+
+  // Cancel editing social account
+  const handleCancelEditSocial = () => {
+    setEditingSocialId(null);
+    setEditSocialPlatform('youtube');
+    setEditSocialUrl('');
+  };
+
+  // Update social account
+  const handleUpdateSocial = async (socialId: number) => {
+    if (!editSocialUrl.trim()) {
+      setError(t('enterUrl'));
+      return;
+    }
+
+    const userId = tokenManager.getCurrentUserId();
+    if (!userId) return;
+
+    try {
+      setLoading(true);
+      setError(null);
+      const updatedSocial = await apiClient.updateSocialAccount(userId, socialId, {
+        platform: editSocialPlatform,
+        url: ensureHttps(editSocialUrl.trim())
+      });
+      setSocialAccounts(socialAccounts.map(social => 
+        social.id === socialId ? updatedSocial : social
+      ));
+      setEditingSocialId(null);
+      setSuccess(t('snsUpdated'));
+    } catch (err) {
+      const e = err as ApiError;
+      setError(e?.message || 'Failed to update social account');
     } finally {
       setLoading(false);
     }
@@ -347,24 +414,88 @@ export default function EditProfilePage() {
               {socialAccounts.length === 0 ? (
                 <p className="text-sm text-gray-500">{t('noSnsYet')}</p>
               ) : (
-                <div className="grid gap-2 md:grid-cols-2">
+                <div className="grid gap-2 md:grid-cols-1">
                   {socialAccounts.map((social) => (
-                    <div key={social.id} className="flex items-center justify-between p-3 border rounded">
-                      <div className="flex-1">
-                        <div className="font-medium capitalize">{social.platform}</div>
-                        <div className="text-sm text-gray-500 flex items-center">
-                          <ExternalLink className="w-3 h-3 mr-1" />
-                          {social.url}
+                    <div key={social.id} className="p-3 border rounded">
+                      {editingSocialId === social.id ? (
+                        // Edit mode
+                        <div className="space-y-2">
+                          <div className="grid gap-2 md:grid-cols-2">
+                            <div>
+                              <Label>{t('platform')}</Label>
+                              <Select value={editSocialPlatform} onValueChange={(value: typeof editSocialPlatform) => setEditSocialPlatform(value)}>
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="youtube">YouTube</SelectItem>
+                                  <SelectItem value="x">𝕏 (Twitter)</SelectItem>
+                                  <SelectItem value="twitch">Twitch</SelectItem>
+                                  <SelectItem value="github">GitHub</SelectItem>
+                                  <SelectItem value="instagram">Instagram</SelectItem>
+                                  <SelectItem value="facebook">Facebook</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label>URL</Label>
+                              <Input
+                                value={editSocialUrl}
+                                onChange={(e) => setEditSocialUrl(e.target.value)}
+                                placeholder={t('snsUrlPlaceholder')}
+                              />
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={() => handleUpdateSocial(social.id)}
+                              size="sm"
+                              disabled={loading}
+                            >
+                              <Check className="w-4 h-4 mr-1" />
+                              {t('save')}
+                            </Button>
+                            <Button
+                              onClick={handleCancelEditSocial}
+                              variant="outline"
+                              size="sm"
+                              disabled={loading}
+                            >
+                              <X className="w-4 h-4 mr-1" />
+                              {t('cancel')}
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                      <Button
-                        onClick={() => {/* TODO: Implement delete social */}}
-                        variant="destructive"
-                        size="sm"
-                        disabled={loading}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      ) : (
+                        // Display mode
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="font-medium capitalize">{social.platform}</div>
+                            <div className="text-sm text-gray-500 flex items-center">
+                              <ExternalLink className="w-3 h-3 mr-1" />
+                              {social.url}
+                            </div>
+                          </div>
+                          <div className="flex gap-1">
+                            <Button
+                              onClick={() => handleEditSocial(social)}
+                              variant="outline"
+                              size="sm"
+                              disabled={loading}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              onClick={() => handleDeleteSocial(social.id)}
+                              variant="destructive"
+                              size="sm"
+                              disabled={loading}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
