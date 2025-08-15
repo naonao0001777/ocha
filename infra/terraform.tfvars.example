@@ -1,0 +1,9 @@
+# Terraform variables example
+# Copy to terraform.tfvars and fill in your actual values
+
+region                    = "ap-northeast-1"
+project                   = "ocha"
+environment               = "prod"
+supabase_url              = "https://your-project.supabase.co"
+supabase_service_role_key = "your-service-role-key"
+files_bucket              = "files"

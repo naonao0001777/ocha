@@ -1,3 +1,43 @@
 /node_modules
 /app/config/config.php
 /config/
+# OS
+.DS_Store
+Thumbs.db
+
+# Node/Next.js
+node_modules/
+frontend/node_modules/
+frontend/.next/
+.next/
+.npm/
+.pnpm-store/
+
+# Python
+__pycache__/
+*.pyc
+api/.lambda_build/
+
+# Terraform
+infra/.terraform/
+infra/.terraform/**
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
+# Containers/DB data
+config/mysql/data/
+config/mysql/data/**
+
+# Env
+.env
+api/.env
+frontend/.env
+
+# Logs
+*.log
+logs/
+
+# Misc
+.vscode/
+.idea/
