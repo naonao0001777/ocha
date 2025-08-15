@@ -87,4 +87,4 @@ Internet
 - CI/CD 導入による完全自動デプロイ
 - 認証機能の強化（Supabase Auth や Cognito）
 - 監視・ログ分析の導入
-
+- AI導入
