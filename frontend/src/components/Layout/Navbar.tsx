@@ -58,6 +58,14 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated = false, onDemoLogin, o
                 <Button 
                   variant="outline"
                   size="sm"
+                  asChild
+                  className="hidden sm:inline-flex"
+                >
+                  <Link href="/pricing">料金プラン</Link>
+                </Button>
+                <Button 
+                  variant="outline"
+                  size="sm"
                   onClick={onDemoLogin}
                   className="text-orange-600 border-orange-600 hover:bg-orange-50 hover:text-orange-700 dark:text-orange-400 dark:border-orange-400 dark:hover:bg-orange-950 dark:hover:text-orange-300"
                 >
@@ -86,10 +94,20 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated = false, onDemoLogin, o
                       <Menu className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-40">
+                  <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem asChild>
                       <Link href="/profile_edit" className="cursor-pointer">
                         {t('editProfile')}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/account" className="cursor-pointer">
+                        アカウント設定
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/pricing" className="cursor-pointer">
+                        料金プラン
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={onLogout} className="cursor-pointer">

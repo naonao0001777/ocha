@@ -109,8 +109,11 @@ const HomePage = ({ message }: HomePageProps) => {
 
         {/* Footer Links and Author Info */}
         <div className="text-center">
-          <div className="mb-6 text-sm">
-            <Link href="/privacy" className="text-gray-700 dark:text-gray-300 hover:text-primary underline underline-offset-4 mr-4">
+          <div className="mb-6 text-sm space-x-4">
+            <Link href="/pricing" className="text-gray-700 dark:text-gray-300 hover:text-primary underline underline-offset-4">
+              料金プラン
+            </Link>
+            <Link href="/privacy" className="text-gray-700 dark:text-gray-300 hover:text-primary underline underline-offset-4">
               {t('privacy')}
             </Link>
             <Link href="/terms" className="text-gray-700 dark:text-gray-300 hover:text-primary underline underline-offset-4">
