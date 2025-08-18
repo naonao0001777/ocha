@@ -76,7 +76,7 @@ export interface PresignedUrlResponse {
 }
 
 export interface LoginRequest {
-  user_id: string;
+  email: string;
   password: string;
 }
 

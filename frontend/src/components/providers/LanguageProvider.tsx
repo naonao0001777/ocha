@@ -73,7 +73,7 @@ const ja: Dict = {
   deleteAccountConfirmButton: '削除する',
   cancel: 'キャンセル',
   // Login errors
-  invalidCredentials: 'ユーザーIDまたはパスワードが間違っています',
+  invalidCredentials: 'メールアドレスまたはパスワードが間違っています',
   accountNotExists: 'アカウントが存在しません',
   loginFailed: 'ログインに失敗しました',
   networkError: 'ネットワークエラーが発生しました',
@@ -154,7 +154,7 @@ const en: Dict = {
   deleteAccountConfirmButton: 'Delete',
   cancel: 'Cancel',
   // Login errors
-  invalidCredentials: 'Invalid user ID or password',
+  invalidCredentials: 'Invalid email address or password',
   accountNotExists: 'Account does not exist',
   loginFailed: 'Login failed',
   networkError: 'Network error occurred',

@@ -18,13 +18,13 @@ const OchaIcon = () => (
 interface LoginPageProps {
   message?: string;
   messageType?: 'success' | 'error';
-  onLogin?: (userId: string, password: string, autoLogin: boolean) => void;
+  onLogin?: (email: string, password: string, autoLogin: boolean) => void;
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ message, messageType = 'error', onLogin }) => {
   const { t, locale } = useLanguage();
   const [formData, setFormData] = useState({
-    userId: '',
+    email: '',
     userPassword: '',
     autoLogin: false
   });
@@ -48,7 +48,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ message, messageType = 'error', o
     
     try {
       if (onLogin) {
-        await onLogin(formData.userId, formData.userPassword, formData.autoLogin);
+        await onLogin(formData.email, formData.userPassword, formData.autoLogin);
       }
     } finally {
       setIsLoading(false);
@@ -91,17 +91,17 @@ const LoginPage: React.FC<LoginPageProps> = ({ message, messageType = 'error', o
             
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="userId" className="text-sm font-medium">
-                  User ID
+                <Label htmlFor="email" className="text-sm font-medium">
+                  {locale === 'ja' ? 'メールアドレス' : 'Email Address'}
                 </Label>
                 <Input
-                  id="userId"
-                  name="userId"
-                  type="text"
-                  placeholder={locale === 'ja' ? 'ユーザーIDを入力' : 'Enter user ID'}
-                  value={formData.userId}
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder={locale === 'ja' ? 'メールアドレスを入力' : 'Enter email address'}
+                  value={formData.email}
                   onChange={handleChange}
-                  autoComplete="username"
+                  autoComplete="email"
                   required
                   className="w-full"
                 />

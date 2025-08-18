@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Layout/Navbar';
 import LoginPage from '@/components/LoginPage/LoginPage';
 import { apiClient, ApiError, tokenManager } from '@/lib/api';
@@ -10,13 +9,12 @@ import { useLanguage } from '@/components/providers/LanguageProvider';
 export default function Login() {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error'>('error');
-  const router = useRouter();
   const { t } = useLanguage();
 
-  const handleLogin = async (userId: string, password: string, autoLogin: boolean) => {
+  const handleLogin = async (email: string, password: string, autoLogin: boolean) => {
     try {
       setMessage('');
-      const response = await apiClient.login({ user_id: userId, password });
+      const response = await apiClient.login({ email, password });
       
       if (response.success) {
         // ログイン成功
@@ -60,8 +58,8 @@ export default function Login() {
   };
 
   const handleDemoLogin = async () => {
-    // デモログイン（demo/test）
-    await handleLogin('demo', 'test', false);
+    // デモログイン（demo@example.com/test）
+    await handleLogin('demo@example.com', 'test', false);
   };
 
   return (
