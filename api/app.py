@@ -156,7 +156,7 @@ class PresignedUrlResponse(BaseModel):
     token: str
 
 class LoginRequest(BaseModel):
-    user_id: str = Field(..., min_length=1, max_length=50)
+    email: str = Field(..., min_length=1, max_length=100)
     password: str = Field(..., min_length=1)
 
 class LoginResponse(BaseModel):
@@ -313,11 +313,11 @@ async def update_user_profile(user_id: str, profile_data: UpdateUserProfileReque
 
 @app.post("/auth/login", response_model=LoginResponse)
 async def login(login_data: LoginRequest, sb: Client = Depends(get_supabase_client)):
-    """ユーザーログイン"""
+    """ユーザーログイン（メールアドレスベース）"""
     
     # まずユーザーの存在確認（論理削除チェック含む）
     try:
-        user_result = sb.table('users').select('*').eq('user_name', login_data.user_id).single().execute()
+        user_result = sb.table('users').select('*').eq('email', login_data.email).single().execute()
         if not user_result.data:
             # ユーザーが存在しない
             raise HTTPException(status_code=404, detail="Account does not exist")
