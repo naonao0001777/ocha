@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Layout/Navbar';
 import AdminPage from '@/components/AdminPage/AdminPage';
-import { apiClient, ApiError, tokenManager, CreateSocialAccountRequest } from '@/lib/api';
+import { apiClient, ApiError, CreateSocialAccountRequest } from '@/lib/api';
+import { useAuth } from '@/components/providers/AuthProvider';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface AdminUserProfile {
@@ -25,33 +26,36 @@ interface AdminUserProfile {
 
 export default function ProfileAdmin() {
   const router = useRouter();
+  const { isAuthenticated, userId: authUserId, logout } = useAuth();
   const [userProfile, setUserProfile] = useState<AdminUserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string>('');
   const [error, setError] = useState<string>('');
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!tokenManager.isAuthenticated()) {
+    console.log('[Profile] useEffect - Auth state:', { isAuthenticated, authUserId });
+    
+    // 認証状態がまだ確定していない場合は待機
+    if (isAuthenticated === undefined) {
+      console.log('[Profile] Authentication state not yet determined, waiting...');
+      return;
+    }
+    
+    if (!isAuthenticated || !authUserId) {
+      console.log('[Profile] Not authenticated, redirecting to login');
       router.push('/login');
       return;
     }
-    const userId = tokenManager.getCurrentUserId();
-    if (!userId) {
-      router.push('/login');
-      return;
-    }
-    setCurrentUserId(userId);
-    loadUserProfile(userId);
+    console.log('[Profile] Loading user profile for:', authUserId);
+    loadUserProfile(authUserId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router]);
+  }, [isAuthenticated, authUserId, router]);
 
-  const loadUserProfile = async (userId?: string) => {
+  const loadUserProfile = async (userId: string) => {
     try {
       setLoading(true);
-      const userIdToUse = userId || currentUserId;
-      if (!userIdToUse) return;
-      const profile = await apiClient.getUserProfile(userIdToUse);
+      if (!userId) return;
+      const profile = await apiClient.getUserProfile(userId);
       const adminProfile: AdminUserProfile = {
         userId: profile.user.user_name,
         userName: profile.user.name,
@@ -78,8 +82,7 @@ export default function ProfileAdmin() {
   };
 
   const handleLogout = () => {
-    tokenManager.removeToken();
-    sessionStorage.clear();
+    logout();
     router.push('/');
   };
 
@@ -92,10 +95,10 @@ export default function ProfileAdmin() {
       const bucketName = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || 'ocha-serverless-storage-bucket';
       const baseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/\/$/, '');
       const imageUrl = `${baseUrl}/storage/v1/object/public/${bucketName}/${normalizedKey}`;
-      if (!currentUserId) throw new Error('User not authenticated');
-      await apiClient.updateUserProfile(currentUserId, { profile_image: imageUrl });
+      if (!authUserId) throw new Error('User not authenticated');
+      await apiClient.updateUserProfile(authUserId, { profile_image: imageUrl });
       setMessage(hadImage ? 'プロフィール画像を変更しました' : 'プロフィール画像をアップロードしました');
-      await loadUserProfile();
+      await loadUserProfile(authUserId);
     } catch (err) {
       console.error('Profile image upload failed:', err);
       setError('プロフィール画像のアップロードに失敗しました');
@@ -106,7 +109,7 @@ export default function ProfileAdmin() {
     try {
       console.log('[Profile] handleProfileImageDelete: start');
        setMessage('プロフィール画像を削除中...');
-       if (!currentUserId) throw new Error('User not authenticated');
+       if (!authUserId) throw new Error('User not authenticated');
        // 先にストレージから削除
        if (userProfile?.profileImage) {
         console.log('[Profile] deleting from storage:', userProfile.profileImage);
@@ -114,10 +117,10 @@ export default function ProfileAdmin() {
         console.log('[Profile] storage delete: done');
        }
       console.log('[Profile] calling API: updateUserProfile -> profile_image: null');
-      await apiClient.updateUserProfile(currentUserId, { profile_image: null });
+      await apiClient.updateUserProfile(authUserId, { profile_image: null });
       console.log('[Profile] API updateUserProfile: done');
        setMessage('プロフィール画像を削除しました');
-      await loadUserProfile();
+      await loadUserProfile(authUserId);
       console.log('[Profile] loadUserProfile: done');
      } catch (err) {
        console.error('Profile image delete failed:', err);
@@ -131,8 +134,8 @@ export default function ProfileAdmin() {
       for (const [platform, url] of Object.entries(accounts)) {
         if (url && url.trim()) {
           try {
-            if (!currentUserId) throw new Error('User not authenticated');
-            await apiClient.createSocialAccount(currentUserId, {
+            if (!authUserId) throw new Error('User not authenticated');
+            await apiClient.createSocialAccount(authUserId, {
               platform: platform as CreateSocialAccountRequest['platform'],
               url: url.trim(),
             });
@@ -142,7 +145,7 @@ export default function ProfileAdmin() {
         }
       }
       setMessage('SNSアカウントを更新しました');
-      await loadUserProfile();
+      await loadUserProfile(authUserId);
     } catch (err) {
       console.error('Social account update failed:', err);
       setError('SNSアカウントの更新に失敗しました');
@@ -152,16 +155,16 @@ export default function ProfileAdmin() {
   const handleSocialAccountDelete = async (platform: keyof AdminUserProfile['socialAccounts']) => {
     try {
       setMessage('SNSアカウントを削除中...');
-      if (!currentUserId) throw new Error('User not authenticated');
+      if (!authUserId) throw new Error('User not authenticated');
       
       // プロフィールから該当プラットフォームのソーシャルアカウントIDを取得
-      const profile = await apiClient.getUserProfile(currentUserId);
+      const profile = await apiClient.getUserProfile(authUserId);
       const socialAccount = profile.social_accounts.find(acc => acc.platform === platform);
       
       if (socialAccount) {
-        await apiClient.deleteSocialAccount(currentUserId, socialAccount.id);
+        await apiClient.deleteSocialAccount(authUserId, socialAccount.id);
         setMessage('SNSアカウントを削除しました');
-        await loadUserProfile();
+        await loadUserProfile(authUserId);
       } else {
         setError('削除対象のSNSアカウントが見つかりません');
       }
@@ -174,10 +177,10 @@ export default function ProfileAdmin() {
   const handleLinkAdd = async (title: string, url: string) => {
     try {
       setMessage('リンクを追加中...');
-      if (!currentUserId) throw new Error('User not authenticated');
-      await apiClient.createLink(currentUserId, { title, url });
+      if (!authUserId) throw new Error('User not authenticated');
+      await apiClient.createLink(authUserId, { title, url });
       setMessage('リンクを追加しました');
-      await loadUserProfile();
+      await loadUserProfile(authUserId);
     } catch (err) {
       console.error('Link creation failed:', err);
       setError('リンクの追加に失敗しました');
@@ -187,10 +190,10 @@ export default function ProfileAdmin() {
   const handleLinkUpdate = async (linkId: number, title: string, url: string) => {
     try {
       setMessage('リンクを更新中...');
-      if (!currentUserId) throw new Error('User not authenticated');
-      await apiClient.updateLink(currentUserId, linkId, { title, url });
+      if (!authUserId) throw new Error('User not authenticated');
+      await apiClient.updateLink(authUserId, linkId, { title, url });
       setMessage('リンクを更新しました');
-      await loadUserProfile();
+      await loadUserProfile(authUserId);
     } catch (err) {
       console.error('Link update failed:', err);
       setError('リンクの更新に失敗しました');
@@ -200,15 +203,27 @@ export default function ProfileAdmin() {
   const handleLinkDelete = async (linkId: number) => {
     try {
       setMessage('リンクを削除中...');
-      if (!currentUserId) throw new Error('User not authenticated');
-      await apiClient.deleteLink(currentUserId, linkId);
+      if (!authUserId) throw new Error('User not authenticated');
+      await apiClient.deleteLink(authUserId, linkId);
       setMessage('リンクを削除しました');
-      await loadUserProfile();
+      await loadUserProfile(authUserId);
     } catch (err) {
       console.error('Link delete failed:', err);
       setError('リンクの削除に失敗しました');
     }
   };
+
+  // 認証状態が確定していない場合のローディング
+  if (isAuthenticated === undefined) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>認証状態を確認中...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading && !userProfile) {
     return (

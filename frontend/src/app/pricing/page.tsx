@@ -2,10 +2,13 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Check, X } from 'lucide-react';
 import Navbar from '@/components/Layout/Navbar';
+import { apiClient } from '@/lib/api';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 interface PlanFeature {
   name: string;
@@ -76,11 +79,41 @@ const PlanCard = ({
 );
 
 export default function PricingPage() {
+  const router = useRouter();
+  const { isAuthenticated, login, logout } = useAuth();
+
+  const handleDemoLogin = async () => {
+    try {
+      console.log('[Pricing] Demo login initiated');
+      const res = await apiClient.login({ email: 'demo@example.com', password: 'test' });
+      if (res.success && res.access_token) {
+        console.log('[Pricing] Demo login successful, setting token and redirecting');
+        login(res.access_token, false);
+        // 少し遅延を入れて認証状態が確実に更新されるのを待つ
+        setTimeout(() => {
+          router.push('/profile');
+        }, 100);
+      } else {
+        console.error('Demo login failed: Invalid response', res);
+        alert('デモログインに失敗しました');
+      }
+    } catch (e) {
+      console.error('Demo login failed', e);
+      alert('デモログインに失敗しました');
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  };
+
   return (
     <>
       <Navbar 
-        isAuthenticated={false}
-        onDemoLogin={() => {}}
+        isAuthenticated={isAuthenticated}
+        onDemoLogin={handleDemoLogin}
+        onLogout={handleLogout}
       />
       <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">

@@ -109,7 +109,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ message, messageType = 'error', o
 
               <div className="space-y-2">
                 <Label htmlFor="userPassword" className="text-sm font-medium">
-                  Password
+                  {locale === 'ja' ? 'パスワード' : 'Password'}
                 </Label>
                 <Input
                   id="userPassword"

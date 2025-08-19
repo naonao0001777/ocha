@@ -59,9 +59,8 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated = false, onDemoLogin, o
                   variant="outline"
                   size="sm"
                   asChild
-                  className="hidden sm:inline-flex"
                 >
-                  <Link href="/pricing">料金プラン</Link>
+                  <Link href="/pricing">{locale === 'ja' ? '料金プラン' : 'Pricing'}</Link>
                 </Button>
                 <Button 
                   variant="outline"
@@ -69,7 +68,7 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated = false, onDemoLogin, o
                   onClick={onDemoLogin}
                   className="text-orange-600 border-orange-600 hover:bg-orange-50 hover:text-orange-700 dark:text-orange-400 dark:border-orange-400 dark:hover:bg-orange-950 dark:hover:text-orange-300"
                 >
-                  DEMO
+                  {locale === 'ja' ? 'デモ体験' : 'Demo'}
                 </Button>
                 <Button 
                   variant="outline"
@@ -96,18 +95,18 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated = false, onDemoLogin, o
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem asChild>
+                      <Link href="/profile" className="cursor-pointer">
+                        プロフィール
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
                       <Link href="/profile_edit" className="cursor-pointer">
                         {t('editProfile')}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/account" className="cursor-pointer">
-                        アカウント設定
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
                       <Link href="/pricing" className="cursor-pointer">
-                        料金プラン
+                        {locale === 'ja' ? '料金プラン' : 'Pricing'}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={onLogout} className="cursor-pointer">

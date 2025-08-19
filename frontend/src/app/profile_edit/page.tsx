@@ -9,9 +9,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { apiClient, tokenManager, ApiError, type UserProfile, type Link, type SocialAccount, type CreateLinkRequest, type CreateSocialAccountRequest } from '@/lib/api';
+import { apiClient, ApiError, type UserProfile, type Link, type SocialAccount, type CreateLinkRequest, type CreateSocialAccountRequest } from '@/lib/api';
+import { useAuth } from '@/components/providers/AuthProvider';
 import { Plus, Trash2, ExternalLink, Edit, Check, X } from 'lucide-react';
 import { useLanguage } from '@/components/providers/LanguageProvider';
+import Navbar from '@/components/Layout/Navbar';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,6 +29,7 @@ import {
 export default function EditProfilePage() {
   const router = useRouter();
   const { t } = useLanguage();
+  const { isAuthenticated, userId: authUserId, logout } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -54,12 +57,22 @@ export default function EditProfilePage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    const userId = tokenManager.getCurrentUserId();
-    if (!userId) {
+    console.log('[ProfileEdit] useEffect - Auth state:', { isAuthenticated, authUserId });
+    
+    // 認証状態がまだ確定していない場合は待機
+    if (isAuthenticated === undefined) {
+      console.log('[ProfileEdit] Authentication state not yet determined, waiting...');
+      return;
+    }
+    
+    if (!isAuthenticated || !authUserId) {
+      console.log('[ProfileEdit] Not authenticated, redirecting to login');
       router.push('/login');
       return;
     }
-    apiClient.getUserProfile(userId)
+    
+    console.log('[ProfileEdit] Loading user profile for:', authUserId);
+    apiClient.getUserProfile(authUserId)
       .then((data) => {
         setName(data.user.name || '');
         setBiography(data.user.biography || '');
@@ -70,7 +83,7 @@ export default function EditProfilePage() {
         console.error(e);
         setError('Failed to load profile');
       });
-  }, [router]);
+  }, [isAuthenticated, authUserId, router]);
 
   // Auto-add https:// if not present
   const ensureHttps = (url: string) => {
@@ -88,7 +101,7 @@ export default function EditProfilePage() {
       return;
     }
 
-    const userId = tokenManager.getCurrentUserId();
+    const userId = authUserId;
     if (!userId) return;
 
     try {
@@ -112,7 +125,7 @@ export default function EditProfilePage() {
 
   // Delete link
   const handleDeleteLink = async (linkId: number) => {
-    const userId = tokenManager.getCurrentUserId();
+    const userId = authUserId;
     if (!userId) return;
 
     try {
@@ -135,7 +148,7 @@ export default function EditProfilePage() {
       return;
     }
 
-    const userId = tokenManager.getCurrentUserId();
+    const userId = authUserId;
     if (!userId) return;
 
     try {
@@ -158,7 +171,7 @@ export default function EditProfilePage() {
 
   // Delete social account
   const handleDeleteSocial = async (socialId: number) => {
-    const userId = tokenManager.getCurrentUserId();
+    const userId = authUserId;
     if (!userId) return;
 
     try {
@@ -195,7 +208,7 @@ export default function EditProfilePage() {
       return;
     }
 
-    const userId = tokenManager.getCurrentUserId();
+    const userId = authUserId;
     if (!userId) return;
 
     try {
@@ -224,7 +237,7 @@ export default function EditProfilePage() {
     setError(null);
     setSuccess(null);
 
-    const userId = tokenManager.getCurrentUserId();
+    const userId = authUserId;
     if (!userId) {
       router.push('/login');
       return;
@@ -250,7 +263,7 @@ export default function EditProfilePage() {
 
   // Handle account deletion
   const handleDeleteAccount = async () => {
-    const userId = tokenManager.getCurrentUserId();
+    const userId = authUserId;
     if (!userId) return;
 
     try {
@@ -270,9 +283,31 @@ export default function EditProfilePage() {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  };
+
+  // 認証状態が確定していない場合のローディング
+  if (isAuthenticated === undefined) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>認証状態を確認中...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="container mx-auto px-4 max-w-4xl py-6">
-      <h1 className="text-3xl font-bold mb-6">{t('profileEditTitle')}</h1>
+    <>
+      <Navbar 
+        isAuthenticated={isAuthenticated}
+        onLogout={handleLogout}
+      />
+      <div className="container mx-auto px-4 max-w-4xl py-6">
+        <h1 className="text-3xl font-bold mb-6">{t('profileEditTitle')}</h1>
 
       {error && (
         <Alert className="mb-4 text-red-600 bg-red-50 border-red-200 whitespace-nowrap overflow-hidden text-ellipsis">{error}</Alert>
@@ -549,6 +584,7 @@ export default function EditProfilePage() {
           </AlertDialog>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </>
   );
 }

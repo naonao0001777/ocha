@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import Navbar from '@/components/Layout/Navbar';
 import { apiClient, ApiError } from '@/lib/api';
 import { useLanguage } from '@/components/providers/LanguageProvider';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 const OchaIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" height="1.5em" viewBox="0 0 512 512" className="inline ml-2">
@@ -19,6 +20,7 @@ const OchaIcon = () => (
 
 export default function Register() {
   const { t, locale } = useLanguage();
+  const { isAuthenticated, login, logout } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     userId: '',
@@ -30,8 +32,29 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleDemoLogin = () => {
-    router.push('/login');
+  const handleDemoLogin = async () => {
+    try {
+      console.log('[Register] Demo login initiated');
+      const res = await apiClient.login({ email: 'demo@example.com', password: 'test' });
+      if (res.success && res.access_token) {
+        console.log('[Register] Demo login successful, setting token and redirecting');
+        login(res.access_token, false);
+        setTimeout(() => {
+          router.push('/profile');
+        }, 100);
+      } else {
+        console.error('Demo login failed: Invalid response', res);
+        alert('デモログインに失敗しました');
+      }
+    } catch (e) {
+      console.error('Demo login failed', e);
+      alert('デモログインに失敗しました');
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -103,11 +126,24 @@ export default function Register() {
     }));
   };
 
+  // 認証状態が確定していない場合のローディング
+  if (isAuthenticated === undefined) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>認証状態を確認中...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <Navbar 
-        isAuthenticated={false}
+        isAuthenticated={isAuthenticated}
         onDemoLogin={handleDemoLogin}
+        onLogout={handleLogout}
       />
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
         <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-screen">
@@ -129,7 +165,7 @@ export default function Register() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-sm font-medium">
-                    Email
+                    {locale === 'ja' ? 'メールアドレス' : 'Email'}
                   </Label>
                   <Input
                     id="email"
@@ -145,7 +181,7 @@ export default function Register() {
 
                 <div className="space-y-2">
                   <Label htmlFor="userId" className="text-sm font-medium">
-                    User ID
+                    {locale === 'ja' ? 'ユーザーID' : 'User ID'}
                   </Label>
                   <Input
                     id="userId"
@@ -162,7 +198,7 @@ export default function Register() {
 
                 <div className="space-y-2">
                   <Label htmlFor="userName" className="text-sm font-medium">
-                    Name
+                    {locale === 'ja' ? '表示名' : 'Name'}
                   </Label>
                   <Input
                     id="userName"
@@ -178,7 +214,7 @@ export default function Register() {
 
                 <div className="space-y-2">
                   <Label htmlFor="password" className="text-sm font-medium">
-                    Password
+                    {locale === 'ja' ? 'パスワード' : 'Password'}
                   </Label>
                   <Input
                     id="password"
@@ -195,7 +231,7 @@ export default function Register() {
 
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword" className="text-sm font-medium">
-                    Confirm Password
+                    {locale === 'ja' ? 'パスワード確認' : 'Confirm Password'}
                   </Label>
                   <Input
                     id="confirmPassword"

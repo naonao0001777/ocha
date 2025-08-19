@@ -1,15 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Layout/Navbar';
 import LoginPage from '@/components/LoginPage/LoginPage';
-import { apiClient, ApiError, tokenManager } from '@/lib/api';
+import { apiClient, ApiError } from '@/lib/api';
+import { useAuth } from '@/components/providers/AuthProvider';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 
 export default function Login() {
+  const router = useRouter();
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error'>('error');
   const { t } = useLanguage();
+  const { login } = useAuth();
 
   const handleLogin = async (email: string, password: string, autoLogin: boolean) => {
     try {
@@ -18,18 +22,19 @@ export default function Login() {
       
       if (response.success) {
         // ログイン成功
-        console.log('Login successful:', response);
+        console.log('[Login] Login successful:', response);
         
         // JWTトークンを保存
-        tokenManager.setToken(response.access_token, !!autoLogin);
+        console.log('[Login] Calling login with token:', response.access_token.substring(0, 20) + '...');
+        login(response.access_token, !!autoLogin);
         
         setMessage(response.message);
         setMessageType('success');
         
         // プロフィール管理画面にリダイレクト
-        // window.location.href を使用してハードリダイレクト
+        console.log('[Login] Redirecting to profile page');
         setTimeout(() => {
-          window.location.href = '/profile';
+          router.push('/profile');
         }, 1000);
         
       } else {
@@ -59,6 +64,7 @@ export default function Login() {
 
   const handleDemoLogin = async () => {
     // デモログイン（demo@example.com/test）
+    console.log('[Login] Demo login initiated');
     await handleLogin('demo@example.com', 'test', false);
   };
 
