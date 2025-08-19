@@ -47,7 +47,7 @@ export default function ProfileAdmin() {
       return;
     }
     console.log('[Profile] Loading user profile for:', authUserId);
-    loadUserProfile(authUserId);
+    if (authUserId) loadUserProfile(authUserId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, authUserId, router]);
 
@@ -98,7 +98,7 @@ export default function ProfileAdmin() {
       if (!authUserId) throw new Error('User not authenticated');
       await apiClient.updateUserProfile(authUserId, { profile_image: imageUrl });
       setMessage(hadImage ? 'プロフィール画像を変更しました' : 'プロフィール画像をアップロードしました');
-      await loadUserProfile(authUserId);
+      if (authUserId) await loadUserProfile(authUserId);
     } catch (err) {
       console.error('Profile image upload failed:', err);
       setError('プロフィール画像のアップロードに失敗しました');
@@ -120,7 +120,7 @@ export default function ProfileAdmin() {
       await apiClient.updateUserProfile(authUserId, { profile_image: null });
       console.log('[Profile] API updateUserProfile: done');
        setMessage('プロフィール画像を削除しました');
-      await loadUserProfile(authUserId);
+      if (authUserId) await loadUserProfile(authUserId);
       console.log('[Profile] loadUserProfile: done');
      } catch (err) {
        console.error('Profile image delete failed:', err);
@@ -145,7 +145,7 @@ export default function ProfileAdmin() {
         }
       }
       setMessage('SNSアカウントを更新しました');
-      await loadUserProfile(authUserId);
+      if (authUserId) await loadUserProfile(authUserId);
     } catch (err) {
       console.error('Social account update failed:', err);
       setError('SNSアカウントの更新に失敗しました');
@@ -164,7 +164,7 @@ export default function ProfileAdmin() {
       if (socialAccount) {
         await apiClient.deleteSocialAccount(authUserId, socialAccount.id);
         setMessage('SNSアカウントを削除しました');
-        await loadUserProfile(authUserId);
+        if (authUserId) await loadUserProfile(authUserId);
       } else {
         setError('削除対象のSNSアカウントが見つかりません');
       }
@@ -180,7 +180,7 @@ export default function ProfileAdmin() {
       if (!authUserId) throw new Error('User not authenticated');
       await apiClient.createLink(authUserId, { title, url });
       setMessage('リンクを追加しました');
-      await loadUserProfile(authUserId);
+      if (authUserId) await loadUserProfile(authUserId);
     } catch (err) {
       console.error('Link creation failed:', err);
       setError('リンクの追加に失敗しました');
@@ -193,7 +193,7 @@ export default function ProfileAdmin() {
       if (!authUserId) throw new Error('User not authenticated');
       await apiClient.updateLink(authUserId, linkId, { title, url });
       setMessage('リンクを更新しました');
-      await loadUserProfile(authUserId);
+      if (authUserId) await loadUserProfile(authUserId);
     } catch (err) {
       console.error('Link update failed:', err);
       setError('リンクの更新に失敗しました');
@@ -206,7 +206,7 @@ export default function ProfileAdmin() {
       if (!authUserId) throw new Error('User not authenticated');
       await apiClient.deleteLink(authUserId, linkId);
       setMessage('リンクを削除しました');
-      await loadUserProfile(authUserId);
+      if (authUserId) await loadUserProfile(authUserId);
     } catch (err) {
       console.error('Link delete failed:', err);
       setError('リンクの削除に失敗しました');
@@ -244,7 +244,7 @@ export default function ProfileAdmin() {
             <AlertDescription className="text-foreground">{error}</AlertDescription>
           </Alert>
           <button
-            onClick={() => loadUserProfile()}
+            onClick={() => authUserId && loadUserProfile(authUserId)}
             className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90"
           >
             再読み込み

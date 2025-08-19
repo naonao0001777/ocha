@@ -151,13 +151,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       checkAuth();
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('focus', handleFocus);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('focus', handleFocus);
-    };
+    if (typeof window !== 'undefined') {
+      const globalWindow = window as Window & typeof globalThis;
+      globalWindow.addEventListener('storage', handleStorageChange);
+      globalWindow.addEventListener('focus', handleFocus);
+      
+      return () => {
+        globalWindow.removeEventListener('storage', handleStorageChange);
+        globalWindow.removeEventListener('focus', handleFocus);
+      };
+    }
+    
+    return () => {};
   }, []);
 
   const value = {

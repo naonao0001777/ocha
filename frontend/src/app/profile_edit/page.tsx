@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { apiClient, ApiError, type UserProfile, type Link, type SocialAccount, type CreateLinkRequest, type CreateSocialAccountRequest } from '@/lib/api';
+import { apiClient, ApiError, tokenManager, type Link, type SocialAccount } from '@/lib/api';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { Plus, Trash2, ExternalLink, Edit, Check, X } from 'lucide-react';
 import { useLanguage } from '@/components/providers/LanguageProvider';
