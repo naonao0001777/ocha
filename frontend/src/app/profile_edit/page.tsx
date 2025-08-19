@@ -520,14 +520,34 @@ export default function EditProfilePage() {
                             >
                               <Edit className="w-4 h-4" />
                             </Button>
-                            <Button
-                              onClick={() => handleDeleteSocial(social.id)}
-                              variant="destructive"
-                              size="sm"
-                              disabled={loading}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  disabled={loading}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>SNSアカウントを削除しますか？</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    {social.platform}のアカウント（{social.url}）を削除します。この操作は取り消せません。
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleDeleteSocial(social.id)}
+                                    className="bg-red-600 hover:bg-red-700"
+                                  >
+                                    削除
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </div>
                         </div>
                       )}
