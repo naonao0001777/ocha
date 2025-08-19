@@ -437,6 +437,68 @@ async def create_social_account(user_id: str, social_data: CreateSocialAccountRe
     
     return SocialAccountResponse(**created_social)
 
+@app.put("/users/{user_id}/social-accounts/{social_id}", response_model=SocialAccountResponse)
+async def update_social_account(user_id: str, social_id: int, social_data: CreateSocialAccountRequest, current_user: str = Depends(verify_token), sb: Client = Depends(get_supabase_client)):
+    """SNSアカウント更新"""
+    
+    # 所有者チェック
+    if current_user != user_id:
+        raise HTTPException(status_code=403, detail="Permission denied")
+    
+    # ユーザー存在確認
+    user_result = sb.table('users').select('id').eq('user_name', user_id).single().execute()
+    if not user_result.data:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # SNSアカウント存在確認と所有者チェック
+    social_result = sb.table('social_accounts').select('*').eq('id', social_id).eq('user_id', user_result.data['id']).single().execute()
+    if not social_result.data:
+        raise HTTPException(status_code=404, detail="Social account not found")
+    
+    # 同じプラットフォームの重複チェック（自分以外）
+    existing = sb.table('social_accounts').select('id').eq('user_id', user_result.data['id']).eq('platform', social_data.platform).neq('id', social_id).execute()
+    if existing.data:
+        raise HTTPException(status_code=400, detail="Social account for this platform already exists")
+    
+    # SNSアカウント更新
+    now = datetime.utcnow().isoformat()
+    update_data = {
+        'platform': social_data.platform,
+        'url': social_data.url,
+        'updated_at': now
+    }
+    
+    result = sb.table('social_accounts').update(update_data).eq('id', social_id).execute()
+    
+    if not result.data:
+        raise HTTPException(status_code=500, detail="Failed to update social account")
+    
+    return SocialAccountResponse(**result.data[0])
+
+@app.delete("/users/{user_id}/social-accounts/{social_id}", status_code=204)
+async def delete_social_account(user_id: str, social_id: int, current_user: str = Depends(verify_token), sb: Client = Depends(get_supabase_client)):
+    """SNSアカウント削除"""
+    
+    # 所有者チェック
+    if current_user != user_id:
+        raise HTTPException(status_code=403, detail="Permission denied")
+    
+    # ユーザー存在確認
+    user_result = sb.table('users').select('id').eq('user_name', user_id).single().execute()
+    if not user_result.data:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # SNSアカウント存在確認と所有者チェック
+    social_result = sb.table('social_accounts').select('id').eq('id', social_id).eq('user_id', user_result.data['id']).single().execute()
+    if not social_result.data:
+        raise HTTPException(status_code=404, detail="Social account not found")
+    
+    # SNSアカウント削除
+    result = sb.table('social_accounts').delete().eq('id', social_id).execute()
+    
+    if not result.data:
+        raise HTTPException(status_code=500, detail="Failed to delete social account")
+
 @app.put("/users/{user_id}/links/{link_id}", response_model=LinkResponse)
 async def update_link(user_id: str, link_id: int, link_data: CreateLinkRequest, current_user: str = Depends(verify_token), sb: Client = Depends(get_supabase_client)):
     """リンク更新"""
