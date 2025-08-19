@@ -348,6 +348,14 @@ export const apiClient = {
       method: 'DELETE',
     });
   },
+
+  // メールアドレスの利用可能性をチェック
+  checkEmailAvailability: async (email: string): Promise<{ available: boolean; message: string }> => {
+    return fetchApi<{ available: boolean; message: string }>('/auth/check-email', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  },
 };
 
 export { ApiError };

@@ -11,6 +11,7 @@ import Navbar from '@/components/Layout/Navbar';
 import { apiClient, ApiError } from '@/lib/api';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { ArrowLeft, UserPlus } from 'lucide-react';
 
 const OchaIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" height="1.5em" viewBox="0 0 512 512" className="inline ml-2">
@@ -21,6 +22,7 @@ const OchaIcon = () => (
 export default function Register() {
   const { t, locale } = useLanguage();
   const { isAuthenticated, login, logout } = useAuth();
+  const [step, setStep] = useState(1); // 1: メール入力, 2: 詳細情報入力
   const [formData, setFormData] = useState({
     email: '',
     userId: '',
@@ -57,7 +59,47 @@ export default function Register() {
     router.push('/');
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setMessage('');
+    
+    if (!formData.email) {
+      setMessage(locale === 'ja' ? 'メールアドレスを入力してください' : 'Please enter your email address');
+      setIsLoading(false);
+      return;
+    }
+
+    // メールアドレスの形式検証
+    const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setMessage(locale === 'ja' ? '有効なメールアドレスを入力してください' : 'Please enter a valid email address');
+      setIsLoading(false);
+      return;
+    }
+    
+    // メールアドレス重複チェック
+    try {
+      await apiClient.checkEmailAvailability(formData.email);
+      // 重複がない場合、次のステップに進む
+      setIsLoading(false);
+      setStep(2);
+      setMessage('');
+    } catch (error) {
+      if (error instanceof ApiError) {
+        if (error.status === 400 && error.message.toLowerCase().includes('already in use')) {
+          setMessage(locale === 'ja' ? 'そのメールアドレスは既に使用されています' : 'This email address is already in use');
+        } else {
+          setMessage(locale === 'ja' ? 'メールアドレスの確認中にエラーが発生しました' : 'Error occurred while checking email address');
+        }
+      } else {
+        setMessage(locale === 'ja' ? 'ネットワークエラーが発生しました' : 'Network error occurred');
+      }
+      setIsLoading(false);
+    }
+  };
+
+  const handleDetailsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setMessage('');
@@ -84,12 +126,36 @@ export default function Register() {
         biography: ''
       });
       
-      setMessage(t('accountCreated'));
+      setMessage(locale === 'ja' ? 'アカウントを作成しました。自動的にログインします...' : 'Account created successfully. Logging you in...');
       
-      // 2秒後にログイン画面にリダイレクト
-      setTimeout(() => {
-        router.push('/login');
-      }, 2000);
+      // アカウント作成成功後、自動的にログインする
+      try {
+        const loginRes = await apiClient.login({ 
+          email: formData.email, 
+          password: formData.password 
+        });
+        
+        if (loginRes.success && loginRes.access_token) {
+          // ログイン成功：トークンを保存してプロフィール画面に遷移
+          login(loginRes.access_token, false);
+          setTimeout(() => {
+            router.push('/profile');
+          }, 1000);
+        } else {
+          // ログイン失敗の場合はログイン画面に遷移
+          setMessage(locale === 'ja' ? 'アカウントは作成されましたが、自動ログインに失敗しました。ログイン画面に移動します。' : 'Account created but auto-login failed. Redirecting to login page.');
+          setTimeout(() => {
+            router.push('/login');
+          }, 2000);
+        }
+      } catch (loginError) {
+        // ログインエラーの場合もログイン画面に遷移
+        console.error('Auto login failed:', loginError);
+        setMessage(locale === 'ja' ? 'アカウントは作成されましたが、自動ログインに失敗しました。ログイン画面に移動します。' : 'Account created but auto-login failed. Redirecting to login page.');
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
+      }
       
     } catch (error) {
       // コンソールエラーは開発時のみ表示
@@ -116,6 +182,11 @@ export default function Register() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleBackToStep1 = () => {
+    setStep(1);
+    setMessage('');
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -157,104 +228,159 @@ export default function Register() {
             
             <CardContent className="space-y-6">
               {message && (
-                <Alert variant={message.includes('エラー') || message.includes('失敗') ? 'destructive' : 'default'} className="mb-6">
+                <Alert variant={message.includes('エラー') || message.includes('失敗') || message.includes('error') || message.includes('Error') ? 'destructive' : 'default'} className="mb-6">
                   <AlertDescription>{message}</AlertDescription>
                 </Alert>
               )}
               
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium">
-                    {locale === 'ja' ? 'メールアドレス' : 'Email'}
-                  </Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="email@example.com"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full"
-                  />
+              {/* ステップ1: メールアドレス入力 */}
+              {step === 1 && (
+                <div className="space-y-6">
+                  <div className="text-center space-y-2">
+                    <div className="text-8xl mb-6">✉️</div>
+                    <h2 className="text-xl font-semibold">
+                      {locale === 'ja' ? 'まずはメールアドレスを入力してください' : 'Enter your email address'}
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      {locale === 'ja' ? '将来的には認証メールを送信予定です' : 'We will send you a verification email in the future'}
+                    </p>
+                  </div>
+                  
+                  <form onSubmit={handleEmailSubmit} className="space-y-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-sm font-medium">
+                        {locale === 'ja' ? 'メールアドレス' : 'Email Address'}
+                      </Label>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="email@example.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className="w-full"
+                        autoFocus
+                      />
+                    </div>
+
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-lg font-semibold"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? 
+                        (locale === 'ja' ? '確認中...' : 'Checking...') : 
+                        (locale === 'ja' ? '次へ' : 'Next')
+                      }
+                    </Button>
+                  </form>
                 </div>
+              )}
 
-                <div className="space-y-2">
-                  <Label htmlFor="userId" className="text-sm font-medium">
-                    {locale === 'ja' ? 'ユーザーID' : 'User ID'}
-                  </Label>
-                  <Input
-                    id="userId"
-                    name="userId"
-                    type="text"
-                    placeholder={locale === 'ja' ? 'ユーザーIDを入力' : 'Enter user ID'}
-                    value={formData.userId}
-                    onChange={handleChange}
-                    autoComplete="username"
-                    required
-                    className="w-full"
-                  />
+              {/* ステップ2: 詳細情報入力 */}
+              {step === 2 && (
+                <div className="space-y-6">
+                  <div className="flex items-center space-x-4">
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={handleBackToStep1}
+                      className="p-2"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <div className="flex-1">
+                      <h2 className="text-xl font-semibold flex items-center">
+                        <UserPlus className="h-5 w-5 mr-2" />
+                        {locale === 'ja' ? 'アカウント情報を入力' : 'Enter Account Information'}
+                      </h2>
+                      <p className="text-sm text-muted-foreground">
+                        {formData.email}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <form onSubmit={handleDetailsSubmit} className="space-y-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="userId" className="text-sm font-medium">
+                        {locale === 'ja' ? 'ユーザーID' : 'User ID'}
+                      </Label>
+                      <Input
+                        id="userId"
+                        name="userId"
+                        type="text"
+                        placeholder={locale === 'ja' ? 'ユーザーIDを入力' : 'Enter user ID'}
+                        value={formData.userId}
+                        onChange={handleChange}
+                        autoComplete="username"
+                        required
+                        className="w-full"
+                        autoFocus
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="userName" className="text-sm font-medium">
+                        {locale === 'ja' ? '表示名' : 'Display Name'}
+                      </Label>
+                      <Input
+                        id="userName"
+                        name="userName"
+                        type="text"
+                        placeholder={locale === 'ja' ? '表示名を入力' : 'Enter display name'}
+                        value={formData.userName}
+                        onChange={handleChange}
+                        required
+                        className="w-full"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="password" className="text-sm font-medium">
+                        {locale === 'ja' ? 'パスワード' : 'Password'}
+                      </Label>
+                      <Input
+                        id="password"
+                        name="password"
+                        type="password"
+                        placeholder={locale === 'ja' ? 'パスワードを入力' : 'Enter password'}
+                        value={formData.password}
+                        onChange={handleChange}
+                        autoComplete="new-password"
+                        required
+                        className="w-full"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="confirmPassword" className="text-sm font-medium">
+                        {locale === 'ja' ? 'パスワード確認' : 'Confirm Password'}
+                      </Label>
+                      <Input
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        type="password"
+                        placeholder={locale === 'ja' ? 'パスワードを再入力' : 'Re-enter password'}
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        autoComplete="new-password"
+                        required
+                        className="w-full"
+                      />
+                    </div>
+
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-lg font-semibold"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? t('creatingAccount') : t('signUp')}
+                    </Button>
+                  </form>
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="userName" className="text-sm font-medium">
-                    {locale === 'ja' ? '表示名' : 'Name'}
-                  </Label>
-                  <Input
-                    id="userName"
-                    name="userName"
-                    type="text"
-                    placeholder={locale === 'ja' ? '表示名を入力' : 'Enter display name'}
-                    value={formData.userName}
-                    onChange={handleChange}
-                    required
-                    className="w-full"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-medium">
-                    {locale === 'ja' ? 'パスワード' : 'Password'}
-                  </Label>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder={locale === 'ja' ? 'パスワードを入力' : 'Enter password'}
-                    value={formData.password}
-                    onChange={handleChange}
-                    autoComplete="new-password"
-                    required
-                    className="w-full"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-sm font-medium">
-                    {locale === 'ja' ? 'パスワード確認' : 'Confirm Password'}
-                  </Label>
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    placeholder={locale === 'ja' ? 'パスワードを再入力' : 'Re-enter password'}
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    autoComplete="new-password"
-                    required
-                    className="w-full"
-                  />
-                </div>
-
-
-                <Button 
-                  type="submit" 
-                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-lg font-semibold"
-                  disabled={isLoading}
-                >
-                  {isLoading ? t('creatingAccount') : t('signUp')}
-                </Button>
-              </form>
+              )}
             </CardContent>
           </Card>
         </div>

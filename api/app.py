@@ -566,6 +566,25 @@ async def delete_user_account(user_id: str, current_user: str = Depends(verify_t
     if not result.data:
         raise HTTPException(status_code=500, detail="Failed to delete account")
 
+@app.post("/auth/check-email")
+async def check_email_availability(request: dict, sb: Client = Depends(get_supabase_client)):
+    """メールアドレスの利用可能性をチェック"""
+    email = request.get('email', '')
+    if not email:
+        raise HTTPException(status_code=400, detail="Email required")
+    
+    # メールアドレス重複チェック（論理削除関係なく全てのレコード）
+    try:
+        existing_email = sb.table('users').select('id').eq('email', email).execute()
+        if existing_email.data:
+            raise HTTPException(status_code=400, detail="Email address is already in use")
+        
+        return {"available": True, "message": "Email address is available"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
 @app.post("/auth/test-hash")
 async def test_hash(request: dict):
     """テスト用パスワードハッシュ生成"""
