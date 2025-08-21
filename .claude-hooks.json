@@ -1,0 +1,9 @@
+{
+  "hooks": {
+    "on-task-complete": {
+      "command": "node -e \"const os = require('os'); const exec = require('child_process').exec; let cmd = ''; if(os.platform()==='win32'){cmd='powershell -c \\\"(New-Object Media.SoundPlayer \\\\\\\"C:\\\\\\\\Windows\\\\\\\\Media\\\\\\\\chimes.wav\\\\\\\").PlaySync();\\\"';} else if(os.platform()==='darwin'){cmd='afplay /System/Library/Sounds/Glass.aiff';} else if(os.platform()==='linux'){cmd='paplay /usr/share/sounds/freedesktop/stereo/complete.oga';} exec(cmd, (err) => { if(err) console.error(err); });\"",
+      "on_failure": "ignore",
+      "message": "タスク完了！"
+    }
+  }
+}
