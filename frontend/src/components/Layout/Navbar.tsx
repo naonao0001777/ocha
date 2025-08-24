@@ -42,26 +42,6 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated = false, onDemoLogin, o
           <div className="flex items-center space-x-2">
             <ThemeToggle />
 
-            {/* ログイン・新規登録ボタン（常に表示） */}
-            {!isAuthenticated && (
-              <div className="flex items-center space-x-2">
-                <Button 
-                  variant="outline"
-                  size="sm"
-                  asChild
-                >
-                  <Link href="/login">{t('signIn')}</Link>
-                </Button>
-                <Button 
-                  size="sm"
-                  asChild
-                  className="bg-primary hover:bg-primary/90"
-                >
-                  <Link href="/register">{t('signUp')}</Link>
-                </Button>
-              </div>
-            )}
-
             {/* 非認証状態 - その他のメニュー */}
             {!isAuthenticated && (
               <>
@@ -123,6 +103,26 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated = false, onDemoLogin, o
                   </DropdownMenu>
                 </div>
               </>
+            )}
+
+            {/* ログイン・新規登録ボタン（常に表示・右端） */}
+            {!isAuthenticated && (
+              <div className="flex items-center space-x-2">
+                <Button 
+                  variant="outline"
+                  size="sm"
+                  asChild
+                >
+                  <Link href="/login">{t('signIn')}</Link>
+                </Button>
+                <Button 
+                  size="sm"
+                  asChild
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  <Link href="/register">{t('signUp')}</Link>
+                </Button>
+              </div>
             )}
 
             {/* 認証済み状態 - 常にハンバーガーメニュー */}
