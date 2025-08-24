@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
-import { Menu } from 'lucide-react';
+import { Menu, Globe } from 'lucide-react';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 
 interface NavbarProps {
@@ -42,34 +42,9 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated = false, onDemoLogin, o
           <div className="flex items-center space-x-2">
             <ThemeToggle />
 
-            {/* Language Switcher */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">{locale === 'ja' ? '日本語' : 'English'}</Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-36">
-                <DropdownMenuItem onClick={() => setLocale('ja')} className="cursor-pointer">日本語</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLocale('en')} className="cursor-pointer">English</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {!isAuthenticated ? (
-              <>
-                <Button 
-                  variant="outline"
-                  size="sm"
-                  asChild
-                >
-                  <Link href="/pricing">{locale === 'ja' ? '料金プラン' : 'Pricing'}</Link>
-                </Button>
-                <Button 
-                  variant="outline"
-                  size="sm"
-                  onClick={onDemoLogin}
-                  className="text-orange-600 border-orange-600 hover:bg-orange-50 hover:text-orange-700 dark:text-orange-400 dark:border-orange-400 dark:hover:bg-orange-950 dark:hover:text-orange-300"
-                >
-                  {locale === 'ja' ? 'デモ体験' : 'Demo'}
-                </Button>
+            {/* ログイン・新規登録ボタン（常に表示） */}
+            {!isAuthenticated && (
+              <div className="flex items-center space-x-2">
                 <Button 
                   variant="outline"
                   size="sm"
@@ -84,9 +59,89 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated = false, onDemoLogin, o
                 >
                   <Link href="/register">{t('signUp')}</Link>
                 </Button>
-              </>
-            ) : (
+              </div>
+            )}
+
+            {/* 非認証状態 - その他のメニュー */}
+            {!isAuthenticated && (
               <>
+                {/* デスクトップ表示 - 個別ボタン */}
+                <div className="hidden sm:flex items-center space-x-2">
+                  {/* Language Switcher */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm">{locale === 'ja' ? '日本語' : 'English'}</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-36">
+                      <DropdownMenuItem onClick={() => setLocale('ja')} className="cursor-pointer">日本語</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setLocale('en')} className="cursor-pointer">English</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    asChild
+                  >
+                    <Link href="/pricing">{locale === 'ja' ? '料金プラン' : 'Pricing'}</Link>
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    onClick={onDemoLogin}
+                    className="text-orange-600 border-orange-600 hover:bg-orange-50 hover:text-orange-700 dark:text-orange-400 dark:border-orange-400 dark:hover:bg-orange-950 dark:hover:text-orange-300"
+                  >
+                    {locale === 'ja' ? 'デモ体験' : 'Demo'}
+                  </Button>
+                </div>
+
+                {/* モバイル・タブレット表示 - ハンバーガーメニュー */}
+                <div className="sm:hidden">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Menu className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      {/* 言語切り替え */}
+                      <DropdownMenuItem onClick={() => setLocale(locale === 'ja' ? 'en' : 'ja')} className="cursor-pointer">
+                        <Globe className="h-4 w-4 mr-2" />
+                        {locale === 'ja' ? 'English' : '日本語'}
+                      </DropdownMenuItem>
+                      
+                      {/* メニュー項目 */}
+                      <DropdownMenuItem asChild>
+                        <Link href="/pricing" className="cursor-pointer">
+                          {locale === 'ja' ? '料金プラン' : 'Pricing'}
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={onDemoLogin} className="cursor-pointer text-orange-600">
+                        {locale === 'ja' ? 'デモ体験' : 'Demo'}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </>
+            )}
+
+            {/* 認証済み状態 - 常にハンバーガーメニュー */}
+            {isAuthenticated && (
+              <>
+                {/* デスクトップでの言語切り替え */}
+                <div className="hidden md:block">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm">{locale === 'ja' ? '日本語' : 'English'}</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-36">
+                      <DropdownMenuItem onClick={() => setLocale('ja')} className="cursor-pointer">日本語</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setLocale('en')} className="cursor-pointer">English</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                {/* メインメニュー */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
@@ -94,6 +149,14 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated = false, onDemoLogin, o
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
+                    {/* モバイルでの言語切り替え */}
+                    <div className="md:hidden">
+                      <DropdownMenuItem onClick={() => setLocale(locale === 'ja' ? 'en' : 'ja')} className="cursor-pointer">
+                        <Globe className="h-4 w-4 mr-2" />
+                        {locale === 'ja' ? 'English' : '日本語'}
+                      </DropdownMenuItem>
+                    </div>
+                    
                     <DropdownMenuItem asChild>
                       <Link href="/profile" className="cursor-pointer">
                         プロフィール
