@@ -20,19 +20,40 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# 環境別CORS設定
+def get_cors_origins():
+    """環境に応じたCORSオリジンを取得"""
+    environment = os.environ.get('ENVIRONMENT', 'development')
+    
+    if environment == 'production':
+        return [
+            "https://ocha.onrender.com",
+            "https://your-production-domain.com",
+            # 具体的なVercelドメインを追加
+            "https://ocha-navy.vercel.app/",
+        ]
+    elif environment == 'development':  # development
+        return [
+            "http://localhost:3000",
+            "http://localhost:3001",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:3001",
+        ]
+
 # CORS設定
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:3001",  # Next.js dev server alternative port
-        "https://*.vercel.app",
-        "https://ocha.onrender.com",
-        "*"  # 本番環境では適切なドメインに制限
-    ],
-    allow_credentials=False,  # Lambdaでは通常False
+    allow_origins=get_cors_origins(),
+    allow_credentials=False,  # JWTトークンはAuthorizationヘッダーで送信
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
+    allow_headers=[
+        "Accept",
+        "Accept-Language",
+        "Content-Language",
+        "Content-Type",
+        "Authorization",  # JWT用
+        "X-Requested-With",
+    ],
 )
 
 # JWT設定
