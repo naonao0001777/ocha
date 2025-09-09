@@ -1,3 +1,14 @@
+# 環境変数でCORSオリジンを制御
+locals {
+  cors_origins = var.environment == "prod" ? [
+    "https://ocha.onrender.com",
+    "https://ocha-navy.vercel.app"
+  ] : [
+    "http://localhost:3000",
+    "http://localhost:3001"
+  ]
+}
+
 resource "aws_apigatewayv2_api" "http" {
   name          = "${var.project}-${var.environment}-http-api"
   protocol_type = "HTTP"
@@ -5,10 +16,17 @@ resource "aws_apigatewayv2_api" "http" {
 
   cors_configuration {
     allow_credentials = false
-    allow_headers     = ["*"]
-    allow_methods     = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "DELETE"]
-    allow_origins     = ["*"]  # 本番では適切なオリジンを指定
-    max_age           = 86400
+    allow_headers = [
+      "Accept",
+      "Accept-Language",
+      "Content-Language", 
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With"
+    ]
+    allow_methods = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "DELETE"]
+    allow_origins = local.cors_origins  # ✅ 環境別制限
+    max_age       = 86400
   }
 
   tags = {
