@@ -25,14 +25,12 @@ def get_cors_origins():
     """環境に応じたCORSオリジンを取得"""
     environment = os.environ.get('ENVIRONMENT', 'development')
     
-    if environment == 'production':
+    if environment in ['production', 'prod']:
         return [
             "https://ocha.onrender.com",
-            "https://your-production-domain.com",
-            # 具体的なVercelドメインを追加
-            "https://ocha-navy.vercel.app/",
+            "https://ocha-navy.vercel.app",  # 末尾のスラッシュを削除
         ]
-    elif environment == 'development':  # development
+    else:  # development または未設定
         return [
             "http://localhost:3000",
             "http://localhost:3001",
